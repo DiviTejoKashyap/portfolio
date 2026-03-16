@@ -1,0 +1,155 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: 40 33% 97%;
+    --bg-alt: 36 22% 93%;
+    --surface: 0 0% 100%;
+    --ink: 0 4% 6%;
+    --ink-60: 0 4% 6% / 0.6;
+    --ink-30: 0 4% 6% / 0.3;
+    --ink-12: 0 4% 6% / 0.12;
+    --accent: 0 0% 10%;
+    --accent-warm: 20 68% 50%;
+    --rule: 0 4% 6% / 0.08;
+    --tag-bg: 0 4% 6% / 0.05;
+    --tag-border: 0 4% 6% / 0.10;
+    --card-hover: 0 4% 6% / 0.03;
+
+    --background: var(--bg);
+    --foreground: var(--ink);
+    --primary: var(--ink);
+    --primary-foreground: var(--bg);
+    --secondary: var(--bg-alt);
+    --secondary-foreground: var(--ink);
+    --muted: var(--bg-alt);
+    --muted-foreground: var(--ink-60);
+    --accent-color: var(--accent);
+    --accent-foreground: var(--bg);
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: var(--rule);
+    --input: var(--rule);
+    --ring: var(--ink);
+    --card: var(--surface);
+    --card-foreground: var(--ink);
+    --popover: var(--surface);
+    --popover-foreground: var(--ink);
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  [data-theme="dark"] {
+    --bg: 20 12% 4%;
+    --bg-alt: 24 14% 8%;
+    --surface: 24 8% 10%;
+    --ink: 36 18% 93%;
+    --ink-60: 36 18% 93% / 0.6;
+    --ink-30: 36 18% 93% / 0.3;
+    --ink-12: 36 18% 93% / 0.12;
+    --accent: 36 18% 93%;
+    --accent-warm: 20 72% 54%;
+    --rule: 36 18% 93% / 0.08;
+    --tag-bg: 36 18% 93% / 0.06;
+    --tag-border: 36 18% 93% / 0.12;
+    --card-hover: 36 18% 93% / 0.04;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: hsl(var(--bg));
+    color: hsl(var(--ink));
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+  }
+
+  .font-mono-label {
+    font-family: 'DM Mono', monospace;
+  }
+
+  .text-ink { color: hsl(var(--ink)); }
+  .text-ink-60 { color: hsl(var(--ink-60)); }
+  .text-ink-30 { color: hsl(var(--ink-30)); }
+  .text-accent-warm { color: hsl(var(--accent-warm)); }
+  .bg-page { background-color: hsl(var(--bg)); }
+  .bg-page-alt { background-color: hsl(var(--bg-alt)); }
+  .bg-surface { background-color: hsl(var(--surface)); }
+  .border-rule { border-color: hsl(var(--rule)); }
+  .bg-tag { background-color: hsl(var(--tag-bg)); }
+  .border-tag { border-color: hsl(var(--tag-border)); }
+  .bg-card-hover { background-color: hsl(var(--card-hover)); }
+  .bg-ink { background-color: hsl(var(--ink)); }
+  .text-bg { color: hsl(var(--bg)); }
+  .border-accent-warm { border-color: hsl(var(--accent-warm)); }
+}
+
+/* Marquee animation */
+@keyframes marquee-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes marquee-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+.animate-marquee-left {
+  animation: marquee-left 24s linear infinite;
+}
+.animate-marquee-right {
+  animation: marquee-right 20s linear infinite;
+}
+.group:hover .animate-marquee-left,
+.group:hover .animate-marquee-right {
+  animation-play-state: paused;
+}
+
+/* Noise overlay */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.025;
+}
+[data-theme="dark"] .noise-overlay {
+  opacity: 0.04;
+}
+
+/* Custom cursor */
+@media (pointer: coarse) {
+  .custom-cursor { display: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.3s !important;
+  }
+  .animate-marquee-left, .animate-marquee-right {
+    animation-duration: 48s !important;
+  }
+}

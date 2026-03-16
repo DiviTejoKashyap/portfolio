@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pulse | Professional Wellness Architecture</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-canvas: #f1f5f9;
+            --bg-app: linear-gradient(165deg, #f8fafc 0%, #e0e7ff 100%);
+            --accent: #4f46e5;
+            --secondary: #7c3aed;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --radius-app: 44px;
+            --radius-card: 24px;
+            --font-main: 'Inter', sans-serif;
+            --border: 1px solid rgba(255, 255, 255, 0.5);
+            --shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .wire-mode {
+            --bg-app: #ffffff;
+            --accent: #000000;
+            --secondary: #000000;
+            --success: #000000;
+            --card-bg: #ffffff;
+            --text-primary: #000000;
+            --text-secondary: #000000;
+            --radius-app: 0px;
+            --radius-card: 0px;
+            --font-main: 'Courier New', monospace;
+            --border: 2px solid #000000;
+            --shadow: none;
+        }
+
+        * { box-sizing: border-box; transition: all 0.2s ease; }
+        body { margin: 0; background-color: var(--bg-canvas); font-family: var(--font-main); height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+
+        .external-controls {
+            position: fixed; top: 30px; right: 30px; z-index: 1000;
+            display: flex; align-items: center; gap: 12px;
+            background: #fff; padding: 10px 20px; border-radius: 50px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;
+        }
+        .ext-btn { padding: 6px 14px; border-radius: 20px; border: 1px solid #e2e8f0; background: white; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .ext-btn:hover { background: #f8fafc; }
+
+        .phone-shell {
+            width: 375px; height: 812px; background: var(--bg-app);
+            border: 12px solid #0f172a; border-radius: 54px;
+            position: relative; overflow: hidden; display: flex; flex-direction: column;
+            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.25);
+        }
+
+        .screen-container { flex: 1; overflow-y: auto; padding: 24px 20px 120px; scrollbar-width: none; }
+        .screen-container::-webkit-scrollbar { display: none; }
+        .screen { display: none; animation: fadeIn 0.3s ease; }
+        .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section-tag { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 8px; display: block; }
+        h1 { font-size: 28px; font-weight: 800; margin: 0 0 16px; letter-spacing: -0.5px; color: var(--text-primary); }
+
+        .card { background: var(--card-bg); border-radius: var(--radius-card); padding: 18px; margin-bottom: 16px; border: var(--border); box-shadow: var(--shadow); backdrop-filter: blur(10px); }
+        .wire-mode .card { border-style: dashed; }
+
+        .progress-rail { height: 6px; background: rgba(0,0,0,0.05); border-radius: 10px; overflow: hidden; margin: 10px 0; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, var(--accent), var(--secondary)); border-radius: 10px; }
+
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+        .data-point { font-size: 18px; font-weight: 800; color: var(--text-primary); }
+        .data-label { font-size: 10px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; }
+
+        .list-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+        .list-item:last-child { border: none; }
+
+        .bottom-nav {
+            position: absolute; bottom: 0; width: 100%; height: 90px;
+            background: rgba(255,255,255,0.85); border-top: var(--border);
+            display: flex; justify-content: space-around; align-items: center; padding-bottom: 20px;
+            backdrop-filter: blur(20px); z-index: 10;
+        }
+        .nav-item { text-align: center; color: var(--text-secondary); cursor: pointer; font-size: 10px; font-weight: 700; opacity: 0.5; flex: 1; }
+        .nav-item.active { color: var(--accent); opacity: 1; }
+        .nav-icon { font-size: 20px; margin-bottom: 4px; display: block; }
+
+        #toast { position: absolute; bottom: 110px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 10px 20px; border-radius: 50px; font-size: 12px; font-weight: 600; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 100; }
+    </style>
+</head>
+<body id="mainBody">
+
+    <div class="external-controls">
+        <span style="font-size: 13px; font-weight: 600; color: #475569;">Display:</span>
+        <button class="ext-btn" onclick="toggleDesign()">Toggle Wireframe</button>
+    </div>
+
+    <div class="phone-shell" id="phone">
+        <div class="screen-container">
+
+            <div id="home" class="screen active">
+                <span class="section-tag">Thursday, Feb 19</span>
+                <h1>Pulse Dashboard</h1>
+
+                <div class="card">
+                    <div style="display:flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <span class="data-label">Daily Movement</span>
+                            <div class="data-point">8,421 Steps</div>
+                        </div>
+                        <span style="background: var(--success); color: white; font-size: 9px; padding: 4px 8px; border-radius: 12px; font-weight: 800;">+12% vs Yesterday</span>
+                    </div>
+                    <div class="progress-rail"><div class="progress-bar" style="width: 84%"></div></div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; margin-top: 10px;">
+                        <div><div class="data-label">Kcal</div><div style="font-size:13px; font-weight:700">412</div></div>
+                        <div><div class="data-label">Mins</div><div style="font-size:13px; font-weight:700">45</div></div>
+                        <div><div class="data-label">Distance</div><div style="font-size:13px; font-weight:700">6.2km</div></div>
+                    </div>
+                </div>
+
+                <span class="section-tag">Bio-Intelligence</span>
+                <div class="card" style="background: var(--accent); color: white;">
+                    <div style="display:flex; gap:12px; align-items:center;">
+                        <div style="font-size:24px">&#x1F9E0;</div>
+                        <div>
+                            <strong style="font-size:14px">High Cognitive Load Detected</strong>
+                            <p style="font-size: 11px; opacity: 0.9; margin: 4px 0 0;">Your HRV suggests mental fatigue. A 5-minute Focus Reset is recommended before your next task.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <span class="section-tag">Mental Wellness</span>
+                <div class="card">
+                    <div class="list-item">
+                        <div>
+                            <div style="font-size:13px; font-weight:700">Mood Journal</div>
+                            <div style="font-size:11px; color:var(--text-secondary)">3 Entries today &bull; Mostly Focused</div>
+                        </div>
+                        <span style="font-size:18px">&#x1F60A;</span>
+                    </div>
+                    <div class="list-item">
+                        <div>
+                            <div style="font-size:13px; font-weight:700">Water Intake</div>
+                            <div style="font-size:11px; color:var(--text-secondary)">1.8L / 2.5L Target</div>
+                        </div>
+                        <span style="font-size:18px">&#x1F4A7;</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="analytics" class="screen">
+                <span class="section-tag">Deep Dive</span>
+                <h1>Health Trends</h1>
+
+                <div class="card">
+                    <div style="display:flex; justify-content: space-between;">
+                        <span class="data-label">Sleep Quality</span>
+                        <span style="color:var(--accent); font-weight:800; font-size:12px">8h 12m</span>
+                    </div>
+                    <div style="display: flex; height: 35px; border-radius: 8px; overflow: hidden; margin: 15px 0;">
+                        <div style="width: 20%; background: #1e293b;" title="Deep"></div>
+                        <div style="width: 45%; background: #4f46e5;" title="REM"></div>
+                        <div style="width: 35%; background: #a5b4fc;" title="Light"></div>
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 10px; font-weight:600;">
+                        <div style="color:var(--text-secondary)"><span style="color:#1e293b">&#9632;</span> Deep: 1h 42m</div>
+                        <div style="color:var(--text-secondary)"><span style="color:#4f46e5">&#9632;</span> REM: 3h 15m</div>
+                    </div>
+                </div>
+
+                <div class="stat-grid">
+                    <div class="card" style="margin-bottom:0">
+                        <span class="data-label">Avg HRV</span>
+                        <div class="data-point">62ms</div>
+                        <div style="font-size:9px; color:var(--success); font-weight:700">Optimal Range</div>
+                    </div>
+                    <div class="card" style="margin-bottom:0">
+                        <span class="data-label">Recovery</span>
+                        <div class="data-point">88%</div>
+                        <div style="font-size:9px; color:var(--text-secondary); font-weight:700">Ready for Training</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <span class="data-label">Key Correlations</span>
+                    <p style="font-size:12px; line-height:1.6; color:var(--text-secondary); margin: 8px 0 0;">Recovery Score increases by 12% when you complete your last meal 3 hours before sleep.</p>
+                </div>
+            </div>
+
+            <div id="habits" class="screen">
+                <span class="section-tag">Performance</span>
+                <h1>Habit Stacking</h1>
+
+                <div class="card" style="background: linear-gradient(135deg, #7c3aed, #4f46e5); color: white; text-align: center;">
+                    <div style="font-size: 44px; font-weight: 800;">14</div>
+                    <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Day Wellness Streak</div>
+                    <p style="font-size: 11px; opacity: 0.8; margin: 8px 0 0;">You're in the top 3% of users this month!</p>
+                </div>
+
+                <span class="section-tag">Active Stack</span>
+                <div class="card">
+                    <div class="list-item">
+                        <div style="display:flex; align-items:center; gap:12px">
+                            <input type="checkbox" checked style="accent-color: var(--accent)">
+                            <div style="font-size:13px; font-weight:700">Morning Sunlight (15m)</div>
+                        </div>
+                        <span style="font-size:10px; font-weight:800; color:var(--success)">DONE</span>
+                    </div>
+                    <div class="list-item">
+                        <div style="display:flex; align-items:center; gap:12px">
+                            <input type="checkbox" style="accent-color: var(--accent)">
+                            <div style="font-size:13px; font-weight:700">Deep Work Block (2h)</div>
+                        </div>
+                        <span style="font-size:10px; font-weight:800; color:var(--warning)">LATER</span>
+                    </div>
+                    <div class="list-item">
+                        <div style="display:flex; align-items:center; gap:12px">
+                            <input type="checkbox" style="accent-color: var(--accent)">
+                            <div style="font-size:13px; font-weight:700">Magnesium Supplement</div>
+                        </div>
+                        <span style="font-size:10px; font-weight:800; color:var(--warning)">PM</span>
+                    </div>
+                </div>
+
+                <button onclick="notify('Habit log updated')" style="width:100%; padding:16px; border-radius:16px; border:none; background:var(--text-primary); color:white; font-weight:700; cursor:pointer;">Update Today's Progress</button>
+            </div>
+
+        </div>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="nav('home', this)"><span class="nav-icon">&#x1F3E0;</span>Summary</div>
+            <div class="nav-item" onclick="nav('analytics', this)"><span class="nav-icon">&#x1F4CA;</span>Analytics</div>
+            <div class="nav-item" onclick="nav('habits', this)"><span class="nav-icon">&#x1F3AF;</span>Habits</div>
+        </nav>
+
+        <div id="toast">Update successful</div>
+    </div>
+
+    <script>
+        function toggleDesign() {
+            const phone = document.getElementById('phone');
+            phone.classList.toggle('wire-mode');
+        }
+        function nav(id, el) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            el.classList.add('active');
+        }
+        function notify(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg; t.style.opacity = '1';
+            setTimeout(() => t.style.opacity = '0', 2000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sync — Collaboration Workspace</title>
+<style>
+  :root {
+    --bg: #FAFAF9; --surface: #FFFFFF; --alt: #F6F6F4; --text: #121212; --muted: #737373;
+    --border: #E7E7E4; --accent: #2F6FED; --accent-hover: #275FD1; --accent-soft: #EEF4FF;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+    --shadow-md: 0 12px 32px rgba(0,0,0,0.08), 0 4px 8px rgba(0,0,0,0.03);
+    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-serif: 'Newsreader', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+    --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 32px; --space-2xl: 48px; --space-3xl: 64px;
+    --radius-sm: 6px; --radius-md: 10px; --radius-lg: 18px;
+  }
+
+  body.wireframe-mode {
+    --bg: #ffffff; --surface: #ffffff; --alt: #f0f0f0; --text: #000000; --muted: #555555;
+    --border: #000000; --accent: #000000; --accent-hover: #333333; --accent-soft: #f0f0f0;
+    --shadow-sm: none; --shadow-md: none; --radius-sm: 0px; --radius-md: 0px; --radius-lg: 0px;
+    --font-sans: 'Courier New', Courier, monospace; --font-serif: 'Courier New', Courier, monospace;
+  }
+  body.wireframe-mode * { box-shadow: none !important; border-radius: 0 !important; }
+  body.wireframe-mode .card, body.wireframe-mode .task-card, body.wireframe-mode .mock-document,
+  body.wireframe-mode .drawer, body.wireframe-mode .topbar, body.wireframe-mode .sidebar,
+  body.wireframe-mode .review-versions, body.wireframe-mode .review-comments,
+  body.wireframe-mode .comment-bubble, body.wireframe-mode .column-header { border: 1px solid #000 !important; }
+  body.wireframe-mode .btn-primary { background: #000 !important; color: #fff !important; }
+  body.wireframe-mode .tag { background: #fff !important; color: #000 !important; border: 1px solid #000; }
+  body.wireframe-mode .avatar { background: #fff !important; border: 1px solid #000 !important; color: transparent !important;
+    background-image: linear-gradient(to bottom right, transparent 48%, #000 49%, #000 51%, transparent 52%), linear-gradient(to top right, transparent 48%, #000 49%, #000 51%, transparent 52%) !important; }
+  body.wireframe-mode .pin { background-image: none !important; color: #000 !important; font-weight: bold; border: 2px solid #000 !important; }
+  body.wireframe-mode .mode-toggle-pill { border-radius: 20px !important; }
+  body.wireframe-mode .mode-toggle-pill button { border-radius: 16px !important; }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.1s, color 0.1s; }
+  body { font-family: var(--font-sans); background-color: var(--bg); color: var(--text); font-size: 15px; line-height: 1.5; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+  h1, h2, h3, h4 { color: var(--text); }
+  .serif { font-family: var(--font-serif); font-weight: 400; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; transition: all 0.2s ease; font-size: 14px; font-weight: 500; }
+  input { font-family: inherit; font-size: 14px; }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #D4D4D0; border-radius: 4px; }
+
+  .flex { display: flex; } .flex-col { display: flex; flex-direction: column; }
+  .items-center { align-items: center; } .justify-between { justify-content: space-between; }
+  .gap-xs { gap: var(--space-xs); } .gap-sm { gap: var(--space-sm); } .gap-md { gap: var(--space-md); } .gap-lg { gap: var(--space-lg); } .gap-xl { gap: var(--space-xl); }
+  .text-muted { color: var(--muted); } .text-sm { font-size: 13px; } .hidden { display: none !important; }
+  .mb-sm { margin-bottom: var(--space-sm); } .mb-md { margin-bottom: var(--space-md); } .mb-lg { margin-bottom: var(--space-lg); }
+  .mb-xl { margin-bottom: var(--space-xl); } .mb-2xl { margin-bottom: var(--space-2xl); } .mb-3xl { margin-bottom: var(--space-3xl); }
+  .mt-sm { margin-top: var(--space-sm); } .mt-md { margin-top: var(--space-md); } .mt-lg { margin-top: var(--space-lg); } .mt-xl { margin-top: var(--space-xl); }
+  .mt-2xl { margin-top: var(--space-2xl); } .mt-xs { margin-top: var(--space-xs); }
+  .border-b { border-bottom: 1px solid var(--border); }
+
+  .avatar { display: flex; align-items: center; justify-content: center; border-radius: 50%; color: var(--text); font-weight: 600; flex-shrink: 0; }
+  .av-sm { width: 22px; height: 22px; font-size: 10px; } .av-md { width: 28px; height: 28px; font-size: 12px; } .av-lg { width: 36px; height: 36px; font-size: 14px; }
+  .bg-1 { background: #E3F2FD; color: #1565C0; } .bg-2 { background: #FCE4EC; color: #C2185B; }
+  .bg-3 { background: #E8F5E9; color: #2E7D32; } .bg-4 { background: #FFF3E0; color: #E65100; }
+  .bg-5 { background: #F3E5F5; color: #6A1B9A; } .bg-alt { background: var(--alt); }
+
+  .btn-primary { background: var(--accent); color: white; padding: 8px 16px; border-radius: var(--radius-sm); }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-secondary { background: var(--surface); border: 1px solid var(--border); padding: 8px 16px; border-radius: var(--radius-sm); color: var(--text); }
+  .btn-secondary:hover { background: var(--alt); }
+  .btn-icon { padding: 8px; border-radius: var(--radius-sm); color: var(--muted); }
+  .btn-icon:hover { background: var(--alt); color: var(--text); }
+
+  .topbar { height: 64px; background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 var(--space-xl); flex-shrink: 0; z-index: 10; }
+  .logo { font-size: 22px; letter-spacing: -0.02em; font-weight: 500; }
+  .workspace-switcher { padding: 6px 12px; border-radius: var(--radius-sm); font-weight: 500; display: flex; align-items: center; gap: 8px; }
+  .workspace-switcher:hover { background: var(--alt); }
+  .search-bar { background: var(--alt); border: 1px solid transparent; border-radius: 20px; padding: 8px 16px; width: 340px; display: flex; align-items: center; gap: 8px; }
+  .search-bar:focus-within { background: var(--surface); border-color: var(--accent); }
+  .search-bar input { background: transparent; border: none; outline: none; width: 100%; color: var(--text); }
+
+  .app-body { display: flex; flex: 1; overflow: hidden; }
+
+  .sidebar { width: 260px; background: var(--surface); border-right: 1px solid var(--border); padding: var(--space-lg) var(--space-md); flex-shrink: 0; overflow-y: auto; }
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--radius-sm); color: var(--muted); margin-bottom: 2px; font-weight: 500; text-decoration: none; cursor: pointer; }
+  .nav-item:hover { background: var(--alt); color: var(--text); }
+  .nav-item.active { background: var(--accent-soft); color: var(--accent); }
+  .nav-section { margin-top: var(--space-xl); margin-bottom: var(--space-sm); padding-left: 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
+
+  .main-content { flex: 1; position: relative; overflow: hidden; background: var(--bg); }
+  .screen { height: 100%; width: 100%; overflow-y: auto; display: none; }
+  .screen.active { display: block; }
+
+  .home-layout { display: grid; grid-template-columns: 1fr 340px; gap: var(--space-3xl); padding: var(--space-3xl) max(var(--space-3xl), calc((100% - 1200px) / 2)); max-width: 1600px; margin: 0 auto; }
+  .editorial-header { margin-bottom: var(--space-2xl); }
+  .editorial-header h1 { font-size: 40px; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: var(--space-sm); }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-lg); box-shadow: var(--shadow-sm); margin-bottom: var(--space-md); position: relative; transition: border-color 0.2s; }
+  .card:hover { border-color: #D4D4D0; }
+  .card-actions { position: absolute; top: var(--space-md); right: var(--space-md); opacity: 0; transition: opacity 0.2s; }
+  .card:hover .card-actions { opacity: 1; }
+
+  .right-rail-section { margin-bottom: var(--space-2xl); }
+  .right-rail-section h3 { font-size: 14px; font-weight: 600; margin-bottom: var(--space-md); text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  .list-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .list-item:last-child { border-bottom: none; }
+
+  .review-layout { display: flex; height: 100%; }
+  .review-versions { width: 280px; border-right: 1px solid var(--border); background: var(--bg); padding: var(--space-lg); overflow-y: auto; flex-shrink: 0; }
+  .version-card { padding: var(--space-md); border-radius: var(--radius-sm); border: 1px solid transparent; cursor: pointer; margin-bottom: var(--space-sm); }
+  .version-card:hover { background: var(--alt); }
+  .version-card.active { background: var(--surface); border-color: var(--border); box-shadow: var(--shadow-sm); }
+
+  .review-viewer { flex: 1; display: flex; flex-direction: column; background: var(--alt); min-width: 0; }
+  .viewer-toolbar { height: 56px; border-bottom: 1px solid var(--border); background: var(--surface); display: flex; align-items: center; justify-content: center; gap: var(--space-xl); flex-shrink: 0; }
+  .viewer-content { flex: 1; overflow: auto; padding: var(--space-3xl); display: flex; justify-content: center; align-items: flex-start; }
+  .mock-document { background: var(--surface); width: 100%; max-width: 800px; min-height: 1200px; box-shadow: var(--shadow-md); border-radius: var(--radius-md); position: relative; padding: var(--space-3xl); }
+
+  .pin { position: absolute; width: 28px; height: 28px; background: var(--accent); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; box-shadow: 0 2px 8px rgba(47,111,237,0.4); cursor: pointer; border: 2px solid var(--surface); transition: transform 0.2s; z-index: 5; }
+  .pin:hover { transform: scale(1.1); }
+
+  .review-comments { width: 380px; border-left: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; flex-shrink: 0; }
+  .comments-header { padding: var(--space-lg); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .comments-body { flex: 1; overflow-y: auto; padding: var(--space-lg); }
+  .comment-thread { margin-bottom: var(--space-xl); }
+  .comment-bubble { background: var(--bg); padding: 12px 16px; border-radius: var(--radius-md); border-top-left-radius: 4px; margin-top: 4px; border: 1px solid var(--border); line-height: 1.5; }
+
+  .toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
+  .toggle-track { width: 36px; height: 20px; background: var(--muted); border-radius: 10px; position: relative; transition: background 0.3s; }
+  .toggle input { display: none; }
+  .toggle input:checked + .toggle-track { background: var(--accent); }
+  .toggle-thumb { width: 16px; height: 16px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform 0.3s; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+  .toggle input:checked + .toggle-track .toggle-thumb { transform: translateX(16px); }
+
+  .tasks-layout { display: flex; flex-direction: column; height: 100%; }
+  .tasks-toolbar { padding: var(--space-lg) var(--space-xl); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--surface); flex-shrink: 0; }
+  .board { flex: 1; display: flex; gap: var(--space-lg); padding: var(--space-xl); overflow-x: auto; background: var(--bg); align-items: flex-start; }
+  .column { width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: var(--space-md); }
+  .column-header { display: flex; justify-content: space-between; align-items: center; font-weight: 600; padding: 0 4px; }
+  .task-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-md); box-shadow: var(--shadow-sm); cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; position: relative; }
+  .task-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: #D4D4D0; }
+  .task-card .task-hover-action { position: absolute; top: 12px; right: 12px; opacity: 0; background: var(--surface); border: 1px solid var(--border); padding: 4px 12px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; transition: opacity 0.2s; }
+  .task-card:hover .task-hover-action { opacity: 1; }
+
+  .drawer-overlay { position: absolute; inset: 0; background: rgba(18,18,18,0.2); backdrop-filter: blur(2px); z-index: 100; display: flex; justify-content: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+  .drawer-overlay.open { opacity: 1; pointer-events: auto; }
+  .drawer { width: 600px; height: 100%; background: var(--surface); box-shadow: var(--shadow-md); transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; border-left: 1px solid var(--border); }
+  .drawer-overlay.open .drawer { transform: translateX(0); }
+  .drawer-header { padding: var(--space-xl); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; }
+  .drawer-body { padding: var(--space-xl); flex: 1; overflow-y: auto; }
+
+  .tag { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; display: inline-block; }
+  .tag-review { background: #FFF3E0; color: #E65100; } .tag-design { background: #E3F2FD; color: #1565C0; }
+  .tag-eng { background: #E8F5E9; color: #2E7D32; } .tag-copy { background: #F3E5F5; color: #6A1B9A; }
+
+  .toast-container { position: fixed; top: var(--space-xl); right: var(--space-xl); z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
+  .toast { background: var(--text); color: var(--surface); padding: 12px 24px; border-radius: var(--radius-sm); font-weight: 500; font-size: 14px; box-shadow: var(--shadow-md); animation: slideIn 0.3s ease forwards; }
+  @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  .mode-toggle-pill { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--border); border-radius: 30px; padding: 6px; display: flex; gap: 4px; box-shadow: var(--shadow-md); z-index: 1000; }
+  .mode-toggle-pill button { padding: 8px 20px; border-radius: 20px; font-weight: 600; font-size: 13px; color: var(--muted); }
+  .mode-toggle-pill button.active { background: var(--alt); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+</style>
+</head>
+<body>
+
+  <header class="topbar flex items-center justify-between">
+    <div class="flex items-center gap-xl">
+      <div class="logo serif">Sync</div>
+      <button class="workspace-switcher">
+        Wavelength Studio
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="search-bar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search across files, projects, and people...">
+    </div>
+    <div class="flex items-center gap-md">
+      <button class="btn-primary flex items-center gap-sm" onclick="triggerToast('Create menu opened')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Create
+      </button>
+      <div class="flex items-center gap-sm" style="margin-left: 16px;">
+        <button class="btn-icon" style="position:relative;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <div style="position:absolute; top:8px; right:8px; width:8px; height:8px; background:#E65100; border-radius:50%; border:2px solid var(--surface);"></div>
+        </button>
+        <div class="avatar av-lg bg-alt" style="margin-left: 8px;">AK</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <nav class="sidebar">
+      <a class="nav-item active" onclick="switchTab('screen-home', this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Home
+      </a>
+      <a class="nav-item" onclick="switchTab('screen-tasks', this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Tasks
+      </a>
+      <a class="nav-item" onclick="switchTab('screen-reviews', this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4l2-9 5 18 3-9h6"/></svg>
+        Reviews
+      </a>
+      <div class="nav-section">Workspace</div>
+      <a class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Projects
+      </a>
+      <div class="nav-section">Team</div>
+      <a class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        People
+      </a>
+    </nav>
+
+    <main class="main-content">
+
+      <div id="screen-home" class="screen active">
+        <div class="home-layout">
+          <div class="feed">
+            <div class="editorial-header">
+              <h1 class="serif">Good morning, Alex.</h1>
+              <p class="text-muted" style="font-size: 18px;">Here's what's happening in your workspace today.</p>
+            </div>
+
+            <div class="card">
+              <div class="flex items-center gap-sm text-muted text-sm mb-md">
+                <div class="avatar av-sm bg-1">SJ</div>
+                Sarah J. requested a review &bull; 2 hours ago
+              </div>
+              <h3 style="font-size: 18px; margin-bottom: 8px;">Q3 Mobile Navigation Refactor</h3>
+              <p class="text-muted" style="margin-bottom: var(--space-lg);">Left 3 new comments on the interactive prototype. Approvals needed by EOD to unblock engineering.</p>
+              <div class="flex gap-sm">
+                <button class="btn-primary" onclick="switchTab('screen-reviews', document.querySelectorAll('.nav-item')[2])">Open Review</button>
+              </div>
+              <div class="card-actions"><button class="btn-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button></div>
+            </div>
+
+            <div class="card">
+              <div class="flex items-center gap-sm text-muted text-sm mb-md">
+                <div class="avatar av-sm bg-2">RL</div>
+                Rachel L. mentioned you &bull; 4 hours ago
+              </div>
+              <h3 style="font-size: 18px; margin-bottom: 8px;">User Interview Synthesis: Enterprise Flow</h3>
+              <div class="comment-bubble" style="margin-bottom: var(--space-lg);">
+                <p class="text-sm">"<span style="color: var(--accent); font-weight: 500;">@Alex</span> can you verify this insight aligns with the analytics data from last week?"</p>
+              </div>
+              <div class="flex gap-sm"><button class="btn-secondary">Reply</button></div>
+              <div class="card-actions"><button class="btn-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button></div>
+            </div>
+
+            <div class="card">
+              <div class="flex items-center gap-sm text-muted text-sm mb-md">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Document updated &bull; Yesterday
+              </div>
+              <h3 style="font-size: 18px; margin-bottom: 8px;">Design System V2 Guidelines</h3>
+              <p class="text-muted" style="margin-bottom: var(--space-lg);">David M. updated typography scales and elevation shadow tokens to match the new brand refresh.</p>
+            </div>
+          </div>
+
+          <div class="right-rail">
+            <div class="right-rail-section">
+              <h3>Quick Actions</h3>
+              <div class="flex-col gap-sm">
+                <button class="btn-secondary" style="text-align: left;" onclick="triggerToast('Draft started')">Draft new artifact</button>
+                <button class="btn-secondary" style="text-align: left;" onclick="switchTab('screen-tasks', document.querySelectorAll('.nav-item')[1])">Create task</button>
+              </div>
+            </div>
+            <div class="right-rail-section">
+              <h3>Assigned to You</h3>
+              <div class="list-item">
+                <input type="checkbox" style="margin-top: 4px;">
+                <div><div style="font-weight: 500;">Finalize user personas</div><div class="text-muted text-sm" style="color: #E65100; font-weight: 500;">Due Today</div></div>
+              </div>
+              <div class="list-item">
+                <input type="checkbox" style="margin-top: 4px;">
+                <div><div style="font-weight: 500;">Review onboarding copy</div><div class="text-muted text-sm">Tomorrow</div></div>
+              </div>
+              <div class="list-item">
+                <input type="checkbox" style="margin-top: 4px;">
+                <div><div style="font-weight: 500;">Prepare slides for All-Hands</div><div class="text-muted text-sm">Thursday</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="screen-reviews" class="screen">
+        <div class="review-layout">
+          <div class="review-versions">
+            <div class="flex items-center justify-between mb-lg">
+              <h3 class="serif" style="font-size: 20px;">Versions</h3>
+              <button class="btn-icon" style="padding: 4px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+            </div>
+            <div class="version-card active">
+              <div class="flex items-center justify-between mb-sm"><strong style="font-size: 14px;">V6. Final Tweaks</strong><span class="tag tag-review">Review</span></div>
+              <div class="text-sm text-muted flex items-center gap-xs"><div class="avatar av-sm bg-1">SJ</div> Today, 9:41 AM</div>
+            </div>
+            <div class="version-card">
+              <div class="flex items-center justify-between mb-sm"><strong style="font-size: 14px;">V5. Copy Update</strong></div>
+              <div class="text-sm text-muted flex items-center gap-xs"><div class="avatar av-sm bg-5">RL</div> Yesterday, 4:20 PM</div>
+            </div>
+            <div class="version-card">
+              <div class="flex items-center justify-between mb-sm"><strong style="font-size: 14px;">V4. Layout Shift</strong></div>
+              <div class="text-sm text-muted flex items-center gap-xs"><div class="avatar av-sm bg-alt">AK</div> Oct 14, 11:15 AM</div>
+            </div>
+          </div>
+
+          <div class="review-viewer">
+            <div class="viewer-toolbar">
+              <div class="flex items-center gap-sm text-muted">
+                <button class="btn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                <span style="font-size: 13px; font-weight: 500; min-width: 48px; text-align: center;">85%</span>
+                <button class="btn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+              </div>
+              <div style="width: 1px; height: 24px; background: var(--border);"></div>
+              <label class="toggle">
+                Show pins
+                <input type="checkbox" checked id="pin-toggle">
+                <div class="toggle-track"><div class="toggle-thumb"></div></div>
+              </label>
+            </div>
+            <div class="viewer-content">
+              <div class="mock-document">
+                <div class="flex items-center justify-between mb-2xl border-b" style="border-bottom: 2px solid var(--text); padding-bottom: 16px;">
+                  <h1 class="serif" style="font-size: 48px;">Product Specification</h1>
+                  <div class="tag tag-design">Draft Status</div>
+                </div>
+                <h2 class="serif" style="font-size: 28px; margin-top: var(--space-2xl); margin-bottom: var(--space-md);">1. Executive Summary</h2>
+                <div style="width: 100%; height: 16px; background: var(--alt); border-radius: 4px; margin-bottom: 12px;"></div>
+                <div style="width: 85%; height: 16px; background: var(--alt); border-radius: 4px; margin-bottom: 12px;"></div>
+                <div style="width: 90%; height: 16px; background: var(--alt); border-radius: 4px; margin-bottom: 32px;"></div>
+                <h2 class="serif" style="font-size: 28px; margin-top: var(--space-2xl); margin-bottom: var(--space-md);">2. Design Considerations</h2>
+                <div style="width: 100%; height: 320px; background: var(--alt); border: 1px dashed var(--muted); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); margin-bottom: 32px;">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin-bottom: 16px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  Hero Image Asset
+                </div>
+                <div class="pin-container">
+                  <div class="pin" style="top: 180px; left: -14px;">1</div>
+                  <div class="pin" style="top: 360px; left: 120px;">2</div>
+                  <div class="pin" style="top: 500px; right: -14px;">3</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="review-comments">
+            <div class="comments-header flex items-center justify-between">
+              <h3 style="font-size: 16px; font-weight: 600;">Comments (3)</h3>
+              <button class="btn-primary" onclick="triggerToast('Review approved successfully')">Approve</button>
+            </div>
+            <div class="comments-body">
+              <div class="comment-thread">
+                <div class="flex items-center gap-sm mb-sm">
+                  <div class="pin" style="position: static; width: 24px; height: 24px; font-size: 11px; z-index: 1;">1</div>
+                  <div class="avatar av-sm bg-1">SJ</div>
+                  <strong style="font-size: 14px;">Sarah J.</strong>
+                  <span class="text-sm text-muted">2 hrs ago</span>
+                </div>
+                <div class="comment-bubble text-sm">Should we elevate this section to the executive summary?</div>
+                <div class="flex gap-sm mt-sm" style="margin-left: 56px;">
+                  <button class="text-sm text-muted" style="font-weight: 500;">Reply</button>
+                  <button class="text-sm text-muted" style="font-weight: 500;">Resolve</button>
+                </div>
+              </div>
+              <div class="comment-thread">
+                <div class="flex items-center gap-sm mb-sm">
+                  <div class="pin" style="position: static; width: 24px; height: 24px; font-size: 11px; z-index: 1;">2</div>
+                  <div class="avatar av-sm bg-2">DM</div>
+                  <strong style="font-size: 14px;">David M.</strong>
+                  <span class="text-sm text-muted">3 hrs ago</span>
+                </div>
+                <div class="comment-bubble text-sm">Padding around this asset feels tight. Match the 32px standard from the DS.</div>
+              </div>
+              <div class="comment-thread" style="margin-top: var(--space-2xl); border-top: 1px solid var(--border); padding-top: var(--space-lg);">
+                <input type="text" placeholder="Leave a general comment..." style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--alt);">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="screen-tasks" class="screen">
+        <div class="tasks-layout">
+          <div class="tasks-toolbar">
+            <h1 class="serif" style="font-size: 24px;">Platform Core Q4</h1>
+            <div class="flex gap-md items-center">
+              <button class="btn-secondary flex items-center gap-sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                Filter
+              </button>
+              <button class="btn-primary" onclick="triggerToast('New task drafted')">+ New task</button>
+            </div>
+          </div>
+
+          <div class="board">
+            <div class="column">
+              <div class="column-header mb-sm">
+                <span class="text-muted">To Do <span style="font-weight: normal; font-size: 12px; margin-left: 4px;">3</span></span>
+                <button class="btn-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+              </div>
+              <div class="task-card" onclick="openDrawer()">
+                <div class="tag tag-design mb-sm">Design</div>
+                <h4 style="font-size: 15px; margin-bottom: 8px;">Update component library constraints</h4>
+                <div class="flex justify-between items-center text-muted text-sm mt-md"><span>Oct 24</span><div class="avatar av-sm bg-1">SJ</div></div>
+                <div class="task-hover-action">Open</div>
+              </div>
+              <div class="task-card" onclick="openDrawer()">
+                <div class="tag tag-review mb-sm">Research</div>
+                <h4 style="font-size: 15px; margin-bottom: 8px;">User interviews for mobile flow</h4>
+                <div class="flex justify-between items-center text-muted text-sm mt-md"><span>Oct 28</span><div class="avatar av-sm bg-alt">AK</div></div>
+                <div class="task-hover-action">Open</div>
+              </div>
+              <div class="task-card" onclick="openDrawer()">
+                <div class="tag tag-eng mb-sm">Engineering</div>
+                <h4 style="font-size: 15px; margin-bottom: 8px;">Investigate API latency spikes</h4>
+                <div class="flex justify-between items-center text-muted text-sm mt-md"><span>No date</span><div class="avatar av-sm bg-3">TC</div></div>
+                <div class="task-hover-action">Open</div>
+              </div>
+            </div>
+
+            <div class="column">
+              <div class="column-header mb-sm">
+                <span class="text-muted">In Progress <span style="font-weight: normal; font-size: 12px; margin-left: 4px;">2</span></span>
+                <button class="btn-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+              </div>
+              <div class="task-card" onclick="openDrawer()">
+                <div class="tag tag-review mb-sm">Product</div>
+                <h4 style="font-size: 15px; margin-bottom: 8px;">Finalize Q4 Roadmap Document</h4>
+                <div class="flex justify-between items-center text-muted text-sm mt-md"><span style="color: #E65100; font-weight: 500;">Today</span><div class="avatar av-sm bg-alt">AK</div></div>
+                <div class="task-hover-action">Open</div>
+              </div>
+              <div class="task-card" onclick="openDrawer()">
+                <div class="tag tag-design mb-sm">Design</div>
+                <h4 style="font-size: 15px; margin-bottom: 8px;">Refine empty states for feeds</h4>
+                <div class="flex justify-between items-center text-muted text-sm mt-md"><span>Tomorrow</span><div class="avatar av-sm bg-1">SJ</div></div>
+                <div class="task-hover-action">Open</div>
+              </div>
+            </div>
+
+            <div class="column">
+              <div class="column-header mb-sm">
+                <span class="text-muted">Done <span style="font-weight: normal; font-size: 12px; margin-left: 4px;">2</span></span>
+              </div>
+              <div class="task-card" style="opacity: 0.6;">
+                <div class="tag tag-eng mb-sm">Engineering</div>
+                <h4 style="font-size: 15px; margin-bottom: 8px; text-decoration: line-through;">Setup Jira Integration</h4>
+                <div class="flex justify-between items-center text-muted text-sm mt-md"><span>Oct 10</span><div class="avatar av-sm bg-3">TC</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="task-drawer" class="drawer-overlay" onclick="closeDrawer(event)">
+        <div class="drawer" onclick="event.stopPropagation()">
+          <div class="drawer-header">
+            <div class="flex gap-sm">
+              <div class="tag tag-review">Product</div>
+              <button class="btn-secondary" style="padding: 4px 8px; font-size: 12px;">In Progress</button>
+            </div>
+            <button class="btn-icon" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          </div>
+          <div class="drawer-body">
+            <h2 style="font-size: 28px; line-height: 1.2; margin-bottom: var(--space-xl); outline: none;" contenteditable="true">Finalize Q4 Roadmap Document</h2>
+            <div class="flex flex-col gap-md mb-xl" style="max-width: 300px;">
+              <div class="flex items-center justify-between border-b" style="padding-bottom: 8px;">
+                <span class="text-muted text-sm">Assignee</span>
+                <span style="font-weight: 500; display: flex; align-items: center; gap: 8px;"><div class="avatar av-sm bg-alt">AK</div> Alex K.</span>
+              </div>
+              <div class="flex items-center justify-between border-b" style="padding-bottom: 8px;">
+                <span class="text-muted text-sm">Due date</span>
+                <span style="font-weight: 500; color: #E65100;">Today</span>
+              </div>
+            </div>
+            <h3 style="font-size: 16px; margin-bottom: var(--space-sm);">Description</h3>
+            <p class="text-muted" style="line-height: 1.6; margin-bottom: var(--space-2xl);">Incorporate feedback from yesterday's stakeholder review session.</p>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div class="mode-toggle-pill">
+    <button id="btn-hifi" class="active" onclick="setMode('hifi')">Hi-Fi Mode</button>
+    <button id="btn-wire" onclick="setMode('wire')">Wireframe</button>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script>
+    function setMode(mode) {
+      if (mode === 'wire') {
+        document.body.classList.add('wireframe-mode');
+        document.getElementById('btn-wire').classList.add('active');
+        document.getElementById('btn-hifi').classList.remove('active');
+      } else {
+        document.body.classList.remove('wireframe-mode');
+        document.getElementById('btn-hifi').classList.add('active');
+        document.getElementById('btn-wire').classList.remove('active');
+      }
+    }
+    function switchTab(screenId, navElement) {
+      document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+      if (navElement) {
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        navElement.classList.add('active');
+      }
+    }
+    const drawer = document.getElementById('task-drawer');
+    function openDrawer() { drawer.classList.add('open'); }
+    function closeDrawer(event) {
+      if (!event || event.target === drawer) drawer.classList.remove('open');
+    }
+    const pinToggle = document.getElementById('pin-toggle');
+    const pinContainer = document.querySelector('.pin-container');
+    if (pinToggle && pinContainer) {
+      pinToggle.addEventListener('change', (e) => {
+        e.target.checked ? pinContainer.classList.remove('hidden') : pinContainer.classList.add('hidden');
+      });
+    }
+    function triggerToast(message) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-20px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

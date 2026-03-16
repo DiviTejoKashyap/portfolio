@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUME.SYS // Advanced Workspace</title>
+    <style>
+        /* CSS VARIABLES & THEMING */
+        :root {
+            --bg-grid: radial-gradient(circle, #000000 1px, transparent 1px);
+            --border-width: 2px;
+            --border-color: #000;
+            --color-pink: #FF0099;
+            --color-yellow: #EFFF00;
+            --color-blue: #0033FF;
+            --color-green: #00FF66;
+            --color-white: #FFFFFF;
+            --color-black: #000000;
+            --color-gray: #E0E0E0;
+
+            --font-sans: 'Helvetica Neue', 'Arial Black', Arial, sans-serif;
+            --font-mono: 'Courier New', Courier, monospace;
+            --box-shadow: 6px 6px 0px var(--border-color);
+        }
+
+        /* RESET & BASE */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--color-white);
+            background-image: var(--bg-grid);
+            background-size: 24px 24px;
+            color: var(--color-black);
+            font-family: var(--font-sans);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* STRICT WIREFRAME MODE OVERRIDES */
+        body.wire-mode .accent-bg,
+        body.wire-mode .tab-btn.active,
+        body.wire-mode .badge,
+        body.wire-mode .progress-fill,
+        body.wire-mode .toast {
+            background-color: var(--color-white) !important;
+            color: var(--color-black) !important;
+            border-color: var(--color-black) !important;
+        }
+        body.wire-mode .state-error {
+            background-color: var(--color-white) !important;
+            color: var(--color-black) !important;
+            border-style: dashed !important;
+        }
+        body.wire-mode .box,
+        body.wire-mode .btn,
+        body.wire-mode .card,
+        body.wire-mode .annotation-card,
+        body.wire-mode .toast {
+            box-shadow: none !important;
+        }
+        body.wire-mode .highlight {
+            background-color: transparent !important;
+            border: 1px dotted var(--color-black) !important;
+            color: var(--color-black) !important;
+        }
+        body.wire-mode .progress-bar {
+            background-color: transparent !important;
+            border: 1px dotted var(--color-black) !important;
+        }
+
+        /* TYPOGRAPHY */
+        h1, h2, h3, h4 { font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px; }
+        .mono { font-family: var(--font-mono); font-weight: bold; text-transform: uppercase; font-size: 0.75rem; }
+        .text-small { font-size: 0.85rem; }
+
+        .highlight { padding: 0 4px; border-bottom: 2px solid var(--border-color); }
+        .hl-yellow { background-color: var(--color-yellow); color: var(--color-black); }
+        .hl-pink { background-color: var(--color-pink); color: var(--color-white); }
+        .hl-blue { background-color: var(--color-blue); color: var(--color-white); }
+
+        /* BRUTALIST COMPONENTS */
+        .box {
+            background: var(--color-white);
+            border: var(--border-width) solid var(--border-color);
+            margin-bottom: 2rem;
+            box-shadow: var(--box-shadow);
+            border-radius: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .box-header {
+            padding: 1rem;
+            border-bottom: var(--border-width) solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .box-body { padding: 1.5rem; flex-grow: 1; }
+
+        .btn {
+            background: var(--color-white);
+            border: var(--border-width) solid var(--border-color);
+            padding: 0.5rem 1rem;
+            font-family: var(--font-sans);
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 var(--border-color);
+            transition: all 0.1s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+        .btn:hover { background: var(--color-black); color: var(--color-white); }
+        .btn:active { box-shadow: 0 0 0 var(--border-color); transform: translate(4px, 4px); }
+        .btn-sm { padding: 0.25rem 0.5rem; box-shadow: 2px 2px 0 var(--border-color); }
+        .btn-sm:active { transform: translate(2px, 2px); }
+
+        input, textarea, select {
+            width: 100%;
+            background: var(--color-white);
+            border: var(--border-width) solid var(--border-color);
+            padding: 1rem;
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            resize: vertical;
+            border-radius: 0;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            box-shadow: 4px 4px 0 var(--color-blue);
+        }
+
+        /* DATA DENSITY COMPONENTS (BADGES, TABLES, TIMELINES) */
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border: 1px solid var(--border-color);
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .b-pink { background: var(--color-pink); color: var(--color-white); }
+        .b-yellow { background: var(--color-yellow); color: var(--color-black); }
+        .b-blue { background: var(--color-blue); color: var(--color-white); }
+        .b-green { background: var(--color-green); color: var(--color-black); }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--color-gray);
+            margin: 0.5rem 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--color-blue);
+            width: 64%;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .data-table th, .data-table td {
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 0.5rem;
+            text-align: left;
+        }
+        .data-table th { font-family: var(--font-mono); text-transform: uppercase; background: var(--color-gray); }
+        .data-table tr:hover td { background: var(--color-yellow); }
+
+        .timeline { list-style: none; border-left: 2px dotted var(--border-color); margin-left: 10px; padding-left: 15px; }
+        .timeline li { margin-bottom: 1.5rem; position: relative; }
+        .timeline li::before {
+            content: ''; position: absolute; left: -21px; top: 0;
+            width: 10px; height: 10px; background: var(--color-black); border: 1px solid var(--border-color);
+        }
+
+        /* TOAST NOTIFICATION */
+        .toast-container {
+            position: fixed; bottom: 2rem; right: 2rem; z-index: 1000;
+            display: flex; flex-direction: column; gap: 1rem;
+        }
+        .toast {
+            background: var(--color-white); border: var(--border-width) solid var(--border-color);
+            box-shadow: 4px 4px 0 var(--border-color); padding: 1rem; min-width: 250px;
+            font-family: var(--font-mono); font-size: 0.85rem; font-weight: bold;
+            transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .toast.show { transform: translateX(0); }
+
+        /* LAYOUT & NAVIGATION */
+        header {
+            background: var(--color-white); border-bottom: var(--border-width) solid var(--border-color);
+            padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-size: 2rem; font-weight: 900; letter-spacing: -2px; }
+
+        .global-search {
+            flex-grow: 0.5; margin: 0 2rem; position: relative;
+        }
+        .global-search input { padding: 0.5rem 1rem; font-size: 0.85rem; }
+
+        .controls { display: flex; gap: 1rem; align-items: center; }
+
+        nav { background: var(--color-black); padding: 0 2rem; display: flex; gap: 1rem; }
+        .tab-btn {
+            background: transparent; color: var(--color-white);
+            border: none; border-right: var(--border-width) solid #333; border-left: var(--border-width) solid #333;
+            padding: 1rem 2rem; font-family: var(--font-mono); font-size: 1rem;
+            cursor: pointer; text-transform: uppercase; transition: background 0.2s;
+        }
+        .tab-btn:hover { background: #333; }
+        .tab-btn.active { background: var(--color-yellow); color: var(--color-black); border-color: var(--color-black); font-weight: 900; }
+
+        .container { max-width: 1600px; margin: 0 auto; padding: 2rem; flex-grow: 1; width: 100%; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.2s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* TAB A: HUB LAYOUT */
+        .grid-hub { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+
+        /* TAB B: READ LAYOUT (3 Column) */
+        .grid-read { display: grid; grid-template-columns: 250px 1fr 350px; gap: 2rem; }
+        .toc-list { list-style: none; font-family: var(--font-mono); font-size: 0.85rem; }
+        .toc-list li { padding: 0.5rem 0; border-bottom: 1px dotted var(--border-color); cursor: pointer; }
+        .toc-list li:hover { background: var(--color-yellow); }
+        .article-body { font-size: 1.15rem; line-height: 1.8; border-left: 8px solid var(--color-black); padding-left: 2rem; }
+        .annotation-card {
+            background: var(--color-white); border: var(--border-width) solid var(--border-color);
+            padding: 1rem; margin-bottom: 1.5rem; position: relative;
+            box-shadow: 4px 4px 0 var(--border-color);
+        }
+
+        /* TAB C: BOARD LAYOUT */
+        .board-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; align-items: start; }
+        .col-header { padding: 1rem; border: var(--border-width) solid var(--border-color); border-bottom: none; display: flex; justify-content: space-between; align-items: center; }
+        .col-body {
+            border: var(--border-width) solid var(--border-color); min-height: 600px;
+            padding: 1rem; background: rgba(255,255,255,0.8); display: flex; flex-direction: column; gap: 1rem;
+        }
+        .card { background: var(--color-white); border: var(--border-width) solid var(--border-color); padding: 1rem; box-shadow: 4px 4px 0 var(--border-color); }
+        .card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .card-actions { margin-top: 1rem; border-top: 1px dotted var(--border-color); padding-top: 0.5rem; display: flex; justify-content: space-between; align-items: center;}
+
+        .state-error { background: #ffcccc; color: #cc0000; border: var(--border-width) solid #cc0000; padding: 1rem; font-family: var(--font-mono); font-weight: bold; display: none; margin-top: 1rem; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">LUME.SYS</div>
+        <div class="global-search">
+            <input type="text" placeholder="Search Workspace or press ⌘K">
+        </div>
+        <div class="controls">
+            <span class="mono">Display:</span>
+            <button class="btn" id="toggle-wire">MODE: HI-FI</button>
+            <div style="width:32px; height:32px; background:var(--color-black); border-radius:50%; display:inline-block;"></div>
+        </div>
+    </header>
+
+    <nav>
+        <button class="tab-btn active" onclick="openTab('tab-hub')">A: HUB</button>
+        <button class="tab-btn" onclick="openTab('tab-read')">B: READ</button>
+        <button class="tab-btn" onclick="openTab('tab-board')">C: BOARD</button>
+    </nav>
+
+    <div class="container">
+
+        <div id="tab-hub" class="tab-content active">
+            <div class="grid-hub">
+
+                <div style="display: flex; flex-direction: column; gap: 2rem;">
+
+                    <div class="box">
+                        <div class="box-header bg-yellow accent-bg">
+                            <h2>Project Overview</h2>
+                            <span class="mono">ID: 948-X</span>
+                        </div>
+                        <div class="box-body">
+                            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem; line-height: 1;">NEURAL INTERFACES &amp; HAPTICS</h1>
+                            <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+                                <span class="badge b-blue">HARDWARE</span>
+                                <span class="badge b-pink">NEUROLOGY</span>
+                                <span class="badge">PHASE: ALPHA</span>
+                            </div>
+
+                            <div style="margin-bottom: 2rem;">
+                                <div style="display: flex; justify-content: space-between;" class="mono">
+                                    <span>Milestone Progress</span>
+                                    <span>64%</span>
+                                </div>
+                                <div class="progress-bar"><div class="progress-fill accent-bg"></div></div>
+                            </div>
+
+                            <div style="display: flex; gap: 1rem;">
+                                <button class="btn">VIEW BRIEF</button>
+                                <button class="btn" style="background:var(--color-gray)">EDIT METADATA</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="box">
+                        <div class="box-header" style="border-bottom-style: dotted;">
+                            <h2>Capture Log</h2>
+                            <span class="mono">ENTRIES: 142</span>
+                        </div>
+                        <div class="box-body" style="padding-top: 0; display:flex; flex-direction:column; gap:1rem;">
+                            <textarea rows="4" placeholder="Type raw thoughts, paste DOIs, or enter queries..."></textarea>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span class="mono text-small" style="color:#666;">Supports Markdown &amp; LaTeX math</span>
+                                <button class="btn bg-blue accent-bg" id="btn-log">LOG ENTRY (⌘+Enter)</button>
+                            </div>
+
+                            <div style="border-top: 1px dotted var(--border-color); padding-top: 1rem; margin-top: 1rem;">
+                                <p class="mono text-small" style="margin-bottom:0.5rem;">12 MINS AGO // SYS.USER</p>
+                                <p class="text-small">Check the interference patterns between the 40Hz auditory beat and the tFUS pulse width. Might be causing the artifacting.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 2rem;">
+
+                    <div class="box">
+                        <div class="box-header bg-pink accent-bg">
+                            <h2>SYS.SYNC</h2>
+                            <span class="badge">NODE_04</span>
+                        </div>
+                        <div class="box-body" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <p class="mono" id="sync-text">Status: 3 Unsynced changes</p>
+                                <p class="text-small" style="color: #666;">Last sync: 2026-02-18 10:22 EST</p>
+                            </div>
+                            <button class="btn" id="btn-sync">SYNC NOW</button>
+                        </div>
+                        <div class="state-error" id="sync-error">ERR 408: CONNECTION TIMEOUT. REPOSITORY UNREACHABLE.</div>
+                    </div>
+
+                    <div class="box">
+                        <div class="box-header" style="background:var(--color-black); color:var(--color-white);">
+                            <h2>Linked Literature</h2>
+                            <button class="btn btn-sm">+ ADD</button>
+                        </div>
+                        <div class="box-body" style="padding: 0; overflow-x: auto;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ref ID</th>
+                                        <th>Title / Author</th>
+                                        <th>Status</th>
+                                        <th>Date Added</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="mono">DOI:10.1038</td>
+                                        <td><strong>Bidirectional somatosensory...</strong><br><span style="color:#666;">Chen et al.</span></td>
+                                        <td><span class="badge b-yellow">READING</span></td>
+                                        <td class="mono">2026-02-15</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="mono">DOI:10.1126</td>
+                                        <td><strong>High-density focal arrays</strong><br><span style="color:#666;">Miller, K.</span></td>
+                                        <td><span class="badge b-green">REVIEWED</span></td>
+                                        <td class="mono">2026-02-10</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="mono">ARXIV:2311</td>
+                                        <td><strong>Limits of tFUS spatial res</strong><br><span style="color:#666;">Vasquez &amp; Smith</span></td>
+                                        <td><span class="badge">UNREAD</span></td>
+                                        <td class="mono">2026-02-18</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="box" style="margin-bottom: 0;">
+                        <div class="box-header">
+                            <h2>Activity Pipeline</h2>
+                        </div>
+                        <div class="box-body">
+                            <ul class="timeline">
+                                <li>
+                                    <span class="mono">10:45 AM</span><br>
+                                    Moved <em>Drafting hardware schematic</em> to <strong>DOING</strong>.
+                                </li>
+                                <li>
+                                    <span class="mono">09:12 AM</span><br>
+                                    Added 3 margin notes to <em>Chen et al. (2026)</em>.
+                                </li>
+                                <li>
+                                    <span class="mono">YESTERDAY</span><br>
+                                    Completed milestone: <em>Initial ethics board submission</em>.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="tab-read" class="tab-content">
+            <div class="grid-read">
+
+                <div class="box" style="height: fit-content;">
+                    <div class="box-header bg-blue accent-bg">
+                        <h3>OUTLINE</h3>
+                    </div>
+                    <div class="box-body" style="padding: 1rem;">
+                        <ul class="toc-list">
+                            <li>1. Introduction</li>
+                            <li style="padding-left: 1rem;">1.1 Current BCI Limits</li>
+                            <li>2. The Grid Paradigm</li>
+                            <li>3. tFUS Methodology</li>
+                            <li style="padding-left: 1rem;">3.1 Spatial Multiplexing</li>
+                            <li>4. Phase II Trial Limitations</li>
+                            <li>5. Conclusion</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="box" style="padding: 3rem; margin-bottom: 0;">
+                    <div style="display:flex; justify-content:space-between; border-bottom: 2px solid #000; padding-bottom: 1rem; margin-bottom: 2rem;">
+                        <span class="mono">DOI:10.1038/s41586-026-XXXX-X</span>
+                        <span class="badge b-yellow">STATUS: READING</span>
+                    </div>
+
+                    <h1 style="font-size: 2.5rem; margin-bottom: 1rem; line-height: 1.1;">Bidirectional somatosensory feedback via transcranial arrays</h1>
+                    <p class="mono" style="margin-bottom: 3rem; color: #555;">AUTHORS: CHEN, L., WANG, J., ET AL. // PUBLISHED: JAN 2026</p>
+
+                    <div class="article-body">
+                        <p style="margin-bottom: 1.5rem;">
+                            Current non-invasive brain-computer interfaces (BCIs) primarily focus on motor decoding. However, closing the sensorimotor loop requires <span class="highlight hl-yellow">high-resolution haptic feedback</span> that mimics natural mechanoreception. Without this feedback, users experience significant cognitive load when attempting precise distal object manipulation.
+                        </p>
+                        <p style="margin-bottom: 1.5rem;">
+                            Here we introduce a novel grid paradigm leveraging focused transcranial neuromodulation. By <span class="highlight hl-blue">multiplexing signals across a 256-channel high-density array</span>, we bypass the spatial limitations of traditional tFUS (transcranial focused ultrasound). Our approach utilizes constructive interference to create focal points as small as 2mm&#179; within the somatosensory cortex (S1).
+                        </p>
+                        <p style="margin-bottom: 1.5rem;">
+                            The primary limitation observed during phase II trials was the <span class="highlight hl-pink">refractory period synchronization</span> between adjacent cortical columns. If the stimulation pulse width exceeded 40ms, subjects consistently reported diffuse parasthesia rather than localized, distinct tactile sensations. This suggests a hard biological limit on temporal resolution using continuous wave methodologies.
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+                        <h3>MARGIN NOTES (2)</h3>
+                        <button class="btn btn-sm">+ NOTE</button>
+                    </div>
+
+                    <div class="annotation-card" style="border-left: 6px solid var(--color-yellow);">
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.5rem;">
+                            <span class="mono">NOTE_01</span>
+                            <span class="badge">#LITERATURE</span>
+                        </div>
+                        <p class="text-small">This "high-resolution haptic feedback" claim directly contradicts the MIT paper from last month. Need to cross-reference their spatial resolution metrics.</p>
+                    </div>
+
+                    <div class="annotation-card" style="border-left: 6px solid var(--color-pink);">
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.5rem;">
+                            <span class="mono">NOTE_02</span>
+                            <span class="badge b-pink">#CRITICAL</span>
+                        </div>
+                        <p class="text-small">Refractory period synchronization: Could we use a stochastic firing pattern instead of uniform pulse widths to avoid the 40ms overlap? <strong>Action item for hardware team.</strong></p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="tab-board" class="tab-content">
+
+            <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <h1 style="font-size: 3rem; line-height: 1;">WORK BOARD</h1>
+                    <span class="mono text-small">FILTER: <span class="badge b-blue">HARDWARE</span> <span class="badge b-pink">NEURO</span></span>
+                </div>
+                <button class="btn" id="btn-add-card" style="font-size: 1rem; padding: 1rem 2rem;">+ NEW TASK CARD</button>
+            </div>
+
+            <div class="board-grid">
+
+                <div>
+                    <div class="col-header bg-pink accent-bg">
+                        <h2>TO DO</h2>
+                        <span class="mono">5 TASKS</span>
+                    </div>
+                    <div class="col-body" id="col-todo">
+                        <div class="card" id="card-1">
+                            <div class="card-meta">
+                                <span class="badge b-pink">NEURO</span>
+                                <span class="mono text-small" style="color:red;">DUE: TODAY</span>
+                            </div>
+                            <h4 style="margin-bottom: 0.5rem;">Literature review on tFUS limits</h4>
+                            <p class="text-small">Cross-ref Vasquez paper with Chen's phase II findings.</p>
+                            <div class="card-actions">
+                                <span class="mono text-small">J. DOE</span>
+                                <select class="move-select mono" data-card-id="card-1">
+                                    <option value="col-todo" selected>To Do</option>
+                                    <option value="col-doing">Doing</option>
+                                    <option value="col-done">Done</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card" id="card-4">
+                            <div class="card-meta"><span class="badge">ADMIN</span></div>
+                            <h4 style="margin-bottom: 0.5rem;">Order gel pads</h4>
+                            <div class="card-actions">
+                                <span class="mono text-small">SYS</span>
+                                <select class="move-select mono" data-card-id="card-4">
+                                    <option value="col-todo" selected>To Do</option><option value="col-doing">Doing</option><option value="col-done">Done</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="col-header bg-yellow accent-bg">
+                        <h2>DOING</h2>
+                        <span class="mono">1 TASK</span>
+                    </div>
+                    <div class="col-body" id="col-doing">
+                        <div class="card" id="card-2">
+                            <div class="card-meta">
+                                <span class="badge b-blue">HARDWARE</span>
+                                <span class="mono text-small">DUE: 02/20</span>
+                            </div>
+                            <h4 style="margin-bottom: 0.5rem;">Drafting hardware schematic</h4>
+                            <p class="text-small">Designing the 256-channel array. Need to factor in the stochastic firing generator.</p>
+                            <div class="card-actions">
+                                <span class="mono text-small">A. SMITH</span>
+                                <select class="move-select mono" data-card-id="card-2">
+                                    <option value="col-todo">To Do</option>
+                                    <option value="col-doing" selected>Doing</option>
+                                    <option value="col-done">Done</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="col-header bg-green accent-bg">
+                        <h2>DONE</h2>
+                        <span class="mono">2 TASKS</span>
+                    </div>
+                    <div class="col-body" id="col-done">
+                        <div class="card" id="card-3" style="opacity: 0.7;">
+                            <div class="card-meta"><span class="badge">COMPLIANCE</span></div>
+                            <h4 style="margin-bottom: 0.5rem; text-decoration: line-through;">Initial ethics board submission</h4>
+                            <div class="card-actions">
+                                <span class="mono text-small">DONE: 02/17</span>
+                                <select class="move-select mono" data-card-id="card-3">
+                                    <option value="col-todo">To Do</option><option value="col-doing">Doing</option><option value="col-done" selected>Done</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            if(type === 'success') toast.classList.add('b-green', 'accent-bg');
+            if(type === 'warning') toast.classList.add('b-yellow', 'accent-bg');
+            if(type === 'error') toast.classList.add('b-pink', 'accent-bg');
+            toast.innerText = `SYS.MSG // ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            const targetBtn = document.querySelector(`button[onclick="openTab('${tabId}')"]`);
+            if(targetBtn) targetBtn.classList.add('active');
+        }
+
+        const toggleWireBtn = document.getElementById('toggle-wire');
+        let isWireMode = false;
+        toggleWireBtn.addEventListener('click', () => {
+            isWireMode = !isWireMode;
+            document.body.classList.toggle('wire-mode');
+            toggleWireBtn.innerText = isWireMode ? 'MODE: WIRE' : 'MODE: HI-FI';
+            showToast(`Display mode set to ${isWireMode ? 'WIREFRAME' : 'HI-FI'}`, 'warning');
+        });
+
+        document.getElementById('btn-log').addEventListener('click', () => {
+            const textarea = document.querySelector('#tab-hub textarea');
+            if(textarea.value.trim() === '') {
+                showToast('Cannot log empty entry.', 'error');
+                return;
+            }
+            textarea.value = '';
+            showToast('Capture logged to database.', 'success');
+        });
+
+        const btnSync = document.getElementById('btn-sync');
+        const syncText = document.getElementById('sync-text');
+        const syncError = document.getElementById('sync-error');
+
+        btnSync.addEventListener('click', () => {
+            syncError.style.display = 'none';
+            btnSync.innerText = 'SYNCING...';
+            syncText.innerText = 'Status: Handshaking with NODE_04...';
+            btnSync.disabled = true;
+            setTimeout(() => {
+                if(Math.random() > 0.5) {
+                    btnSync.innerText = 'SYNC NOW';
+                    syncText.innerText = 'Status: Fully synced.';
+                    btnSync.disabled = false;
+                    showToast('Repository sync successful.', 'success');
+                } else {
+                    btnSync.innerText = 'RETRY SYNC';
+                    syncText.innerText = 'Status: Offline / Desynced';
+                    syncError.style.display = 'block';
+                    btnSync.disabled = false;
+                    showToast('Sync failed. Check connection.', 'error');
+                }
+            }, 1800);
+        });
+
+        let cardCounter = 5;
+        document.getElementById('btn-add-card').addEventListener('click', () => {
+            const text = prompt("Enter task title:");
+            if (!text) return;
+            const cardId = `card-${cardCounter++}`;
+            const cardHTML = `
+                <div class="card" id="${cardId}">
+                    <div class="card-meta"><span class="badge">NEW</span></div>
+                    <h4 style="margin-bottom: 0.5rem;">${text}</h4>
+                    <div class="card-actions">
+                        <span class="mono text-small">UNASSIGNED</span>
+                        <select class="move-select mono" data-card-id="${cardId}">
+                            <option value="col-todo" selected>To Do</option>
+                            <option value="col-doing">Doing</option>
+                            <option value="col-done">Done</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            document.getElementById('col-todo').insertAdjacentHTML('beforeend', cardHTML);
+            showToast('New task added to TO DO.', 'success');
+        });
+
+        document.querySelector('.board-grid').addEventListener('change', (e) => {
+            if (e.target.classList.contains('move-select')) {
+                const targetColId = e.target.value;
+                const cardId = e.target.getAttribute('data-card-id');
+                const cardEl = document.getElementById(cardId);
+                const targetCol = document.getElementById(targetColId);
+                if (cardEl && targetCol) {
+                    if(targetColId === 'col-done') {
+                        cardEl.style.opacity = '0.7';
+                        cardEl.querySelector('h4').style.textDecoration = 'line-through';
+                    } else {
+                        cardEl.style.opacity = '1';
+                        cardEl.querySelector('h4').style.textDecoration = 'none';
+                    }
+                    targetCol.appendChild(cardEl);
+                    showToast(`Task moved to ${targetColId.replace('col-', '').toUpperCase()}`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

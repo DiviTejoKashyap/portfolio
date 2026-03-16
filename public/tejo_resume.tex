@@ -1,0 +1,224 @@
+%==============================================================================
+% TEJO KASHYAP DIVI — Resume
+% Target: Product Designer / Design Engineer
+% ATS-optimized: single column, standard headings, no tables/columns/icons
+%==============================================================================
+
+\documentclass[11pt, letterpaper]{article}
+
+\usepackage[
+  top=0.45in,
+  bottom=0.45in,
+  left=0.6in,
+  right=0.6in
+]{geometry}
+
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{titlesec}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+\titleformat{\section}
+  {\vspace{2pt}\bfseries\large}
+  {}{0em}{}
+  [\vspace{1pt}\titlerule\vspace{3pt}]
+
+\setlist[itemize]{
+  leftmargin=1.4em,
+  itemsep=1pt,
+  topsep=1pt,
+  parsep=0pt
+}
+
+\hypersetup{colorlinks=true, urlcolor=black, hidelinks}
+
+%==============================================================================
+\begin{document}
+%==============================================================================
+
+%-- HEADER --------------------------------------------------------------------
+\begin{center}
+  {\LARGE \textbf{Tejo Kashyap Divi}}\\[5pt]
+  Brooklyn, NY \quad|\quad
+  +1 (929) 727-7912 \quad|\quad
+  \href{mailto:divitejokashyap@gmail.com}{divitejokashyap@gmail.com}\\[2pt]
+  \href{https://www.linkedin.com/in/divitejokashyap}{linkedin.com/in/divitejokashyap}
+  \quad|\quad
+  \href{https://tejokashyap.dev}{tejokashyap.dev}
+\end{center}
+
+%-- SUMMARY -------------------------------------------------------------------
+\section{Summary}
+
+Product Designer and Design Engineer with experience shipping production
+interfaces at Deloitte and Amazon. I work across the full design-to-code
+pipeline — research, Figma, and the React component that ends up in the
+browser. Currently finishing an M.S. in Computer Science at NYU Tandon,
+where I focus on the design of AI-facing systems. Looking for a full-time
+Product Designer or Design Engineer role starting Summer 2026.
+
+%-- EDUCATION -----------------------------------------------------------------
+\section{Education}
+
+\textbf{New York University, Tandon School of Engineering} \hfill Brooklyn, NY\\
+M.S., Computer Science \hfill 2024 -- Present
+
+\vspace{5pt}
+\textbf{SRM Institute of Science and Technology} \hfill Chennai, India\\
+B.Tech, Electrical and Electronics Engineering \hfill 2022
+
+%-- EXPERIENCE ----------------------------------------------------------------
+\section{Work Experience}
+
+\textbf{Deloitte Consulting India Pvt Ltd} \hfill Hyderabad, India\\
+\textit{Analyst, Frontend and UI} \hfill 2022 -- 2023
+
+\begin{itemize}
+  \item Owned the frontend of a customer-facing e-commerce platform from
+        the first wireframe to the deployed build. Handled the HTML, CSS,
+        Java, and Spring Boot, not just the design handoff.
+  \item Designed and built the user authentication flow and product catalog
+        from scratch, making decisions about information architecture and
+        component structure that held up through two subsequent product
+        iterations.
+  \item Worked closely with the backend team to figure out why the database
+        queries were choking under load, dug into the MySQL schema, and
+        fixed the retrieval logic, a problem that had been sitting open
+        for months.
+  \item Presented design decisions and performance findings directly to
+        client stakeholders, which taught me how to talk about interface
+        choices to people who think in business outcomes, not pixels.
+\end{itemize}
+
+\vspace{6pt}
+\textbf{Amazon} \hfill Hyderabad, India\\
+\textit{DART Specialist} \hfill 2022
+
+\begin{itemize}
+  \item Got promoted to DART Specialist within the first six months, not a formal track but something I pushed toward by consistently
+        taking on the cases nobody else wanted to touch.
+  \item Handled manager-level escalations independently: diagnosed the
+        underlying process failure, resolved it, and documented a fix so
+        the same issue would not come back the same way twice.
+  \item Started noticing patterns in the tickets that kept recurring and
+        proposed workflow changes to the team lead that were eventually
+        adopted across the floor.
+  \item Built a personal system for triaging high-priority cases that a
+        few colleagues started borrowing. My first real experience
+        designing a process for people other than myself.
+\end{itemize}
+
+%-- PROJECTS ------------------------------------------------------------------
+\section{Projects}
+
+\textbf{Lume.Sys} — AI Observability Platform\\
+\textit{React, TypeScript, Framer Motion, Figma} \hfill 2024
+
+\begin{itemize}
+  \item Built a monitoring dashboard for tracking inference requests across
+        multiple language models simultaneously: latency trends, token
+        usage, policy violations, and anomaly flags all in one view.
+  \item Designed the information hierarchy from scratch: the hardest part
+        was deciding what to suppress. Most observability tools show
+        everything; this one surfaces what actually needs attention.
+  \item Created the full component library in Figma and then implemented
+        it in React, so nothing got lost in a handoff that never happened.
+\end{itemize}
+
+\vspace{5pt}
+\textbf{Vault DS} — Enterprise Design System\\
+\textit{React, TypeScript, Storybook, Design Tokens, Figma} \hfill 2024
+
+\begin{itemize}
+  \item Built a 128-component design system with a three-tier token
+        architecture: Primitive, Semantic, and Component. The structure
+        matters because it determines how easy the system is to theme
+        and maintain six months later.
+  \item Wrote every component in React and documented it in Storybook,
+        including usage guidelines, prop tables, and accessibility notes
+        -- the kind of documentation that actually gets read.
+  \item Set up contribution guidelines and a versioning workflow, which
+        forced me to think about design systems as infrastructure rather
+        than just a component collection.
+\end{itemize}
+
+\vspace{5pt}
+\textbf{Sync.Collab} — SaaS Collaboration Platform\\
+\textit{Next.js 14, Supabase, TypeScript, Tailwind CSS, Figma} \hfill 2024
+
+\begin{itemize}
+  \item Designed and shipped a full-stack SaaS app in eight weeks: command
+        palette, design review workflow, kanban board, real-time messaging,
+        and a notification system.
+  \item Started with user research and competitive analysis, moved through
+        wireframes and a hi-fi Figma prototype, then built the whole thing
+        in Next.js with Supabase handling auth and the database.
+  \item The command palette was the feature I was most interested in, and it required thinking carefully about keyboard-first interaction
+        patterns and progressive disclosure.
+\end{itemize}
+
+\vspace{5pt}
+\textbf{Pulse Analytics} — Mobile Health Platform\\
+\textit{Figma, React Native, Framer Motion} \hfill 2024
+
+\begin{itemize}
+  \item Designed a mobile wellness app for people who track biometrics
+        seriously: recovery scores, sleep stages, HRV, habit stacking,
+        and a 28-day trend view.
+  \item The design problem was cognitive load: health apps usually throw
+        everything at you. I focused the Today screen on a single recovery
+        score with supporting context rather than a dashboard of equal-weight
+        data points.
+  \item Did user research with twelve people who use wearables regularly,
+        ran concept testing on three different navigation patterns, and
+        picked the one that people could use without thinking about it.
+\end{itemize}
+
+\vspace{5pt}
+\textbf{Solo Leveling OS} — Gamified Productivity System\\
+\textit{Next.js 14, Supabase, Claude API, Tailwind CSS} \hfill 2023 -- Present
+
+\begin{itemize}
+  \item A personal productivity app I built because every task manager
+        I tried either had too much friction or not enough reason to open
+        it again tomorrow. Built the gamification layer (XP, ranks, gate and mission structure) around actual habit research.
+  \item Integrated the Claude API as an in-app assistant that can triage
+        incoming thoughts, suggest which gate a task belongs to, and
+        reflect back patterns in how I spend time.
+  \item Full-stack and live: Next.js frontend, Supabase for auth and
+        persistence, dark cyberpunk design system built entirely in Tailwind.
+\end{itemize}
+
+%-- SKILLS --------------------------------------------------------------------
+\section{Skills}
+
+\textbf{Design:}
+Figma, User Research, Prototyping, Wireframing, Interaction Design,
+Information Architecture, Design Systems, Design Tokens, WCAG Accessibility
+
+\vspace{4pt}
+\textbf{Design Engineering:}
+React, Next.js, TypeScript, Tailwind CSS, Framer Motion, HTML, CSS,
+Storybook, Component Libraries
+
+\vspace{4pt}
+\textbf{Backend and Data:}
+Supabase, PostgreSQL, SQL, Java, Spring Boot, Python, REST APIs, Git
+
+\vspace{4pt}
+\textbf{AI and APIs:}
+Claude API, Anthropic SDK, LLM integration, Prompt Engineering,
+Hugging Face Transformers
+
+\vspace{4pt}
+\textbf{Tools:}
+VS Code, GitHub, Vercel, Notion, Lovable.dev
+
+%==============================================================================
+\end{document}
+%==============================================================================
