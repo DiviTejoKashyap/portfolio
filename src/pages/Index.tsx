@@ -1,6 +1,7 @@
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import WorkSection from "@/components/WorkSection";
+import DesignProcess from "@/components/DesignProcess";
 import AboutSection from "@/components/AboutSection";
 import MarqueeBreak from "@/components/MarqueeBreak";
 import ContactSection from "@/components/ContactSection";
@@ -18,8 +19,9 @@ const Index = () => {
       <Navigation theme={theme} onToggleTheme={toggle} />
       <Hero />
       <WorkSection />
-      <AboutSection />
+      <DesignProcess />
       <MarqueeBreak />
+      <AboutSection />
       <ContactSection />
     </div>
   );

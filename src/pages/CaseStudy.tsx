@@ -164,7 +164,7 @@ function LumeScreenshots({ slots, accent, dark, onImageClick }: { slots: Screens
   const [s0, s1, s2] = slots;
   return (
     <div style={{ marginBottom: "80px" }}>
-      <SectionLabel label="App Screenshots" accent={accent} dark={dark} />
+      <SectionLabel label="Final Design" accent={accent} dark={dark} />
       {s0 && (
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} style={{ marginBottom: "16px" }}>
           <div style={{ border: `1px solid ${border}`, borderRadius: "12px", overflow: "hidden" }}>
@@ -194,7 +194,7 @@ function VaultScreenshots({ slots, accent, dark, onImageClick }: { slots: Screen
   const [s0, s1, s2, s3] = slots;
   return (
     <div style={{ marginBottom: "80px" }}>
-      <SectionLabel label="App Screenshots" accent={accent} dark={dark} />
+      <SectionLabel label="Final Design" accent={accent} dark={dark} />
       {s0 && (
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} style={{ marginBottom: "16px" }}>
           <div style={{ border: `1px solid ${border}`, borderRadius: "12px", overflow: "hidden" }}>
@@ -224,7 +224,7 @@ function SyncScreenshots({ slots, accent, dark, onImageClick }: { slots: Screens
   const [s0, s1, s2, s3] = slots;
   return (
     <div style={{ marginBottom: "80px" }}>
-      <SectionLabel label="App Screenshots" accent={accent} dark={dark} />
+      <SectionLabel label="Final Design" accent={accent} dark={dark} />
       {s0 && (
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} style={{ marginBottom: "16px" }}>
           <div style={{ border: `1px solid ${border}`, borderRadius: "12px", overflow: "hidden" }}>
@@ -304,7 +304,7 @@ function SoloScreenshots({ slots, accent, dark, onImageClick }: { slots: Screens
   const [s0, s1, s2] = slots;
   return (
     <div style={{ marginBottom: "80px" }}>
-      <SectionLabel label="System Screenshots" accent={accent} dark={dark} />
+      <SectionLabel label="Final Design" accent={accent} dark={dark} />
       {s0 && (
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} style={{ marginBottom: "16px" }}>
           <div style={{ border: `1px solid ${border}`, borderRadius: "12px", overflow: "hidden" }}>
@@ -533,6 +533,78 @@ const soloScreenshots: ScreenshotSlot[] = [
   },
 ];
 
+// ─── Structured sections (Users → Research → Insights → Ideation → Wireframes) ──
+
+function StructuredSections({
+  p, accent, dark, fontFamily, containerClass = "px-8 max-w-[1200px] mx-auto",
+}: {
+  p: Project; accent: string; dark: boolean; fontFamily: string; containerClass?: string;
+}) {
+  const dim = dark ? "rgba(200,196,176,0.55)" : "rgba(30,26,22,0.5)";
+  const text = dark ? "#c8c4b0" : "#1e1a16";
+  const borderColor = dark ? "rgba(255,255,255,0.07)" : "rgba(20,18,16,0.1)";
+
+  const labelStyle: React.CSSProperties = {
+    fontFamily: "monospace", fontSize: "9px", color: accent,
+    letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "16px",
+  };
+  const bodyStyle: React.CSSProperties = {
+    fontFamily, fontSize: "14px", lineHeight: 1.9, color: dim, fontWeight: 300,
+  };
+
+  const textSections: { label: string; content: string }[] = [
+    { label: "USERS", content: p.users },
+    { label: "RESEARCH", content: p.research },
+    { label: "IDEATION", content: p.ideation },
+    { label: "WIREFRAMES", content: p.wireframes },
+  ];
+
+  return (
+    <div className={containerClass}>
+      {textSections.slice(0, 2).map((sec, i) => (
+        <motion.div
+          key={sec.label}
+          initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ delay: i * 0.05, duration: 0.5 }}
+          className="py-10 border-t" style={{ borderColor }}
+        >
+          <div style={labelStyle}>{sec.label}</div>
+          <p style={bodyStyle}>{sec.content}</p>
+        </motion.div>
+      ))}
+
+      {/* Insights */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }} transition={{ delay: 0.1, duration: 0.5 }}
+        className="py-10 border-t" style={{ borderColor }}
+      >
+        <div style={labelStyle}>INSIGHTS</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          {p.insights.map((insight, j) => (
+            <div key={j} style={{ display: "flex", alignItems: "flex-start", gap: "16px" }}>
+              <span style={{ fontFamily: "monospace", fontSize: "10px", color: accent, marginTop: "2px", flexShrink: 0 }}>0{j + 1}</span>
+              <p style={{ ...bodyStyle, color: text }}>{insight}</p>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      {textSections.slice(2).map((sec, i) => (
+        <motion.div
+          key={sec.label}
+          initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ delay: (i + 3) * 0.05, duration: 0.5 }}
+          className="py-10 border-t" style={{ borderColor }}
+        >
+          <div style={labelStyle}>{sec.label}</div>
+          <p style={bodyStyle}>{sec.content}</p>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 // ─── Per-project layouts ───────────────────────────────────────────────────
 
 function LumeCaseStudy({ p }: { p: Project }) {
@@ -586,13 +658,15 @@ function LumeCaseStudy({ p }: { p: Project }) {
         </div>
       </section>
 
+      <StructuredSections p={p} accent="#e8a427" dark fontFamily="'IBM Plex Sans',sans-serif" />
+
       <div className="px-8 max-w-[1200px] mx-auto">
         <LumeScreenshots slots={lumeScreenshots} accent="#e8a427" dark onImageClick={(src, alt) => setLightbox({ src, alt })} />
         {p.sections.map((s, i) => <SectionRenderer key={i} section={s} accent="#e8a427" dark theme="lume" />)}
       </div>
 
       <section className="px-8 max-w-[1200px] mx-auto mt-8 mb-24">
-        <div style={{ fontFamily: "monospace", fontSize: "10px", color: "#3a3a2a", letterSpacing: "0.2em", marginBottom: "24px" }}>// MEASURED IMPACT</div>
+        <div style={{ fontFamily: "monospace", fontSize: "10px", color: "#3a3a2a", letterSpacing: "0.2em", marginBottom: "24px" }}>// OUTCOME</div>
         <div className="grid md:grid-cols-2 gap-px" style={{ background: "rgba(42,42,34,0.4)" }}>
           {p.impact.map((item, i) => (
             <motion.div key={i} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }} className="px-8 py-6 flex items-start gap-4" style={{ background: "#0a0a08" }}>
@@ -654,13 +728,15 @@ function VaultCaseStudy({ p }: { p: Project }) {
         </div>
       </section>
 
+      <StructuredSections p={p} accent="#3b82f6" dark fontFamily="'Inter',sans-serif" />
+
       <div className="px-8 max-w-[1200px] mx-auto">
         <VaultScreenshots slots={vaultScreenshots} accent="#3b82f6" dark onImageClick={(src, alt) => setLightbox({ src, alt })} />
         {p.sections.map((s, i) => <SectionRenderer key={i} section={s} accent="#3b82f6" dark theme="vault" />)}
       </div>
 
       <section className="px-8 max-w-[1200px] mx-auto mt-8 mb-24">
-        <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "9px", color: "#3b82f6", letterSpacing: "0.2em", marginBottom: "16px" }}>// IMPACT</div>
+        <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "9px", color: "#3b82f6", letterSpacing: "0.2em", marginBottom: "16px" }}>// OUTCOME</div>
         <div className="grid md:grid-cols-2 gap-3">
           {p.impact.map((item, i) => (
             <div key={i} className="flex items-start gap-3 p-5" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
@@ -723,13 +799,15 @@ function SyncCaseStudy({ p }: { p: Project }) {
         </div>
       </section>
 
+      <StructuredSections p={p} accent="#2F6FED" dark={false} fontFamily="'Plus Jakarta Sans',sans-serif" containerClass="max-w-[900px] mx-auto px-8" />
+
       <div className="max-w-[900px] mx-auto px-8">
         <SyncScreenshots slots={syncScreenshots} accent="#2F6FED" dark={false} onImageClick={(src, alt) => setLightbox({ src, alt })} />
         {p.sections.map((s, i) => <SectionRenderer key={i} section={s} accent="#2F6FED" dark={false} theme="sync" />)}
       </div>
 
       <section className="max-w-[900px] mx-auto px-8 py-16 mb-8">
-        <div style={{ fontFamily: "monospace", fontSize: "9px", color: "#B0B0AC", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "24px" }}>Outcomes</div>
+        <div style={{ fontFamily: "monospace", fontSize: "9px", color: "#B0B0AC", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "24px" }}>Outcome</div>
         <div className="grid md:grid-cols-2 gap-3">
           {p.impact.map((item, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }} className="p-5" style={{ background: i === 0 ? "#2F6FED" : "#F6F6F4", borderRadius: "10px" }}>
@@ -879,6 +957,8 @@ function PulseCaseStudy({ p }: { p: Project }) {
         </div>
       </section>
 
+      <StructuredSections p={p} accent={A} dark fontFamily="'Cabinet Grotesk',sans-serif" containerClass="relative z-10 max-w-[1100px] mx-auto px-8" />
+
       {/* ── SCREENSHOTS ── */}
       <div className="relative z-10 max-w-[1100px] mx-auto px-8">
         <PulseScreenshots slots={pulseScreenshots} accent={A} dark onImageClick={(src, alt) => setLightbox({ src, alt })} />
@@ -1012,6 +1092,8 @@ function SoloCaseStudy({ p }: { p: Project }) {
         </div>
       </section>
 
+      <StructuredSections p={p} accent={accent} dark fontFamily="'Rajdhani',sans-serif" containerClass="relative z-10 px-8 max-w-[1200px] mx-auto" />
+
       {/* Screenshots */}
       <div className="relative z-10 px-8 max-w-[1200px] mx-auto">
         <SoloScreenshots slots={soloScreenshots} accent={accent} dark onImageClick={(src, alt) => setLightbox({ src, alt })} />
@@ -1028,7 +1110,7 @@ function SoloCaseStudy({ p }: { p: Project }) {
 
       {/* Impact */}
       <section className="relative z-10 px-8 max-w-[1200px] mx-auto mt-8 mb-24">
-        <div style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: "9px", color: accent, letterSpacing: "0.2em", marginBottom: "16px" }}>// GATES CLEARED — IMPACT</div>
+        <div style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: "9px", color: accent, letterSpacing: "0.2em", marginBottom: "16px" }}>// OUTCOME</div>
         <div className="grid md:grid-cols-2 gap-3">
           {p.impact.map((item, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }} className="flex items-start gap-3 p-5" style={{ background: surface, border: `1px solid ${border}` }}>

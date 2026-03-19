@@ -59,18 +59,16 @@ const WorkSection = () => {
                 >
                   {project.headline}
                 </h3>
-                <p className="font-sans font-light text-[15px] text-ink-60 leading-[1.7] max-w-[400px] mb-5">
-                  {project.body}
+                <p className="font-sans font-light text-[14px] text-ink-60 leading-[1.7] max-w-[400px] mb-5 line-clamp-2">
+                  {project.problem}
                 </p>
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {project.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="font-mono-label text-[10px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                  <span className="font-mono-label text-[10px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
+                    {project.role}
+                  </span>
+                  <span className="font-mono-label text-[10px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
+                    {project.timeline}
+                  </span>
                   {project.isLive && (
                     <span className="font-mono-label text-[10px] text-green-500 border border-green-500/25 rounded-full px-3 py-1">
                       LIVE ↗

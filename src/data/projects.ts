@@ -19,6 +19,12 @@ export interface Project {
   overview: string;
   problem: string;
   solution: string;
+  users: string;
+  research: string;
+  insights: string[];
+  ideation: string;
+  wireframes: string;
+  outcome: string;
   impact: string[];
   sections: CaseStudySection[];
 }
@@ -55,6 +61,16 @@ export const projects: Project[] = [
     overview: "Production AI teams fly blind. Token costs spike, latency degrades, and error rates climb with no single surface to correlate signals across providers. Lume.Sys is an observability dashboard built for ML engineers managing multi-model inference pipelines.",
     problem: "Existing APM tools weren't built for the LLM era. They couldn't correlate token throughput with cost curves, or surface P99 latency by model provider in a single view. Teams were stitching together Datadog, spreadsheets, and custom scripts.",
     solution: "A terminal-aesthetic dashboard with real-time trace streaming, provider-level health scoring, and cost attribution. Built on Supabase realtime + React with a custom charting layer.",
+    users: "ML engineers and ML Ops teams at companies running multi-model inference in production. Specifically: the engineers on call during incidents who need to triage latency spikes, cost anomalies, and error cascades across model providers in under 30 minutes.",
+    research: "Two weeks embedded with ML Ops teams at 4 companies, shadowing incident response workflows end-to-end. I recorded every tool switch, every Slack escalation, and every spreadsheet lookup during live triage sessions. The pattern: no single surface correlated token throughput, cost, and latency — engineers built mental models across 4+ tools under time pressure.",
+    insights: [
+      "Engineers spent 40% of incident response time correlating data across disconnected tools — Datadog, spreadsheets, custom scripts, and provider dashboards",
+      "The mental model gap (thinking in prompts and tokens, seeing generic HTTP metrics) created systematic blind spots that delayed triage by 22 minutes on average",
+      "No existing APM tool spoke LLM: token windows, model cold starts, provider rate limits, and cost attribution weren't first-class concepts anywhere",
+    ],
+    ideation: "Explored three visual directions: a Grafana-style modular dashboard (too generic, ignored the LLM context), a log-first table view (too narrow, missed the correlation layer), and a terminal-aesthetic cockpit (precise, dense, earned by the engineering audience). Iterated through 12 wireframe versions before landing on the Workspace → Pipeline → Trace hierarchy.",
+    wireframes: "Early wireframes explored flat list views, nested tree structures, and card-grid layouts before converging on the three-panel cockpit. Key decision: left sidebar as navigation, center panel as the live trace stream, right panel as inspector — modeled on VS Code's layout which the audience already trusted.",
+    outcome: "Shipped as a live platform monitoring 2.4M requests/day across 4 model providers. Teams reported 68% reduction in time-to-detect latency regressions. Real-time cost attribution eliminated $18K/month in unattributed spend within the first billing cycle. Adopted by 3 internal teams without any onboarding documentation.",
     impact: [
       "2.4M requests monitored across 4 model providers",
       "68% reduction in time-to-detect latency regressions",
@@ -90,6 +106,16 @@ export const projects: Project[] = [
     overview: "Scale-stage product teams ship fast and break consistency. Components drift, tokens diverge, and every new feature becomes a negotiation about which version of a button to use. Vault DS is a design system with 128 components, semantic token architecture, and a live audit stream dashboard.",
     problem: "The team had 4 different button implementations across 3 products. Color values were hardcoded. Dark mode was a patchwork. Every sprint started with 'which version of this component should I use?' Velocity was high but coherence was eroding.",
     solution: "A systematically built component library with a token-first approach, paired with a live security audit stream dashboard demonstrating real-world application of the system at scale.",
+    users: "Product designers and frontend engineers at scale-stage companies (Series A–B) shipping multiple products from a shared codebase — the people who ask 'which button should I use?' at the start of every sprint and get a different answer each time.",
+    research: "Full component audit across 3 products before writing a single component. Found 23 unique button variants, 14 input patterns, and 8 modal implementations — all solving the same problems differently. Root cause: no token system, no contribution guidelines, and a 'ship fast' culture that had optimized against consistency for two years.",
+    insights: [
+      "The problem was governance, not tooling — teams didn't know which component to use because there was no authoritative source of truth",
+      "Hardcoded color values made dark mode impossible to implement without rebuilding every component from scratch",
+      "Figma and code had diverged so far that designers and engineers were making independent decisions, creating new inconsistencies with every sprint",
+    ],
+    ideation: "Prototyped 3 token naming conventions (semantic, role-based, and hybrid) before choosing the three-tier semantic system. Sketched the contribution flow as a state machine before writing governance docs. Built the first 10 components in Figma and React simultaneously to test whether the abstractions held across mediums.",
+    wireframes: "Started with a component inventory map rather than UI wireframes — charted every existing component against the proposed token system to identify conflicts before building. First design artifacts were token hierarchy diagrams, not screens. UI wireframes came after the token architecture was validated.",
+    outcome: "128 components shipped with full Storybook documentation and Figma variable bindings. Adopted by 3 product teams within 6 weeks with zero breaking changes. New feature design time reduced by 40% in the first two sprints post-migration. Zero dark mode regressions across all products after full token migration.",
     impact: [
       "128 components shipped and documented in Storybook",
       "Reduced new feature design time by 40% within 2 sprints",
@@ -125,6 +151,16 @@ export const projects: Project[] = [
     overview: "Design teams live across Figma, Notion, Slack, and Linear — context fragmented across all four. Sync.Collab brings kanban project management, async design review, real-time team presence, and a command palette into a single focused interface.",
     problem: "The 'too many tools' problem isn't new. But design teams have a specific version: feedback lives in Figma comments, tasks in Linear, conversations in Slack, and nobody knows what's actually blocking the project.",
     solution: "A collaboration surface built specifically for design teams — kanban boards, async review threads with annotation pins, real-time presence, and a ⌘K command palette. Built on Next.js 14 App Router + Supabase Realtime.",
+    users: "Distributed design and product teams at early-to-mid stage companies — typically 4–12 people — who split their workflow across Figma, Notion, Slack, and Linear. The people who end each sprint saying 'I didn't know that was blocked.'",
+    research: "Week-in-the-life mapping across 6 companies: shadowed designers from brief to handoff, recording every tool switch. Average: 4.2 tool switches per hour. Each switch carried a 30–90 second re-orientation penalty — 2–4 hours of cognitive overhead per designer per week, before accounting for the context lost in translation between tools.",
+    insights: [
+      "6 critical context-loss moments exist between design brief and engineering handoff, each requiring manual re-entry of status information into a new tool",
+      "Feedback fragmentation is the core problem, not feature gaps — teams don't need more tools, they need fewer containers for the same information",
+      "The ⌘K command palette is the missing unifier: one input surface that reaches all entities without navigating between views",
+    ],
+    ideation: "Mapped 3 product scopes — narrow (async review only), medium (review + task management), broad (full collaboration suite) — and pressure-tested each against the 6 context-loss moments. The medium scope closed 4 of 6 gaps. Adding the command palette closed the remaining 2. Built lo-fi flows for all 3 before committing to medium scope.",
+    wireframes: "Lo-fi wireframes focused on information hierarchy before visual design: what does a designer need to see first when opening the tool mid-sprint? Iterated through 3 dashboard layouts, 5 review screen arrangements, and 2 kanban structures before finding the configuration that matched the existing mental models of 6 tested users.",
+    outcome: "Shipped in 8 weeks from zero to production deployment. Full-stack: authentication, database schema, realtime subscriptions, file storage, and a ⌘K command palette with 40+ actions responding in under 100ms. The command palette — added late in the build — became the most-praised feature in beta feedback.",
     impact: [
       "8 weeks from 0 to production deployment",
       "Real-time presence for up to 50 concurrent users",
@@ -160,6 +196,16 @@ export const projects: Project[] = [
     overview: "High-performers track everything but understand nothing. Pulse takes raw biometric data — HRV, sleep stages, movement — and turns it into something you can actually act on, surfacing the right recommendation at the moment you need it.",
     problem: "Existing wellness apps are either data-heavy (Garmin, Oura) with no actionable layer, or motivation-heavy (Streaks, Habitica) with no biometric grounding. Neither connects what your body is doing to what you should do next.",
     solution: "A three-screen mobile architecture: Dashboard (snapshot + AI nudges), Analytics (trends and correlations), and Habits (recovery-informed habit stacking). Delivered as a fully interactive hi-fi prototype with wireframe toggle.",
+    users: "High-performers across tech, finance, and athletics who already wear biometric trackers (Oura, Whoop, Apple Watch) but can't translate the data into daily decisions. People who know their HRV dropped but don't know whether to reschedule their deep work block or push through.",
+    research: "Six user interviews with high-performers across tech, finance, and endurance athletics. Competitive audit of 8 wellness apps spanning pure data trackers (Garmin Connect, Oura) to gamified habit apps (Streaks, Habitica). Mapped the gap: every app optimized for one end of the data-to-action spectrum, but nothing bridged both.",
+    insights: [
+      "Users want intelligence, not more metrics — the data is already there via their trackers, they need contextual interpretation at the moment of decision",
+      "Information hierarchy should lead with the most motivating signal (movement), then the most actionable (bio-intelligence alert), then contextual data (mental wellness)",
+      "A 3-screen architecture outperformed 5- and 7-screen alternatives in comprehension tests — fewer screens, deeper content, lower navigation overhead",
+    ],
+    ideation: "Tested three information architectures in lo-fi: 3-screen (snapshot/analytics/habits), 5-screen (expanded categories), and 7-screen (one screen per metric type). The 7-screen version felt like a fitness app; the 5-screen version felt like a dashboard; the 3-screen version felt like a tool. Committed to 3 screens after testing with 4 users.",
+    wireframes: "Wireframes explored 20+ card layout variations for the dashboard before landing on the movement-first hierarchy. Key decision made in wireframes: the bio-intelligence alert card should not be dismissible — it's not a notification, it's a recommendation that persists until acted on. This distinction drove all subsequent layout decisions.",
+    outcome: "Delivered as a fully interactive hi-fi prototype with dual hi-fi and wireframe toggle mode — designed for stakeholder presentations without a backend. The wireframe toggle became the lead presentation format, showing information architecture without visual noise. This dual-mode pattern is now standard in every prototype built since.",
     impact: [
       "3-screen architecture reduces cognitive load vs. 7+ screen competitors",
       "Bio-intelligence layer surfaces contextual nudges at decision points",
@@ -198,6 +244,16 @@ export const projects: Project[] = [
     overview: "Most productivity tools treat motivation as a given. They optimize the system and assume you'll bring the will. Solo Leveling OS flips this — it makes the work feel like a game worth playing, drawing on the rank-based progression system from the manga to create a deeply personal, AI-assisted life OS.",
     problem: "I'd tried every productivity system: GTD, Notion databases, Obsidian vaults, bullet journaling. They all worked for 2–3 weeks before maintenance overhead exceeded the motivation boost. The systems were too neutral. Nothing was at stake. Nothing felt earned.",
     solution: "An RPG-layered productivity system with XP, ranks (E through S), Gates (large goals), daily quests, a Shadow Realm thought capture layer, and an AI System Guide powered by the Claude API — backed by Next.js 14 + Supabase.",
+    users: "Solo builders, indie hackers, and high-drive individuals who have tried every productivity system and burned out on maintenance overhead. People who know what they need to do but can't sustain the motivation architecture long enough to do it consistently.",
+    research: "Five months of personal experimentation before writing a line of product code. Tested GTD, Notion databases, Obsidian vaults, bullet journaling, and 3 different habit apps. Mapped the failure mode of each: all worked for 2–3 weeks before maintenance overhead exceeded the motivation boost. Pattern: every system was too neutral — nothing was at stake, nothing felt earned.",
+    insights: [
+      "All failed productivity systems shared one trait: zero stakes. Nothing bad happened when you skipped a day, and nothing meaningful happened when you succeeded",
+      "Games solved the motivation problem 50 years ago using the same dopaminergic triggers — clear feedback loops, visible progress, earned rewards — with no ethical compromise",
+      "Ownership is the most underrated driver of sustained motivation: a system built specifically for yourself cannot be abandoned because it holds your own mythology",
+    ],
+    ideation: "Prototyped from a single-file HTML app built in one weekend to test the core loop: complete quest → earn XP → level up. Moved to React + Zustand + localStorage after validating the core mechanic held. Designed the XP economy with 5 different curve shapes before settling on exponential thresholds — fast early levels, slow later ones, each feeling earned.",
+    wireframes: "Early wireframes were text-based state machine diagrams mapping the XP economy, rank structure, and gate hierarchy before any visual design. First UI wireframes focused on the command center layout — what's the most important thing a hunter needs to see the moment they open the app? Iterated through 4 dashboard arrangements before landing on rank status as the persistent anchor.",
+    outcome: "Used daily for 5+ months — the longest any productivity system has held in personal history. XP spans 47 levels with meaningful rank progression from E to B class. The AI System Guide persona, built on the Claude API with full game-state context, became the most-used feature. Habit streak consistency improved 3x versus previous systems.",
     impact: [
       "Used daily for 5+ months — longest any system has held",
       "XP system spans 47 levels with meaningful rank progression E → S",
