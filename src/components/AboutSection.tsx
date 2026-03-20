@@ -9,16 +9,16 @@ const experience = [
 
 const skillGroups = [
   {
-    label: "PRODUCT DESIGN",
-    skills: ["Figma", "Prototyping", "Design Systems", "UX Research", "Information Architecture", "WCAG Accessibility"],
+    label: "DESIGN",
+    skills: ["Figma", "User Research", "Wireframing", "Prototyping", "Usability Testing", "Design Systems", "Information Architecture", "WCAG Accessibility"],
   },
   {
-    label: "DESIGN ENGINEERING",
-    skills: ["React", "Next.js", "TypeScript", "Framer Motion", "Storybook", "Design Tokens", "HTML/CSS"],
+    label: "TOOLS",
+    skills: ["Framer", "React", "Next.js", "TypeScript", "Storybook", "Design Tokens", "Analytics"],
   },
   {
-    label: "CORE ENGINEERING",
-    skills: ["Java", "Python", "Spring Boot", "SQL", "Git"],
+    label: "METHODS",
+    skills: ["Behavioral UX", "System Thinking", "Rapid Prototyping", "User Interviews", "A/B Testing"],
   },
 ];
 
@@ -38,17 +38,23 @@ const AboutSection = () => {
           </span>
           <h2
             className="font-display leading-[1.0] mb-8"
-            style={{ fontSize: "clamp(36px, 5vw, 64px)" }}
+            style={{ fontSize: "clamp(28px, 3.5vw, 40px)" }}
           >
             Designing the interface between{" "}
             <span className="text-accent-warm">AI</span> and human{" "}
             <span className="text-accent-warm">decision-making.</span>
           </h2>
-          <p className="font-sans font-light text-[17px] text-ink-60 leading-[1.8] max-w-[400px] mb-10">
-            I'm Tejo Kashyap Divi. I started as an EEE engineer, moved into
-            software at Deloitte and Amazon, and kept gravitating toward the layer
-            between the system and the person using it. Now I'm at NYU Tandon
-            finishing my M.S. in CS — and building that layer on purpose.
+          <p className="font-sans font-light text-[17px] text-ink-60 leading-[1.8] max-w-[400px] mb-6">
+            I'm a product designer focused on simplifying complex systems.
+          </p>
+          <p className="font-sans font-light text-[15px] text-ink-50 leading-[1.8] max-w-[400px] mb-4">
+            Currently exploring AI workflows, productivity tools, and automation products at NYU Tandon (M.S. CS).
+          </p>
+          <p className="font-sans font-light text-[15px] text-ink-50 leading-[1.8] max-w-[400px] mb-4">
+            Previously built tools for task management, developer workflows, and financial tracking at Deloitte and Amazon.
+          </p>
+          <p className="font-sans font-light text-[15px] text-ink-50 leading-[1.8] max-w-[400px] mb-10">
+            My approach combines behavioral UX, system thinking, and rapid prototyping.
           </p>
 
           {/* Experience grid */}
