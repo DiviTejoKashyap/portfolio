@@ -2,10 +2,10 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 const headlineLines = [
-  "Designing systems",
-  "that think,",
-  "and interfaces",
-  "that feel.",
+  "Product Designer",
+  "focused on AI tools",
+  "& productivity",
+  "systems.",
 ];
 
 function CountUp({ end, suffix = "" }: { end: string; suffix?: string }) {
@@ -91,15 +91,15 @@ const Hero = () => {
           >
             <h1
               className="font-display leading-[0.92] tracking-[-0.02em]"
-              style={{ fontSize: "clamp(56px, 8.5vw, 112px)" }}
+              style={{ fontSize: "clamp(48px, 7.5vw, 96px)" }}
             >
-              {line === "that feel." ? (
+              {line === "systems." ? (
                 <span className="text-accent-warm">{line}</span>
-              ) : line === "Designing systems" ? (
+              ) : line === "focused on AI tools" ? (
                 <>
-                  Designing{" "}
+                  focused on{" "}
                   <span className="relative inline-block">
-                    systems
+                    AI tools
                     <svg
                       className="absolute -bottom-1 left-0 w-full h-3"
                       viewBox="0 0 200 12"
@@ -131,18 +131,21 @@ const Hero = () => {
         transition={{ delay: 0.6, duration: 0.4 }}
         className="flex flex-col md:flex-row justify-between gap-8 mt-12"
       >
-        <p className="font-sans font-light text-[17px] text-ink-60 leading-[1.7] max-w-[420px]">
-          I'm Tejo — I design the product and write the code that ships it. M.S. CS
-          at NYU Tandon. Previously at Deloitte and Amazon. I care about the gap
-          between how something looks and how it actually works.
-        </p>
+        <div className="flex flex-col gap-4 max-w-[420px]">
+          <p className="font-sans font-light text-[17px] text-ink-60 leading-[1.7]">
+            I design scalable UX systems that reduce cognitive load and turn complex workflows into simple products.
+          </p>
+          <p className="font-sans font-light text-[15px] text-ink-40 leading-[1.7]">
+            Previously at Deloitte & Amazon. M.S. CS at NYU Tandon. I design the product and write the code that ships it.
+          </p>
+        </div>
         <div className="flex flex-col gap-4">
           <a
             href="#work"
             className="font-sans font-semibold text-[14px] text-ink border-b-[1.5px] border-ink hover:text-accent-warm hover:border-accent-warm transition-colors w-fit"
             data-cursor="VIEW"
           >
-            See the work ↓
+            View Case Studies ↓
           </a>
           <a
             href="/resume.pdf"
@@ -151,7 +154,7 @@ const Hero = () => {
             className="font-mono-label text-[11px] text-ink-30 hover:text-ink transition-colors w-fit"
             data-cursor="OPEN"
           >
-            Download CV →
+            Download Resume →
           </a>
         </div>
       </motion.div>
