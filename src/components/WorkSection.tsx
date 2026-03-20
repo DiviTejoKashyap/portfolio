@@ -22,9 +22,9 @@ const WorkSection = () => {
             viewport={{ once: true }}
             transition={{ delay: 0.05 }}
             className="font-display leading-tight"
-            style={{ fontSize: "clamp(36px, 4vw, 52px)" }}
+            style={{ fontSize: "clamp(28px, 3.5vw, 40px)" }}
           >
-            {projects.length} projects. One system of thinking.
+            Selected Work
           </motion.h2>
         </div>
         <span className="font-mono-label text-[10px] text-ink-30 uppercase tracking-[0.18em]">
@@ -59,12 +59,29 @@ const WorkSection = () => {
                 >
                   {project.headline}
                 </h3>
-                <p className="font-sans font-light text-[14px] text-ink-60 leading-[1.7] max-w-[400px] mb-5 line-clamp-2">
-                  {project.problem}
-                </p>
-                <div className="flex flex-wrap gap-2 mb-4">
+
+                {/* Problem */}
+                <div className="mb-4">
+                  <span className="font-mono-label text-[9px] uppercase tracking-[0.18em] text-ink-30 block mb-1">Problem</span>
+                  <p className="font-sans font-light text-[14px] text-ink-60 leading-[1.6] max-w-[400px] line-clamp-2">
+                    {project.problem}
+                  </p>
+                </div>
+
+                {/* Impact */}
+                {project.impact && project.impact.length > 0 && (
+                  <div className="mb-4">
+                    <span className="font-mono-label text-[9px] uppercase tracking-[0.18em] text-ink-30 block mb-1">Impact</span>
+                    <p className="font-sans font-light text-[14px] text-ink-60 leading-[1.6]">
+                      {project.impact[0]}
+                    </p>
+                  </div>
+                )}
+
+                {/* Role + Timeline + Live */}
+                <div className="flex flex-wrap gap-2 mb-5">
                   <span className="font-mono-label text-[10px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
-                    {project.role}
+                    My Role: {project.role}
                   </span>
                   <span className="font-mono-label text-[10px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
                     {project.timeline}
@@ -75,8 +92,9 @@ const WorkSection = () => {
                     </span>
                   )}
                 </div>
+
                 <span className="font-sans font-medium text-[13px] text-ink hover:underline">
-                  Read case study →
+                  View Case Study →
                 </span>
               </motion.div>
 
