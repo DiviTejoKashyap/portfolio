@@ -15,7 +15,7 @@ const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="border-t border-rule pt-[120px] pb-20 px-6 md:px-10 max-w-[1100px] mx-auto">
+    <section id="contact" className="border-t border-rule pt-20 pb-20 px-6 md:px-10 max-w-[1100px] mx-auto">
       {/* Top copy */}
       <motion.div
         initial={{ opacity: 0, y: 24 }}
@@ -180,8 +180,8 @@ const ContactSection = () => {
           Built with React · Tailwind · Framer Motion
         </span>
       </div>
-    </section>);
-
+    </section>
+  );
 };
 
 export default ContactSection;
