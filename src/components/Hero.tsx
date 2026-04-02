@@ -58,7 +58,7 @@ const stats = [
 
 const Hero = () => {
   return (
-    <section className="min-h-screen pt-32 pb-20 px-6 md:px-10 max-w-[1100px] mx-auto">
+    <section className="pt-32 pb-20 px-6 md:px-10 max-w-[1100px] mx-auto">
       {/* Eyebrow row */}
       <motion.div
         initial={{ opacity: 0 }}
