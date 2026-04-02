@@ -4,9 +4,9 @@ import { projects } from "@/data/projects";
 
 const WorkSection = () => {
   return (
-    <section id="work" className="py-[120px] px-6 md:px-10 max-w-[1100px] mx-auto">
+    <section id="work" className="py-20 px-6 md:px-10 max-w-[1100px] mx-auto">
       {/* Section header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
+      <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
         <div>
           <motion.span
             initial={{ opacity: 0, x: -16 }}
@@ -22,9 +22,9 @@ const WorkSection = () => {
             viewport={{ once: true }}
             transition={{ delay: 0.05 }}
             className="font-display leading-tight"
-            style={{ fontSize: "clamp(28px, 3.5vw, 40px)" }}
+            style={{ fontSize: "clamp(36px, 4vw, 52px)" }}
           >
-            Selected Work
+            {projects.length} projects. One system of thinking.
           </motion.h2>
         </div>
         <span className="font-mono-label text-[10px] text-ink-30 uppercase tracking-[0.18em]">
@@ -38,7 +38,7 @@ const WorkSection = () => {
           <Link
             to={`/work/${project.slug}`}
             key={project.slug}
-            className="block border-t border-rule py-16 hover:bg-card-hover transition-colors duration-250 -mx-6 px-6 md:-mx-10 md:px-10"
+            className="block border-t border-rule py-12 hover:bg-card-hover transition-colors duration-250 -mx-6 px-6 md:-mx-10 md:px-10"
             data-cursor="VIEW"
           >
             <div className="flex flex-col md:flex-row gap-8 md:gap-12">
@@ -59,29 +59,12 @@ const WorkSection = () => {
                 >
                   {project.headline}
                 </h3>
-
-                {/* Problem */}
-                <div className="mb-4">
-                  <span className="font-mono-label text-[9px] uppercase tracking-[0.18em] text-ink-30 block mb-1">Problem</span>
-                  <p className="font-sans font-light text-[14px] text-ink-60 leading-[1.6] max-w-[400px] line-clamp-2">
-                    {project.problem}
-                  </p>
-                </div>
-
-                {/* Impact */}
-                {project.impact && project.impact.length > 0 && (
-                  <div className="mb-4">
-                    <span className="font-mono-label text-[9px] uppercase tracking-[0.18em] text-ink-30 block mb-1">Impact</span>
-                    <p className="font-sans font-light text-[14px] text-ink-60 leading-[1.6]">
-                      {project.impact[0]}
-                    </p>
-                  </div>
-                )}
-
-                {/* Role + Timeline + Live */}
-                <div className="flex flex-wrap gap-2 mb-5">
+                <p className="font-sans font-light text-[14px] text-ink-60 leading-[1.7] max-w-[400px] mb-5 line-clamp-2">
+                  {project.problem}
+                </p>
+                <div className="flex flex-wrap gap-2 mb-4">
                   <span className="font-mono-label text-[10px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
-                    My Role: {project.role}
+                    {project.role}
                   </span>
                   <span className="font-mono-label text-[10px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
                     {project.timeline}
@@ -92,9 +75,8 @@ const WorkSection = () => {
                     </span>
                   )}
                 </div>
-
                 <span className="font-sans font-medium text-[13px] text-ink hover:underline">
-                  View Case Study →
+                  Read case study →
                 </span>
               </motion.div>
 
