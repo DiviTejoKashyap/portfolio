@@ -2,10 +2,10 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 const headlineLines = [
-  "Product Designer",
-  "focused on AI tools",
-  "& productivity",
-  "systems.",
+  "Designing systems",
+  "that think,",
+  "and interfaces",
+  "that feel.",
 ];
 
 function CountUp({ end, suffix = "" }: { end: string; suffix?: string }) {
@@ -58,13 +58,13 @@ const stats = [
 
 const Hero = () => {
   return (
-    <section className="min-h-screen pt-[140px] pb-20 px-6 md:px-10 max-w-[1100px] mx-auto">
+    <section className="min-h-screen pt-32 pb-20 px-6 md:px-10 max-w-[1100px] mx-auto">
       {/* Eyebrow row */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.1, duration: 0.3 }}
-        className="flex items-center gap-4 mb-12"
+        className="flex items-center gap-4 mb-8"
       >
         <span className="font-mono-label text-[10px] uppercase tracking-[0.18em] text-ink-30 whitespace-nowrap">
           — PRODUCT DESIGNER & DESIGN ENGINEER
@@ -91,15 +91,15 @@ const Hero = () => {
           >
             <h1
               className="font-display leading-[0.92] tracking-[-0.02em]"
-              style={{ fontSize: "clamp(48px, 7.5vw, 96px)" }}
+              style={{ fontSize: "clamp(56px, 8.5vw, 112px)" }}
             >
-              {line === "systems." ? (
+              {line === "that feel." ? (
                 <span className="text-accent-warm">{line}</span>
-              ) : line === "focused on AI tools" ? (
+              ) : line === "Designing systems" ? (
                 <>
-                  focused on{" "}
+                  Designing{" "}
                   <span className="relative inline-block">
-                    AI tools
+                    systems
                     <svg
                       className="absolute -bottom-1 left-0 w-full h-3"
                       viewBox="0 0 200 12"
@@ -129,23 +129,20 @@ const Hero = () => {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.4 }}
-        className="flex flex-col md:flex-row justify-between gap-8 mt-12"
+        className="flex flex-col md:flex-row justify-between gap-8 mt-10"
       >
-        <div className="flex flex-col gap-4 max-w-[420px]">
-          <p className="font-sans font-light text-[17px] text-ink-60 leading-[1.7]">
-            I design scalable UX systems that reduce cognitive load and turn complex workflows into simple products.
-          </p>
-          <p className="font-sans font-light text-[15px] text-ink-40 leading-[1.7]">
-            Previously at Deloitte & Amazon. M.S. CS at NYU Tandon. I design the product and write the code that ships it.
-          </p>
-        </div>
+        <p className="font-sans font-light text-[17px] text-ink-60 leading-[1.7] max-w-[420px]">
+          I'm Tejo — I design the product and write the code that ships it. M.S. CS
+          at NYU Tandon. Previously at Deloitte and Amazon. I care about the gap
+          between how something looks and how it actually works.
+        </p>
         <div className="flex flex-col gap-4">
           <a
             href="#work"
             className="font-sans font-semibold text-[14px] text-ink border-b-[1.5px] border-ink hover:text-accent-warm hover:border-accent-warm transition-colors w-fit"
             data-cursor="VIEW"
           >
-            View Case Studies ↓
+            See the work ↓
           </a>
           <a
             href="/resume.pdf"
@@ -154,7 +151,7 @@ const Hero = () => {
             className="font-mono-label text-[11px] text-ink-30 hover:text-ink transition-colors w-fit"
             data-cursor="OPEN"
           >
-            Download Resume →
+            Download CV →
           </a>
         </div>
       </motion.div>
@@ -164,7 +161,7 @@ const Hero = () => {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.9, duration: 0.4 }}
-        className="mt-20 border-t border-rule pt-8 grid grid-cols-2 md:grid-cols-4 gap-8"
+        className="mt-16 border-t border-rule pt-8 grid grid-cols-2 md:grid-cols-4 gap-8"
       >
         {stats.map((stat, i) => (
           <div key={i} className={`${i > 0 ? "md:border-l md:border-rule md:pl-8" : ""}`}>
