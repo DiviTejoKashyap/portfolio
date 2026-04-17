@@ -37,16 +37,7 @@
     --card-foreground: var(--ink);
     --popover: var(--surface);
     --popover-foreground: var(--ink);
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --radius: 0.25rem; /* dropped from 0.5rem — editorial */
   }
 
   [data-theme="dark"] {
@@ -65,12 +56,12 @@
     --card-hover: 36 18% 93% / 0.04;
   }
 
-  * {
-    @apply border-border;
-  }
+  * { @apply border-border; }
 
   html {
     scroll-behavior: smooth;
+    /* Tighter body default — editorial */
+    font-feature-settings: "ss01", "cv11";
   }
 
   body {
@@ -78,6 +69,49 @@
     background-color: hsl(var(--bg));
     color: hsl(var(--ink));
     transition: background-color 0.4s ease, color 0.4s ease;
+    font-size: 0.9375rem; /* 15px base */
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Lock heading rhythm globally so components can't drift */
+  h1, h2, h3, h4 { font-family: 'DM Sans', sans-serif; }
+}
+
+@layer components {
+  /* ──────────────────────────────────────────────────────────────
+     SECTION SYSTEM — use these on every <section> to enforce rhythm.
+     Replaces scattered py-20/py-24/py-32 across components.
+     ────────────────────────────────────────────────────────────── */
+  .section {
+    @apply py-16 md:py-24; /* 64 / 96 */
+  }
+  .section-sm {
+    @apply py-12 md:py-16; /* 48 / 64 */
+  }
+  .section-lg {
+    @apply py-20 md:py-32; /* 80 / 128 — hero only */
+  }
+
+  /* Container wrapper. Apply inside section: <section class="section"><div class="container-tight">…</div></section> */
+  .container-tight {
+    @apply mx-auto w-full max-w-[1200px] px-6 md:px-8;
+  }
+
+  /* Narrower for long-form case study body copy */
+  .container-prose {
+    @apply mx-auto w-full max-w-[720px] px-6 md:px-8;
+  }
+
+  /* Section label — monospace uppercase above headings (Stripe/Linear pattern) */
+  .eyebrow {
+    @apply font-mono text-label uppercase text-ink-60;
+  }
+
+  /* Hairline rule — use instead of empty spacing between related sections */
+  .rule {
+    @apply border-t border-rule;
   }
 }
 
@@ -87,9 +121,7 @@
     font-style: italic;
   }
 
-  .font-mono-label {
-    font-family: 'DM Mono', monospace;
-  }
+  .font-mono-label { font-family: 'DM Mono', monospace; }
 
   .text-ink { color: hsl(var(--ink)); }
   .text-ink-60 { color: hsl(var(--ink-60)); }
@@ -105,9 +137,17 @@
   .bg-ink { background-color: hsl(var(--ink)); }
   .text-bg { color: hsl(var(--bg)); }
   .border-accent-warm { border-color: hsl(var(--accent-warm)); }
+
+  /* Subtle hover lift for interactive cards */
+  .hover-lift {
+    @apply transition-[transform,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)];
+  }
+  .hover-lift:hover {
+    @apply -translate-y-0.5 bg-card-hover;
+  }
 }
 
-/* Marquee animation */
+/* Marquee animation (unchanged — it works) */
 @keyframes marquee-left {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -116,18 +156,12 @@
   0% { transform: translateX(-50%); }
   100% { transform: translateX(0); }
 }
-.animate-marquee-left {
-  animation: marquee-left 24s linear infinite;
-}
-.animate-marquee-right {
-  animation: marquee-right 20s linear infinite;
-}
+.animate-marquee-left { animation: marquee-left 24s linear infinite; }
+.animate-marquee-right { animation: marquee-right 20s linear infinite; }
 .group:hover .animate-marquee-left,
-.group:hover .animate-marquee-right {
-  animation-play-state: paused;
-}
+.group:hover .animate-marquee-right { animation-play-state: paused; }
 
-/* Noise overlay */
+/* Noise overlay (unchanged) */
 .noise-overlay {
   position: fixed;
   inset: 0;
@@ -135,11 +169,8 @@
   z-index: 9999;
   opacity: 0.025;
 }
-[data-theme="dark"] .noise-overlay {
-  opacity: 0.04;
-}
+[data-theme="dark"] .noise-overlay { opacity: 0.04; }
 
-/* Custom cursor */
 @media (pointer: coarse) {
   .custom-cursor { display: none !important; }
 }
