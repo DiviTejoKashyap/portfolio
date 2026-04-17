@@ -28,10 +28,10 @@ const WorkSection = () => {
             {projects.length} projects. One system of thinking.
           </motion.h2>
         </div>
-        <Eyebrow>© 2022–2026</Eyebrow>
+        <Eyebrow>© 2024–2026</Eyebrow>
       </div>
 
-      {/* Project list — tighter rhythm: py-8 instead of py-12 */}
+      {/* Project list */}
       <div>
         {projects.map((project, idx) => (
           <Link
@@ -49,14 +49,14 @@ const WorkSection = () => {
                 transition={{ delay: 0.05 * idx, duration: 0.4 }}
                 className="md:col-span-7"
               >
-                {/* Row meta: eyebrow + role/company context on same line */}
+                {/* Row meta: eyebrow + status on same line */}
                 <div className="flex items-center gap-3 mb-4">
                   <Eyebrow>{project.eyebrow}</Eyebrow>
-                  {project.company && (
+                  {project.status && (
                     <>
                       <span className="text-ink-30">·</span>
                       <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-60">
-                        {project.company}
+                        {project.status}
                       </span>
                     </>
                   )}
@@ -69,15 +69,12 @@ const WorkSection = () => {
                   {project.headline}
                 </h3>
 
-                {/*
-                  Full problem statement — no line-clamp.
-                  If you have a 5-line problem statement, write a shorter one in data.
-                  Truncation in list view is worse than either full text or no text.
-                */}
-                <p className="font-sans font-light text-[15px] text-ink-60 leading-[1.6] max-w-[520px] mb-5">
-                  {project.problem}
+                {/* Full description — reads from `body`, the actual field in projects.ts */}
+                <p className="font-sans font-light text-[15px] text-ink-60 leading-[1.6] max-w-[560px] mb-5">
+                  {project.body}
                 </p>
 
+                {/* Meta row: role · timeline · isLive flag */}
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-mono text-[11px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
                     {project.role}
@@ -85,6 +82,11 @@ const WorkSection = () => {
                   <span className="font-mono text-[11px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
                     {project.timeline}
                   </span>
+                  {project.team && (
+                    <span className="font-mono text-[11px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
+                      {project.team}
+                    </span>
+                  )}
                   {project.isLive && (
                     <span className="font-mono text-[11px] text-green-500 border border-green-500/25 rounded-full px-3 py-1">
                       Live ↗
@@ -106,7 +108,11 @@ const WorkSection = () => {
               >
                 <div
                   className="rounded-[6px] overflow-hidden aspect-[16/10] transition-transform duration-500"
-                  style={{ transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)" }}
+                  style={{
+                    transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)",
+                    /* Fallback gradient if banner image fails to load */
+                    background: project.gradient,
+                  }}
                 >
                   <img
                     src={project.banner}
@@ -114,6 +120,10 @@ const WorkSection = () => {
                     className="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-500"
                     style={{ transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)" }}
                     loading={idx < 2 ? "eager" : "lazy"}
+                    onError={(e) => {
+                      // If image 404s, hide it so the gradient background shows through
+                      (e.currentTarget as HTMLImageElement).style.display = "none";
+                    }}
                   />
                 </div>
               </motion.div>
@@ -121,7 +131,6 @@ const WorkSection = () => {
           </Link>
         ))}
 
-        {/* Closing rule — establishes that the list has ended */}
         <div className="border-t border-rule" />
       </div>
     </Section>
