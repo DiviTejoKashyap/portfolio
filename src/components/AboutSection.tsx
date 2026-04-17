@@ -9,23 +9,10 @@ const experience = [
   { company: "SRM Institute", role: "B.Tech EEE",               year: "2022" },
 ];
 
-/**
- * Narrative proof block — replaces the three skill-tag columns.
- *
- * Every claim ties to a specific behavior:
- * • "ship alongside engineers" → embedded designer + engineering handoff
- * • "Figma variables driving 40+ states" → Figma expertise, specific
- * • "Two or three projects in parallel" → concurrent project management
- * • "write the production CSS myself" → frontend implementation
- * • "research interviews" → full process from research to shipped
- *
- * No list. No tags. Just prose a recruiter reads once and remembers.
- */
 const AboutSection = () => {
   return (
     <Section id="about">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16">
-        {/* Left — 5/12 */}
         <motion.div
           initial={{ opacity: 0, x: -24 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -49,7 +36,6 @@ const AboutSection = () => {
             building that layer on purpose.
           </p>
 
-          {/* Experience — 1-column list, tighter rhythm than the old 2-col grid */}
           <div className="space-y-3">
             {experience.map((exp) => (
               <div
@@ -72,7 +58,6 @@ const AboutSection = () => {
           </div>
         </motion.div>
 
-        {/* Right — 7/12 */}
         <motion.div
           initial={{ opacity: 0, x: 24 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -88,10 +73,6 @@ const AboutSection = () => {
             A product designer who ships alongside the engineers building it.
           </h3>
 
-          {/*
-            Three prose blocks. Each embeds 2 required skill signals without listing them.
-            This is the "show proof, not claims" section.
-          */}
           <div className="space-y-8 font-sans font-light text-[16px] text-ink-60 leading-[1.75] max-w-[600px]">
             <div>
               <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink mb-3">
@@ -137,10 +118,4 @@ const AboutSection = () => {
   );
 };
 
-export default AboutSection; </motion.div>
-
-/* ──────────────────────────────────────────────────────────────
-   END OF FILE — AboutSection.tsx
-   If you see ANYTHING below this comment, delete it.
-   The previous build broke because old JSX tags were left behind.
-   ────────────────────────────────────────────────────────────── */
+export default AboutSection;
