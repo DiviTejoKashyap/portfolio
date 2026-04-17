@@ -137,37 +137,10 @@ const AboutSection = () => {
   );
 };
 
-export default AboutSection;        </motion.div>
-
-        {/* Right 55% — Skills */}
-        <motion.div
-          initial={{ opacity: 0, x: 32 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.15 }}
-          className="md:w-[55%]"
-        >
-          {skillGroups.map((group) => (
-            <div key={group.label} className="mb-8">
-              <span className="font-mono-label text-[10px] uppercase tracking-[0.18em] text-ink-30 block mb-3">
-                {group.label}
-              </span>
-              <div className="flex flex-wrap gap-2">
-                {group.skills.map((skill) => (
-                  <span
-                    key={skill}
-                    className="font-sans text-[12px] bg-tag border border-tag rounded px-3 py-1.5 text-ink-60 hover:bg-ink hover:text-bg transition-all duration-[180ms] cursor-default"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-};
-
 export default AboutSection;
+
+/* ──────────────────────────────────────────────────────────────
+   END OF FILE — AboutSection.tsx
+   If you see ANYTHING below this comment, delete it.
+   The previous build broke because old JSX tags were left behind.
+   ────────────────────────────────────────────────────────────── */
