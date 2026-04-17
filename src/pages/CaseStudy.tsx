@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useEffect, useState, FC } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { projects } from "@/data/projects";
 import type { Project, CaseStudySection } from "@/data/projects";
 import NotFound from "./NotFound";
+
+/* ════════════════════════════════════════════════════════════════════════
+   SHARED PRIMITIVES
+   These are the genuinely reusable bits. Each per-project layout still
+   composes them differently — visual identity preserved.
+   ════════════════════════════════════════════════════════════════════════ */
 
 // ─── Lightbox ──────────────────────────────────────────────────────────────
 
@@ -53,7 +58,8 @@ function Lightbox({ src, alt, onClose }: { src: string; alt: string; onClose: ()
         onClick={onClose}
         style={{
           position: "fixed", top: "20px", right: "24px",
-          background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)",
+          background: "rgba(255,255,255,0.1)",
+          border: "1px solid rgba(255,255,255,0.2)",
           borderRadius: "50%", width: "40px", height: "40px",
           color: "white", fontSize: "18px", cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center",
@@ -65,7 +71,7 @@ function Lightbox({ src, alt, onClose }: { src: string; alt: string; onClose: ()
   );
 }
 
-// ─── Shared helpers ────────────────────────────────────────────────────────
+// ─── BackLink + Footer ─────────────────────────────────────────────────────
 
 function BackLink({ color }: { color: string }) {
   return (
@@ -96,10 +102,7 @@ function Footer({ accent, dark }: { accent: string; dark: boolean }) {
   );
 }
 
-// ─── Screenshot Showcase ──────────────────────────────────────────────────
-// Each project gets a unique editorial layout — not a uniform grid.
-// Images are height-constrained and object-fit: cover.
-// onError degrades broken paths to a styled placeholder silently.
+// ─── Screenshot slot type + Img with fallback ──────────────────────────────
 
 interface ScreenshotSlot {
   src: string | null;
@@ -108,20 +111,31 @@ interface ScreenshotSlot {
   wide?: boolean;
 }
 
-// Reusable image with onError fallback
+/**
+ * Image with onError fallback that shows the caption (per user preference).
+ * Used by all screenshot layouts so a 404 degrades to a styled placeholder
+ * rather than a broken-image icon.
+ */
 function Img({
-  src, alt, accent, dark,
-  style, className,
+  src, alt, caption, accent, dark,
+  className, style, onClick,
 }: {
-  src: string; alt: string; accent: string; dark: boolean;
-  style?: React.CSSProperties; className?: string;
+  src: string | null;
+  alt: string;
+  caption?: string;
+  accent: string;
+  dark: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+  onClick?: () => void;
 }) {
-  const [broken, setBroken] = useState(false);
+  const [broken, setBroken] = useState(!src);
   const phBg = dark ? "rgba(255,255,255,0.03)" : "rgba(20,18,16,0.03)";
   const phBorder = dark ? "rgba(255,255,255,0.08)" : "rgba(20,18,16,0.08)";
-  const labelColor = dark ? "rgba(255,255,255,0.2)" : "rgba(20,18,16,0.25)";
+  const labelColor = dark ? "rgba(255,255,255,0.35)" : "rgba(20,18,16,0.4)";
+  const dimColor = dark ? "rgba(255,255,255,0.2)" : "rgba(20,18,16,0.25)";
 
-  if (broken) {
+  if (broken || !src) {
     return (
       <div
         className={className}
@@ -133,14 +147,35 @@ function Img({
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: "10px",
+          gap: "12px",
+          padding: "40px 24px",
+          minHeight: "240px",
         }}
       >
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.3 }}>
+        <svg
+          width="28" height="28" viewBox="0 0 24 24"
+          fill="none" stroke={accent} strokeWidth="1.5"
+          strokeLinecap="round" strokeLinejoin="round"
+          style={{ opacity: 0.35 }}
+        >
           <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
           <circle cx="12" cy="13" r="4" />
         </svg>
-        <span style={{ fontFamily: "monospace", fontSize: "9px", color: labelColor, letterSpacing: "0.1em" }}>{alt}</span>
+        <span style={{
+          fontFamily: "monospace", fontSize: "10px",
+          color: labelColor, letterSpacing: "0.1em",
+          textTransform: "uppercase", textAlign: "center",
+          maxWidth: "320px", lineHeight: 1.5,
+        }}>
+          {caption || alt}
+        </span>
+        <span style={{
+          fontFamily: "monospace", fontSize: "9px",
+          color: dimColor, letterSpacing: "0.15em",
+          textTransform: "uppercase",
+        }}>
+          Image pending export
+        </span>
       </div>
     );
   }
@@ -150,16 +185,86 @@ function Img({
       src={src}
       alt={alt}
       className={className}
-      style={{ objectFit: "cover", display: "block", ...style }}
+      style={{ width: "100%", height: "auto", display: "block", cursor: onClick ? "zoom-in" : "default", ...style }}
       loading="lazy"
+      onClick={onClick}
       onError={() => setBroken(true)}
     />
   );
 }
 
-// ── LUME layout: full-width hero, then 2 equal columns
-function LumeScreenshots({ slots, accent, dark, onImageClick }: { slots: ScreenshotSlot[]; accent: string; dark: boolean; onImageClick: (src: string, alt: string) => void }) {
+// ─── Tiny shared text primitives ───────────────────────────────────────────
+
+function SectionLabel({ label, accent, dark }: { label: string; accent: string; dark: boolean }) {
   const border = dark ? "rgba(255,255,255,0.08)" : "rgba(20,18,16,0.1)";
+  const color = dark ? "rgba(255,255,255,0.25)" : "rgba(20,18,16,0.3)";
+  return (
+    <div className="flex items-center gap-4 mb-6">
+      <span style={{
+        fontFamily: "monospace", fontSize: "9px", color,
+        letterSpacing: "0.2em", textTransform: "uppercase",
+      }}>{label}</span>
+      <div className="flex-1 h-px" style={{ background: border }} />
+    </div>
+  );
+}
+
+function Caption({ text, color }: { text: string; color: string }) {
+  return (
+    <div style={{
+      fontFamily: "monospace", fontSize: "10px", color,
+      letterSpacing: "0.04em", marginTop: "8px",
+      paddingLeft: "2px", lineHeight: 1.5,
+    }}>
+      {text}
+    </div>
+  );
+}
+
+/**
+ * One screenshot frame — image + caption, with fallback wired in.
+ * This replaces ~30 lines of duplicated JSX across the layout components.
+ */
+function ScreenFrame({
+  slot, accent, dark, onImageClick, captionColor, borderRadius = "10px",
+}: {
+  slot: ScreenshotSlot;
+  accent: string;
+  dark: boolean;
+  onImageClick: (src: string, alt: string) => void;
+  captionColor: string;
+  borderRadius?: string;
+}) {
+  const border = dark ? "rgba(255,255,255,0.08)" : "rgba(20,18,16,0.1)";
+  return (
+    <>
+      <div style={{ border: `1px solid ${border}`, borderRadius, overflow: "hidden" }}>
+        <Img
+          src={slot.src}
+          alt={slot.label}
+          caption={slot.caption}
+          accent={accent}
+          dark={dark}
+          onClick={() => slot.src && onImageClick(slot.src, slot.label)}
+        />
+      </div>
+      <Caption text={slot.caption} color={captionColor} />
+    </>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   PER-PROJECT SCREENSHOT LAYOUTS
+   Each retains its own composition. The duplication is gone — they all
+   compose ScreenFrame + Caption + SectionLabel — but visual variation
+   stays intact.
+   ════════════════════════════════════════════════════════════════════════ */
+
+// ── LUME: hero + 2-col below
+function LumeScreenshots({ slots, accent, dark, onImageClick }: {
+  slots: ScreenshotSlot[]; accent: string; dark: boolean;
+  onImageClick: (src: string, alt: string) => void;
+}) {
   const cap = dark ? "rgba(255,255,255,0.25)" : "rgba(20,18,16,0.35)";
   const [s0, s1, s2] = slots;
   return (
@@ -167,19 +272,13 @@ function LumeScreenshots({ slots, accent, dark, onImageClick }: { slots: Screens
       <SectionLabel label="Final Design" accent={accent} dark={dark} />
       {s0 && (
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} style={{ marginBottom: "16px" }}>
-          <div style={{ border: `1px solid ${border}`, borderRadius: "12px", overflow: "hidden" }}>
-            <img src={s0.src!} alt={s0.label} style={{ width: "100%", height: "auto", display: "block", cursor: "zoom-in" }} loading="lazy" onClick={() => s0.src && onImageClick(s0.src, s0.label)} />
-          </div>
-          <Caption text={s0.caption} color={cap} />
+          <ScreenFrame slot={s0} accent={accent} dark={dark} onImageClick={onImageClick} captionColor={cap} borderRadius="12px" />
         </motion.div>
       )}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
         {[s1, s2].map((s, i) => s && (
           <motion.div key={i} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 + i * 0.08 }}>
-            <div style={{ border: `1px solid ${border}`, borderRadius: "10px", overflow: "hidden" }}>
-              <img src={s.src!} alt={s.label} style={{ width: "100%", height: "auto", display: "block", cursor: "zoom-in" }} loading="lazy" onClick={() => s.src && onImageClick(s.src, s.label)} />
-            </div>
-            <Caption text={s.caption} color={cap} />
+            <ScreenFrame slot={s} accent={accent} dark={dark} onImageClick={onImageClick} captionColor={cap} />
           </motion.div>
         ))}
       </div>
@@ -187,9 +286,11 @@ function LumeScreenshots({ slots, accent, dark, onImageClick }: { slots: Screens
   );
 }
 
-// ── VAULT layout: full-width hero, then 2-col grid
-function VaultScreenshots({ slots, accent, dark, onImageClick }: { slots: ScreenshotSlot[]; accent: string; dark: boolean; onImageClick: (src: string, alt: string) => void }) {
-  const border = dark ? "rgba(255,255,255,0.08)" : "rgba(20,18,16,0.1)";
+// ── VAULT: hero + 2-col grid (3 children)
+function VaultScreenshots({ slots, accent, dark, onImageClick }: {
+  slots: ScreenshotSlot[]; accent: string; dark: boolean;
+  onImageClick: (src: string, alt: string) => void;
+}) {
   const cap = dark ? "rgba(255,255,255,0.25)" : "rgba(20,18,16,0.35)";
   const [s0, s1, s2, s3] = slots;
   return (
@@ -197,19 +298,13 @@ function VaultScreenshots({ slots, accent, dark, onImageClick }: { slots: Screen
       <SectionLabel label="Final Design" accent={accent} dark={dark} />
       {s0 && (
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} style={{ marginBottom: "16px" }}>
-          <div style={{ border: `1px solid ${border}`, borderRadius: "12px", overflow: "hidden" }}>
-            <img src={s0.src!} alt={s0.label} style={{ width: "100%", height: "auto", display: "block", cursor: "zoom-in" }} loading="lazy" onClick={() => s0.src && onImageClick(s0.src, s0.label)} />
-          </div>
-          <Caption text={s0.caption} color={cap} />
+          <ScreenFrame slot={s0} accent={accent} dark={dark} onImageClick={onImageClick} captionColor={cap} borderRadius="12px" />
         </motion.div>
       )}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
         {[s1, s2, s3].map((s, i) => s && (
           <motion.div key={i} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 + i * 0.08 }}>
-            <div style={{ border: `1px solid ${border}`, borderRadius: "10px", overflow: "hidden" }}>
-              <img src={s.src!} alt={s.label} style={{ width: "100%", height: "auto", display: "block", cursor: "zoom-in" }} loading="lazy" onClick={() => s.src && onImageClick(s.src, s.label)} />
-            </div>
-            <Caption text={s.caption} color={cap} />
+            <ScreenFrame slot={s} accent={accent} dark={dark} onImageClick={onImageClick} captionColor={cap} />
           </motion.div>
         ))}
       </div>
@@ -217,9 +312,11 @@ function VaultScreenshots({ slots, accent, dark, onImageClick }: { slots: Screen
   );
 }
 
-// ── SYNC layout: full-width hero, then 2-col grid for rest
-function SyncScreenshots({ slots, accent, dark, onImageClick }: { slots: ScreenshotSlot[]; accent: string; dark: boolean; onImageClick: (src: string, alt: string) => void }) {
-  const border = dark ? "rgba(255,255,255,0.08)" : "rgba(20,18,16,0.1)";
+// ── SYNC: same shape as Vault, kept distinct in case it diverges later
+function SyncScreenshots({ slots, accent, dark, onImageClick }: {
+  slots: ScreenshotSlot[]; accent: string; dark: boolean;
+  onImageClick: (src: string, alt: string) => void;
+}) {
   const cap = dark ? "rgba(255,255,255,0.25)" : "rgba(20,18,16,0.35)";
   const [s0, s1, s2, s3] = slots;
   return (
@@ -227,19 +324,13 @@ function SyncScreenshots({ slots, accent, dark, onImageClick }: { slots: Screens
       <SectionLabel label="Final Design" accent={accent} dark={dark} />
       {s0 && (
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} style={{ marginBottom: "16px" }}>
-          <div style={{ border: `1px solid ${border}`, borderRadius: "12px", overflow: "hidden" }}>
-            <img src={s0.src!} alt={s0.label} style={{ width: "100%", height: "auto", display: "block", cursor: "zoom-in" }} loading="lazy" onClick={() => s0.src && onImageClick(s0.src, s0.label)} />
-          </div>
-          <Caption text={s0.caption} color={cap} />
+          <ScreenFrame slot={s0} accent={accent} dark={dark} onImageClick={onImageClick} captionColor={cap} borderRadius="12px" />
         </motion.div>
       )}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
         {[s1, s2, s3].map((s, i) => s && (
           <motion.div key={i} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 + i * 0.08 }}>
-            <div style={{ border: `1px solid ${border}`, borderRadius: "10px", overflow: "hidden" }}>
-              <img src={s.src!} alt={s.label} style={{ width: "100%", height: "auto", display: "block", cursor: "zoom-in" }} loading="lazy" onClick={() => s.src && onImageClick(s.src, s.label)} />
-            </div>
-            <Caption text={s.caption} color={cap} />
+            <ScreenFrame slot={s} accent={accent} dark={dark} onImageClick={onImageClick} captionColor={cap} />
           </motion.div>
         ))}
       </div>
@@ -247,8 +338,11 @@ function SyncScreenshots({ slots, accent, dark, onImageClick }: { slots: Screens
   );
 }
 
-// ── PULSE layout: 3 phones portrait, center elevated
-function PulseScreenshots({ slots, accent, dark, onImageClick }: { slots: ScreenshotSlot[]; accent: string; dark: boolean; onImageClick: (src: string, alt: string) => void }) {
+// ── PULSE: 3 phones, center elevated (the special case — kept as-is)
+function PulseScreenshots({ slots, accent, dark, onImageClick }: {
+  slots: ScreenshotSlot[]; accent: string; dark: boolean;
+  onImageClick: (src: string, alt: string) => void;
+}) {
   const cap = dark ? "rgba(255,255,255,0.25)" : "rgba(20,18,16,0.35)";
   const [s0, s1, s2] = slots;
   return (
@@ -276,10 +370,14 @@ function PulseScreenshots({ slots, accent, dark, onImageClick }: { slots: Screen
                 ? "0 40px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(20,184,166,0.25)"
                 : "0 20px 40px rgba(0,0,0,0.5)",
             }}>
-              <img src={s.src ?? undefined} alt={s.label}
-                style={{ width: "100%", height: "auto", display: "block", verticalAlign: "bottom", cursor: "zoom-in" }}
-                loading="lazy"
+              <Img
+                src={s.src}
+                alt={s.label}
+                caption={s.caption}
+                accent={accent}
+                dark={dark}
                 onClick={() => s.src && onImageClick(s.src, s.label)}
+                style={{ verticalAlign: "bottom" }}
               />
             </div>
             <div style={{
@@ -296,10 +394,11 @@ function PulseScreenshots({ slots, accent, dark, onImageClick }: { slots: Screen
   );
 }
 
-
-// ── SOLO layout: full-width hero, then 2-col bottom
-function SoloScreenshots({ slots, accent, dark, onImageClick }: { slots: ScreenshotSlot[]; accent: string; dark: boolean; onImageClick: (src: string, alt: string) => void }) {
-  const border = dark ? "rgba(255,255,255,0.08)" : "rgba(20,18,16,0.1)";
+// ── SOLO: hero + 2-col bottom
+function SoloScreenshots({ slots, accent, dark, onImageClick }: {
+  slots: ScreenshotSlot[]; accent: string; dark: boolean;
+  onImageClick: (src: string, alt: string) => void;
+}) {
   const cap = dark ? "rgba(255,255,255,0.25)" : "rgba(20,18,16,0.35)";
   const [s0, s1, s2] = slots;
   return (
@@ -307,19 +406,13 @@ function SoloScreenshots({ slots, accent, dark, onImageClick }: { slots: Screens
       <SectionLabel label="Final Design" accent={accent} dark={dark} />
       {s0 && (
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} style={{ marginBottom: "16px" }}>
-          <div style={{ border: `1px solid ${border}`, borderRadius: "12px", overflow: "hidden" }}>
-            <img src={s0.src!} alt={s0.label} style={{ width: "100%", height: "auto", display: "block", cursor: "zoom-in" }} loading="lazy" onClick={() => s0.src && onImageClick(s0.src, s0.label)} />
-          </div>
-          <Caption text={s0.caption} color={cap} />
+          <ScreenFrame slot={s0} accent={accent} dark={dark} onImageClick={onImageClick} captionColor={cap} borderRadius="12px" />
         </motion.div>
       )}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
         {[s1, s2].map((s, i) => s && (
           <motion.div key={i} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 + i * 0.1 }}>
-            <div style={{ border: `1px solid ${border}`, borderRadius: "10px", overflow: "hidden" }}>
-              <img src={s.src!} alt={s.label} style={{ width: "100%", height: "auto", display: "block", cursor: "zoom-in" }} loading="lazy" onClick={() => s.src && onImageClick(s.src, s.label)} />
-            </div>
-            <Caption text={s.caption} color={cap} />
+            <ScreenFrame slot={s} accent={accent} dark={dark} onImageClick={onImageClick} captionColor={cap} />
           </motion.div>
         ))}
       </div>
@@ -327,28 +420,96 @@ function SoloScreenshots({ slots, accent, dark, onImageClick }: { slots: Screens
   );
 }
 
-// Shared micro-components used by all layouts above
-function SectionLabel({ label, accent, dark }: { label: string; accent: string; dark: boolean }) {
-  const border = dark ? "rgba(255,255,255,0.08)" : "rgba(20,18,16,0.1)";
-  const color = dark ? "rgba(255,255,255,0.25)" : "rgba(20,18,16,0.3)";
+/* ════════════════════════════════════════════════════════════════════════
+   PROTOTYPE PREVIEW
+   Renders the previewFile (HTML mockup) as a thumbnail iframe with an
+   "Open full prototype" button. Lazy-loaded, sandboxed, themed via accent.
+   ════════════════════════════════════════════════════════════════════════ */
+
+function PrototypePreview({ file, accent, dark, label = "Live Prototype" }: {
+  file: string;
+  accent: string;
+  dark: boolean;
+  label?: string;
+}) {
+  const border = dark ? "rgba(255,255,255,0.1)" : "rgba(20,18,16,0.12)";
+  const cap = dark ? "rgba(255,255,255,0.4)" : "rgba(20,18,16,0.5)";
+
   return (
-    <div className="flex items-center gap-4 mb-6">
-      <span style={{ fontFamily: "monospace", fontSize: "9px", color, letterSpacing: "0.2em", textTransform: "uppercase" }}>{label}</span>
-      <div className="flex-1 h-px" style={{ background: border }} />
+    <div style={{ marginBottom: "80px" }}>
+      <SectionLabel label={label} accent={accent} dark={dark} />
+
+      {/* Iframe thumbnail — capped height, 16:10 aspect, lazy loaded */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        style={{
+          border: `1px solid ${border}`,
+          borderRadius: "12px",
+          overflow: "hidden",
+          position: "relative",
+          aspectRatio: "16 / 10",
+          maxHeight: "560px",
+          background: dark ? "#0a0a08" : "#ffffff",
+        }}
+      >
+        <iframe
+          src={file}
+          loading="lazy"
+          sandbox="allow-scripts allow-same-origin"
+          title={`${label} preview`}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            border: "none",
+            /* Slight zoom-out so dense mockups read at thumbnail size.
+               Inverse-scale the dimensions (1/0.85 ≈ 117.65%) so the
+               scaled iframe still fills the container. */
+            transform: "scale(0.85)",
+            transformOrigin: "top left",
+            width: "117.65%",
+            height: "117.65%",
+          }}
+        />
+      </motion.div>
+
+      {/* CTA + caption row */}
+      <div className="flex items-center justify-between gap-4 mt-4 flex-wrap">
+        <div style={{
+          fontFamily: "monospace", fontSize: "10px",
+          color: cap, letterSpacing: "0.04em", lineHeight: 1.5,
+        }}>
+          Interactive prototype — built without backend, deployed as static HTML.
+        </div>
+        <a
+          href={file}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-4 py-2.5 transition-opacity hover:opacity-80"
+          style={{
+            background: accent,
+            color: dark ? "#0a0a08" : "#ffffff",
+            fontFamily: "monospace",
+            fontSize: "11px",
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            borderRadius: "4px",
+            fontWeight: 600,
+          }}
+        >
+          Open full prototype ↗
+        </a>
+      </div>
     </div>
   );
 }
 
-function Caption({ text, color }: { text: string; color: string }) {
-  return (
-    <div style={{ fontFamily: "monospace", fontSize: "10px", color, letterSpacing: "0.04em", marginTop: "8px", paddingLeft: "2px", lineHeight: 1.5 }}>
-      {text}
-    </div>
-  );
-}
-
-
-// ─── Shared section renderer ───────────────────────────────────────────────
+/* ════════════════════════════════════════════════════════════════════════
+   STRUCTURED + DYNAMIC SECTION RENDERERS
+   (unchanged from original — these were already clean)
+   ════════════════════════════════════════════════════════════════════════ */
 
 function SectionRenderer({ section, accent, dark, theme }: {
   section: CaseStudySection;
@@ -417,124 +578,6 @@ function SectionRenderer({ section, accent, dark, theme }: {
   );
 }
 
-// ─── Screenshot data ───────────────────────────────────────────────────────
-// Change src: null → src: "/screenshots/filename.png" when ready
-
-// ─── Screenshot data — real files ─────────────────────────────────────────
-// All images live in public/screenshots/
-// Lume shots: Hub overview, Work Board kanban, Read/paper mode
-
-const lumeScreenshots: ScreenshotSlot[] = [
-  {
-    src: "/screenshots/lume-1.png",
-    label: "Hub overview — project, capture log, literature, activity",
-    caption: "01 — Project overview panel, capture log, linked literature table, activity pipeline",
-    wide: true,
-  },
-  {
-    src: "/screenshots/lume-3.png",
-    label: "Read mode — annotated paper with margin notes",
-    caption: "02 — Document reader: outline, highlighted text, CRITICAL + LITERATURE margin notes",
-  },
-  {
-    src: "/screenshots/lume-2.png",
-    label: "Work Board — kanban TO DO / DOING / DONE",
-    caption: "03 — Three-column board with hardware, neurology, and UX task cards",
-  },
-];
-
-// Vault shots: Cockpit Hub, Audit Readiness, Network Edge, Incident Reports
-const vaultScreenshots: ScreenshotSlot[] = [
-  {
-    src: "/screenshots/vault-1.png",
-    label: "Cockpit Hub — latency, policy violations, deployments",
-    caption: "01 — Global latency 38ms healthy, 24 policy violations critical, network throughput chart, recent alerts",
-    wide: true,
-  },
-  {
-    src: "/screenshots/vault-2.png",
-    label: "Audit Readiness — framework compliance table",
-    caption: "02 — SOC 2, HIPAA, GDPR, ISO 27001, PCI-DSS, NIST CSF compliance status with failing controls",
-  },
-  {
-    src: "/screenshots/vault-3.png",
-    label: "Network Edge — edge compute topology",
-    caption: "03 — 7 edge nodes with CPU/RAM usage bars, status indicators, rebalance load action",
-  },
-  {
-    src: "/screenshots/vault-4.png",
-    label: "Incident Reports — security log table",
-    caption: "04 — Req ID, timestamp, actor, action, Blocked/Warning/Success status per event",
-  },
-];
-
-// Sync shots: Dashboard, Channels, Reviews, Tasks board
-const syncScreenshots: ScreenshotSlot[] = [
-  {
-    src: "/screenshots/sync-1.png",
-    label: "Dashboard — workspace home with active projects",
-    caption: "01 — Stats row, active project progress bars, needs attention list, active now presence, recent activity",
-    wide: true,
-  },
-  {
-    src: "/screenshots/sync-3.png",
-    label: "Reviews — design review with comment thread",
-    caption: "02 — Workspace Navigation Redesign v3, Question/Approval/Change Request comment types, resolve flow",
-  },
-  {
-    src: "/screenshots/sync-4.png",
-    label: "Tasks — kanban board with 4 columns",
-    caption: "03 — To Do, In Progress, In Review, Done with priority tags, labels, assignee avatars",
-  },
-  {
-    src: "/screenshots/sync-2.png",
-    label: "Channels — async team messaging",
-    caption: "04 — #product-feedback channel with research thread from Maya, Sam, Alex, and Riley",
-  },
-];
-
-// Pulse shots: Daily Snapshot, Deep Dive, Profile
-const pulseScreenshots: ScreenshotSlot[] = [
-  {
-    src: "/screenshots/pulse-1.png",
-    label: "Daily Snapshot — recovery, sleep, stress + 14-day grid",
-    caption: "01 — Recovery 92/100, sleep 8.6h, stress 51/100, last 14 days pattern grid, signals section",
-    wide: true,
-  },
-  {
-    src: "/screenshots/pulse-2.png",
-    label: "Deep Dive — 28-day recovery trend chart",
-    caption: "02 — Recovery trend line chart with interpretation shortcuts, plan progress sidebar",
-  },
-  {
-    src: "/screenshots/pulse-3.png",
-    label: "Profile — user preferences and goal settings",
-    caption: "03 — Name, goal selection (Better Sleep / Lower Stress / Performance / Consistency), baseline",
-  },
-];
-
-// Solo Leveling OS shots: Dashboard, Shadow Realm, Hunter Stats
-const soloScreenshots: ScreenshotSlot[] = [
-  {
-    src: "/screenshots/solo-1.png",
-    label: "Command Center — hunter status, gate queue, daily quests",
-    caption: "01 — Shadow Realm capture, Rank B hunter 850/2000 XP, gate queue with S/A/B priority, daily quests 2/4",
-    wide: true,
-  },
-  {
-    src: "/screenshots/solo-2.png",
-    label: "Shadow Realm — thought capture and classification",
-    caption: "02 — Keyboard-first capture input, 9 items with unprocessed/routed/converted tags and confidence bars",
-  },
-  {
-    src: "/screenshots/solo-3.png",
-    label: "Hunter Stats — XP history, streak calendar, rank ladder",
-    caption: "03 — 14-day XP chart, streak calendar grid, lifetime by domain bars, rank ladder E→S",
-  },
-];
-
-// ─── Structured sections (Users → Research → Insights → Ideation → Wireframes) ──
-
 function StructuredSections({
   p, accent, dark, fontFamily, containerClass = "px-8 max-w-[1200px] mx-auto",
 }: {
@@ -573,7 +616,6 @@ function StructuredSections({
         </motion.div>
       ))}
 
-      {/* Insights */}
       <motion.div
         initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }} transition={{ delay: 0.1, duration: 0.5 }}
@@ -605,7 +647,65 @@ function StructuredSections({
   );
 }
 
-// ─── Per-project layouts ───────────────────────────────────────────────────
+/* ════════════════════════════════════════════════════════════════════════
+   SCREENSHOT DATA
+   All paths point at /public/screenshots/. If a file 404s, the Img
+   component now falls back to a styled placeholder showing the caption.
+   ════════════════════════════════════════════════════════════════════════ */
+
+const lumeScreenshots: ScreenshotSlot[] = [
+  { src: "/screenshots/lume-1.png", label: "Hub overview — project, capture log, literature, activity",
+    caption: "01 — Project overview panel, capture log, linked literature table, activity pipeline", wide: true },
+  { src: "/screenshots/lume-3.png", label: "Read mode — annotated paper with margin notes",
+    caption: "02 — Document reader: outline, highlighted text, CRITICAL + LITERATURE margin notes" },
+  { src: "/screenshots/lume-2.png", label: "Work Board — kanban TO DO / DOING / DONE",
+    caption: "03 — Three-column board with hardware, neurology, and UX task cards" },
+];
+
+const vaultScreenshots: ScreenshotSlot[] = [
+  { src: "/screenshots/vault-1.png", label: "Cockpit Hub — latency, policy violations, deployments",
+    caption: "01 — Global latency 38ms healthy, 24 policy violations critical, network throughput chart, recent alerts", wide: true },
+  { src: "/screenshots/vault-2.png", label: "Audit Readiness — framework compliance table",
+    caption: "02 — SOC 2, HIPAA, GDPR, ISO 27001, PCI-DSS, NIST CSF compliance status with failing controls" },
+  { src: "/screenshots/vault-3.png", label: "Network Edge — edge compute topology",
+    caption: "03 — 7 edge nodes with CPU/RAM usage bars, status indicators, rebalance load action" },
+  { src: "/screenshots/vault-4.png", label: "Incident Reports — security log table",
+    caption: "04 — Req ID, timestamp, actor, action, Blocked/Warning/Success status per event" },
+];
+
+const syncScreenshots: ScreenshotSlot[] = [
+  { src: "/screenshots/sync-1.png", label: "Dashboard — workspace home with active projects",
+    caption: "01 — Stats row, active project progress bars, needs attention list, active now presence, recent activity", wide: true },
+  { src: "/screenshots/sync-3.png", label: "Reviews — design review with comment thread",
+    caption: "02 — Workspace Navigation Redesign v3, Question/Approval/Change Request comment types, resolve flow" },
+  { src: "/screenshots/sync-4.png", label: "Tasks — kanban board with 4 columns",
+    caption: "03 — To Do, In Progress, In Review, Done with priority tags, labels, assignee avatars" },
+  { src: "/screenshots/sync-2.png", label: "Channels — async team messaging",
+    caption: "04 — #product-feedback channel with research thread from Maya, Sam, Alex, and Riley" },
+];
+
+const pulseScreenshots: ScreenshotSlot[] = [
+  { src: "/screenshots/pulse-1.png", label: "Daily Snapshot — recovery, sleep, stress + 14-day grid",
+    caption: "01 — Recovery 92/100, sleep 8.6h, stress 51/100, last 14 days pattern grid, signals section", wide: true },
+  { src: "/screenshots/pulse-2.png", label: "Deep Dive — 28-day recovery trend chart",
+    caption: "02 — Recovery trend line chart with interpretation shortcuts, plan progress sidebar" },
+  { src: "/screenshots/pulse-3.png", label: "Profile — user preferences and goal settings",
+    caption: "03 — Name, goal selection (Better Sleep / Lower Stress / Performance / Consistency), baseline" },
+];
+
+const soloScreenshots: ScreenshotSlot[] = [
+  { src: "/screenshots/solo-1.png", label: "Command Center — hunter status, gate queue, daily quests",
+    caption: "01 — Shadow Realm capture, Rank B hunter 850/2000 XP, gate queue with S/A/B priority, daily quests 2/4", wide: true },
+  { src: "/screenshots/solo-2.png", label: "Shadow Realm — thought capture and classification",
+    caption: "02 — Keyboard-first capture input, 9 items with unprocessed/routed/converted tags and confidence bars" },
+  { src: "/screenshots/solo-3.png", label: "Hunter Stats — XP history, streak calendar, rank ladder",
+    caption: "03 — 14-day XP chart, streak calendar grid, lifetime by domain bars, rank ladder E→S" },
+];
+
+/* ════════════════════════════════════════════════════════════════════════
+   PER-PROJECT CASE STUDY LAYOUTS
+   Each project has its own bespoke composition — visual identity preserved.
+   ════════════════════════════════════════════════════════════════════════ */
 
 function LumeCaseStudy({ p }: { p: Project }) {
   const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
@@ -662,6 +762,7 @@ function LumeCaseStudy({ p }: { p: Project }) {
 
       <div className="px-8 max-w-[1200px] mx-auto">
         <LumeScreenshots slots={lumeScreenshots} accent="#e8a427" dark onImageClick={(src, alt) => setLightbox({ src, alt })} />
+        {p.previewFile && <PrototypePreview file={p.previewFile} accent="#e8a427" dark />}
         {p.sections.map((s, i) => <SectionRenderer key={i} section={s} accent="#e8a427" dark theme="lume" />)}
       </div>
 
@@ -732,6 +833,7 @@ function VaultCaseStudy({ p }: { p: Project }) {
 
       <div className="px-8 max-w-[1200px] mx-auto">
         <VaultScreenshots slots={vaultScreenshots} accent="#3b82f6" dark onImageClick={(src, alt) => setLightbox({ src, alt })} />
+        {p.previewFile && <PrototypePreview file={p.previewFile} accent="#3b82f6" dark />}
         {p.sections.map((s, i) => <SectionRenderer key={i} section={s} accent="#3b82f6" dark theme="vault" />)}
       </div>
 
@@ -803,6 +905,7 @@ function SyncCaseStudy({ p }: { p: Project }) {
 
       <div className="max-w-[900px] mx-auto px-8">
         <SyncScreenshots slots={syncScreenshots} accent="#2F6FED" dark={false} onImageClick={(src, alt) => setLightbox({ src, alt })} />
+        {p.previewFile && <PrototypePreview file={p.previewFile} accent="#2F6FED" dark={false} />}
         {p.sections.map((s, i) => <SectionRenderer key={i} section={s} accent="#2F6FED" dark={false} theme="sync" />)}
       </div>
 
@@ -824,15 +927,10 @@ function SyncCaseStudy({ p }: { p: Project }) {
   );
 }
 
-// ─── PULSE — dark organic mobile editorial ─────────────────────────────────
-// Aesthetic: deep charcoal + teal-green health glow, editorial sans,
-// large device frame as visual anchor, stats as big typographic numbers.
-
 function PulseCaseStudy({ p }: { p: Project }) {
   const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
-  const A = "#14b8a6";        // teal accent
-  const A2 = "#0d9488";       // darker teal
-  const BG = "#0c0f0e";       // near-black with green undertone
+  const A = "#14b8a6";
+  const BG = "#0c0f0e";
   const SURF = "#131916";
   const SURF2 = "#1a211e";
   const BORDER = "rgba(20,184,166,0.15)";
@@ -844,11 +942,9 @@ function PulseCaseStudy({ p }: { p: Project }) {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Chivo+Mono:wght@300;400&display=swap');
         .pulse-noise::before { content:''; position:fixed; inset:0; background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events:none; z-index:1; }
-        .pulse-glow { filter: drop-shadow(0 0 24px rgba(20,184,166,0.25)); }
       `}</style>
       <div className="pulse-noise" />
 
-      {/* Nav */}
       <nav className="fixed top-0 left-0 right-0 z-20 h-14 flex items-center justify-between px-8" style={{ background: "rgba(12,15,14,0.9)", backdropFilter: "blur(16px)", borderBottom: `1px solid ${BORDER}` }}>
         <BackLink color={A} />
         <div style={{ fontFamily: "'Chivo Mono',monospace", fontSize: "10px", color: "rgba(20,184,166,0.5)", letterSpacing: "0.15em" }}>PULSE · WELLNESS PLATFORM</div>
@@ -858,19 +954,11 @@ function PulseCaseStudy({ p }: { p: Project }) {
         </div>
       </nav>
 
-      {/* ── HERO — split layout: text left, big stats right ── */}
       <section className="relative z-10 pt-28 pb-0 overflow-hidden">
-        {/* Background radial */}
         <div style={{ position: "absolute", top: "-20%", right: "-10%", width: "600px", height: "600px", background: `radial-gradient(circle, rgba(20,184,166,0.07) 0%, transparent 70%)`, pointerEvents: "none" }} />
 
         <div className="max-w-[1100px] mx-auto px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col lg:flex-row gap-12 items-start"
-          >
-            {/* Left — copy */}
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex flex-col lg:flex-row gap-12 items-start">
             <div style={{ flex: "0 0 50%" }}>
               <div style={{ fontFamily: "'Chivo Mono',monospace", fontSize: "9px", color: A, letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "20px", display: "flex", alignItems: "center", gap: "12px" }}>
                 <div style={{ width: "24px", height: "1px", background: A }} />
@@ -878,12 +966,11 @@ function PulseCaseStudy({ p }: { p: Project }) {
               </div>
               <h1 style={{ fontFamily: "'Cabinet Grotesk',sans-serif", fontWeight: 900, fontSize: "clamp(56px,8vw,96px)", lineHeight: 0.88, letterSpacing: "-0.03em", color: TEXT, marginBottom: "28px" }}>
                 Pulse<br />
-                <span style={{ color: A, WebkitTextStroke: "0px" }}>Analytics</span>
+                <span style={{ color: A }}>Analytics</span>
               </h1>
               <p style={{ fontFamily: "'Cabinet Grotesk',sans-serif", fontWeight: 400, fontSize: "17px", lineHeight: 1.75, color: DIM, marginBottom: "32px", maxWidth: "400px" }}>
                 {p.overview}
               </p>
-              {/* Tags */}
               <div className="flex flex-wrap gap-2">
                 {p.tags.map(t => (
                   <span key={t} style={{ fontFamily: "'Chivo Mono',monospace", fontSize: "10px", padding: "5px 12px", background: "rgba(20,184,166,0.08)", color: A, border: `1px solid ${BORDER}`, borderRadius: "4px" }}>{t}</span>
@@ -891,7 +978,6 @@ function PulseCaseStudy({ p }: { p: Project }) {
               </div>
             </div>
 
-            {/* Right — big typographic stats */}
             <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2px", background: BORDER }}>
               {[
                 { value: "92", unit: "/100", label: "Recovery Score" },
@@ -899,14 +985,7 @@ function PulseCaseStudy({ p }: { p: Project }) {
                 { value: "3", unit: " screens", label: "Total Architecture" },
                 { value: "86%", unit: "", label: "Workout Cadence" },
               ].map((s, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 + i * 0.08 }}
-                  className="p-6 flex flex-col justify-between"
-                  style={{ background: i === 0 ? SURF2 : SURF, minHeight: "120px" }}
-                >
+                <motion.div key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 + i * 0.08 }} className="p-6 flex flex-col justify-between" style={{ background: i === 0 ? SURF2 : SURF, minHeight: "120px" }}>
                   <div style={{ fontFamily: "'Chivo Mono',monospace", fontSize: "8px", color: "rgba(20,184,166,0.4)", letterSpacing: "0.16em", textTransform: "uppercase" }}>{s.label}</div>
                   <div>
                     <span style={{ fontFamily: "'Cabinet Grotesk',sans-serif", fontWeight: 900, fontSize: "42px", lineHeight: 1, color: i === 0 ? A : TEXT }}>{s.value}</span>
@@ -918,8 +997,7 @@ function PulseCaseStudy({ p }: { p: Project }) {
           </motion.div>
         </div>
 
-        {/* ── Full-bleed accent band ── */}
-        <div className="mt-16 py-4 px-8" style={{ background: A, marginLeft: 0, marginRight: 0 }}>
+        <div className="mt-16 py-4 px-8" style={{ background: A }}>
           <div className="max-w-[1100px] mx-auto flex flex-wrap items-center gap-8">
             {[{ label: "Role", val: p.role }, { label: "Timeline", val: p.timeline }, { label: "Team", val: p.team }, { label: "Status", val: p.status }].map((m, i) => (
               <div key={i} style={{ display: "flex", gap: "8px", alignItems: "baseline" }}>
@@ -931,7 +1009,6 @@ function PulseCaseStudy({ p }: { p: Project }) {
         </div>
       </section>
 
-      {/* ── PROBLEM / SOLUTION — asymmetric editorial ── */}
       <section className="relative z-10 max-w-[1100px] mx-auto px-8 py-20">
         <div className="flex flex-col md:flex-row gap-0" style={{ border: `1px solid ${BORDER}` }}>
           <div className="p-10" style={{ flex: "0 0 55%", borderRight: `1px solid ${BORDER}` }}>
@@ -944,7 +1021,6 @@ function PulseCaseStudy({ p }: { p: Project }) {
           <div className="p-10" style={{ flex: 1 }}>
             <div style={{ fontFamily: "'Chivo Mono',monospace", fontSize: "9px", color: A, letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "16px" }}>02 — Solution</div>
             <p style={{ fontFamily: "'Cabinet Grotesk',sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: 1.85, color: DIM, marginBottom: "24px" }}>{p.solution}</p>
-            {/* Impact bullets */}
             <div className="flex flex-col gap-3">
               {p.impact.map((item, i) => (
                 <div key={i} className="flex items-start gap-3">
@@ -959,25 +1035,16 @@ function PulseCaseStudy({ p }: { p: Project }) {
 
       <StructuredSections p={p} accent={A} dark fontFamily="'Cabinet Grotesk',sans-serif" containerClass="relative z-10 max-w-[1100px] mx-auto px-8" />
 
-      {/* ── SCREENSHOTS ── */}
       <div className="relative z-10 max-w-[1100px] mx-auto px-8">
         <PulseScreenshots slots={pulseScreenshots} accent={A} dark onImageClick={(src, alt) => setLightbox({ src, alt })} />
+        {p.previewFile && <PrototypePreview file={p.previewFile} accent={A} dark />}
       </div>
 
-      {/* ── PROCESS — horizontal numbered steps ── */}
       <section className="relative z-10 max-w-[1100px] mx-auto px-8 mb-20">
         <div style={{ fontFamily: "'Chivo Mono',monospace", fontSize: "9px", color: "rgba(20,184,166,0.4)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "24px" }}>Process</div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "2px", background: BORDER }}>
           {(p.sections.find(s => s.type === "process-steps")?.steps ?? []).map((step, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-              className="p-6"
-              style={{ background: SURF }}
-            >
+            <motion.div key={i} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }} className="p-6" style={{ background: SURF }}>
               <div style={{ fontFamily: "'Cabinet Grotesk',sans-serif", fontWeight: 900, fontSize: "36px", lineHeight: 1, color: A, opacity: 0.3, marginBottom: "12px" }}>{step.number}</div>
               <div style={{ fontFamily: "'Cabinet Grotesk',sans-serif", fontWeight: 700, fontSize: "14px", color: TEXT, marginBottom: "8px" }}>{step.title}</div>
               <p style={{ fontFamily: "'Cabinet Grotesk',sans-serif", fontWeight: 400, fontSize: "12px", lineHeight: 1.75, color: DIM }}>{step.body}</p>
@@ -986,7 +1053,6 @@ function PulseCaseStudy({ p }: { p: Project }) {
         </div>
       </section>
 
-      {/* ── QUOTE ── */}
       {p.sections.filter(s => s.type === "quote").map((s, i) => (
         <section key={i} className="relative z-10 max-w-[1100px] mx-auto px-8 mb-20">
           <div className="px-10 py-12" style={{ background: SURF2, borderLeft: `4px solid ${A}` }}>
@@ -998,7 +1064,6 @@ function PulseCaseStudy({ p }: { p: Project }) {
         </section>
       ))}
 
-      {/* ── REFLECTION ── */}
       {p.sections.filter(s => s.type === "full-text").map((s, i) => (
         <section key={i} className="relative z-10 max-w-[1100px] mx-auto px-8 mb-16 border-t" style={{ borderColor: BORDER, paddingTop: "40px" }}>
           {s.heading && <h2 style={{ fontFamily: "'Cabinet Grotesk',sans-serif", fontWeight: 800, fontSize: "clamp(20px,2.5vw,28px)", color: TEXT, marginBottom: "16px" }}>{s.heading}</h2>}
@@ -1014,12 +1079,9 @@ function PulseCaseStudy({ p }: { p: Project }) {
   );
 }
 
-// ─── SOLO LEVELING OS ──────────────────────────────────────────────────────
-// Dark electric — deep navy/teal, cyan XP bars, gate queue energy
-
 function SoloCaseStudy({ p }: { p: Project }) {
   const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
-  const accent = "#06b6d4"; // cyan
+  const accent = "#06b6d4";
   const border = "rgba(6,182,212,0.2)";
   const surface = "rgba(6,182,212,0.04)";
   const dim = "rgba(186,230,253,0.5)";
@@ -1042,7 +1104,6 @@ function SoloCaseStudy({ p }: { p: Project }) {
         </div>
       </nav>
 
-      {/* Hero */}
       <section className="relative z-10 pt-32 pb-16 px-8 max-w-[1200px] mx-auto">
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           <div style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: "9px", color: accent, letterSpacing: "0.2em", marginBottom: "16px" }}>{p.eyebrow}</div>
@@ -1053,7 +1114,6 @@ function SoloCaseStudy({ p }: { p: Project }) {
             <span style={{ WebkitTextStroke: `1px ${border}`, color: "transparent" }}>OS</span>
           </h1>
 
-          {/* XP bar as hero element */}
           <div className="flex items-center gap-4 mb-8 max-w-[560px]">
             <span style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: "10px", color: accent, whiteSpace: "nowrap" }}>LV.47</span>
             <div className="flex-1 h-2 relative" style={{ background: "rgba(6,182,212,0.1)", border: `1px solid ${border}` }}>
@@ -1066,7 +1126,6 @@ function SoloCaseStudy({ p }: { p: Project }) {
           <p style={{ fontFamily: "'Rajdhani',sans-serif", fontWeight: 400, fontSize: "17px", lineHeight: 1.7, color: dim, maxWidth: "520px" }}>{p.overview}</p>
         </motion.div>
 
-        {/* Meta HUD */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-10">
           {[{ label: "CLASS", value: "Designer & Engineer" }, { label: "PERIOD", value: p.timeline }, { label: "PARTY", value: p.team }, { label: "STATUS", value: p.status }].map((m, i) => (
             <div key={i} className="px-4 py-3" style={{ background: surface, border: `1px solid ${border}` }}>
@@ -1077,7 +1136,6 @@ function SoloCaseStudy({ p }: { p: Project }) {
         </div>
       </section>
 
-      {/* Problem / Solution */}
       <section className="relative z-10 px-8 max-w-[1200px] mx-auto mb-16">
         <div className="grid md:grid-cols-2 gap-4">
           {[
@@ -1094,21 +1152,12 @@ function SoloCaseStudy({ p }: { p: Project }) {
 
       <StructuredSections p={p} accent={accent} dark fontFamily="'Rajdhani',sans-serif" containerClass="relative z-10 px-8 max-w-[1200px] mx-auto" />
 
-      {/* Screenshots */}
       <div className="relative z-10 px-8 max-w-[1200px] mx-auto">
         <SoloScreenshots slots={soloScreenshots} accent={accent} dark onImageClick={(src, alt) => setLightbox({ src, alt })} />
-      </div>
-
-      {/* Live prototype */}
-      <div className="relative z-10 px-8 max-w-[1200px] mx-auto">
-      </div>
-
-      {/* Sections */}
-      <div className="relative z-10 px-8 max-w-[1200px] mx-auto">
+        {p.previewFile && <PrototypePreview file={p.previewFile} accent={accent} dark />}
         {p.sections.map((s, i) => <SectionRenderer key={i} section={s} accent={accent} dark theme="lume" />)}
       </div>
 
-      {/* Impact */}
       <section className="relative z-10 px-8 max-w-[1200px] mx-auto mt-8 mb-24">
         <div style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: "9px", color: accent, letterSpacing: "0.2em", marginBottom: "16px" }}>// OUTCOME</div>
         <div className="grid md:grid-cols-2 gap-3">
@@ -1129,17 +1178,35 @@ function SoloCaseStudy({ p }: { p: Project }) {
   );
 }
 
-// ─── Router ────────────────────────────────────────────────────────────────
+/* ════════════════════════════════════════════════════════════════════════
+   ROUTER — themeMap pattern
+   Add a new project? Register it here. The router throws to NotFound if a
+   slug arrives without a registered layout. No more cascading if-statements.
+   ════════════════════════════════════════════════════════════════════════ */
+
+const themeMap: Record<string, FC<{ p: Project }>> = {
+  "lume-sys":         LumeCaseStudy,
+  "vault-ds":         VaultCaseStudy,
+  "sync-collab":      SyncCaseStudy,
+  "pulse":            PulseCaseStudy,
+  "solo-leveling-os": SoloCaseStudy,
+};
 
 export default function CaseStudy() {
   const { slug } = useParams<{ slug: string }>();
   const project = projects.find((p) => p.slug === slug);
+
   useEffect(() => { window.scrollTo(0, 0); }, [slug]);
-  if (!project) return <NotFound />;
-  if (slug === "lume-sys")          return <LumeCaseStudy p={project} />;
-  if (slug === "vault-ds")          return <VaultCaseStudy p={project} />;
-  if (slug === "sync-collab")       return <SyncCaseStudy p={project} />;
-  if (slug === "pulse")             return <PulseCaseStudy p={project} />;
-  if (slug === "solo-leveling-os")  return <SoloCaseStudy p={project} />;
-  return <NotFound />;
+
+  if (!project || !slug) return <NotFound />;
+
+  const Layout = themeMap[slug];
+  if (!Layout) return <NotFound />;
+
+  return <Layout p={project} />;
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   END OF FILE — CaseStudy.tsx
+   If you see anything below this comment, delete it before saving.
+   ────────────────────────────────────────────────────────────────────────── */
