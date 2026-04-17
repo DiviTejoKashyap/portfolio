@@ -137,7 +137,7 @@ const AboutSection = () => {
   );
 };
 
-export default AboutSection;
+export default AboutSection; </motion.div>
 
 /* ──────────────────────────────────────────────────────────────
    END OF FILE — AboutSection.tsx
