@@ -112,22 +112,31 @@ const WorkSection = () => {
                 {/*
                   ──────────────────────────────────────────────────────
                   BEFORE / AFTER DIFF — revealed on group hover/focus.
-                  One animation, purposeful: max-height + opacity fade.
-                  Keyboard-focus triggers it too (group-focus-within) so
-                  it's not mouse-gated.
+                  Tightened to one line per row so the row stays scannable.
+                  Title attribute preserves full text on tooltip.
                   ──────────────────────────────────────────────────────
                 */}
                 <div
-                  className="max-w-[560px] mb-5 overflow-hidden transition-[max-height,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] max-h-0 opacity-0 group-hover:max-h-[200px] group-hover:opacity-100 group-focus-within:max-h-[200px] group-focus-within:opacity-100"
+                  className="max-w-[560px] mb-5 overflow-hidden transition-[max-height,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] max-h-0 opacity-0 group-hover:max-h-[120px] group-hover:opacity-100 group-focus-within:max-h-[120px] group-focus-within:opacity-100"
                 >
-                  <div className="border border-rule rounded-[4px] bg-surface/40 font-mono text-[12px] leading-[1.7]">
-                    <div className="flex gap-3 px-4 py-2 border-b border-rule">
+                  <div className="border border-rule rounded-[4px] bg-surface/40 font-mono text-[11px] leading-[1.5]">
+                    <div className="flex gap-3 px-3 py-1.5 border-b border-rule">
                       <span className="text-red-500/70 shrink-0" aria-hidden="true">−</span>
-                      <span className="text-ink-60">{project.beforeAfter.before}</span>
+                      <span
+                        className="text-ink-60 truncate"
+                        title={project.beforeAfter.before}
+                      >
+                        {project.beforeAfter.before}
+                      </span>
                     </div>
-                    <div className="flex gap-3 px-4 py-2">
+                    <div className="flex gap-3 px-3 py-1.5">
                       <span className="text-green-600/80 shrink-0" aria-hidden="true">+</span>
-                      <span className="text-ink">{project.beforeAfter.after}</span>
+                      <span
+                        className="text-ink truncate"
+                        title={project.beforeAfter.after}
+                      >
+                        {project.beforeAfter.after}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -151,7 +160,7 @@ const WorkSection = () => {
                     </span>
                   )}
                   <span className="ml-auto font-sans font-medium text-[13px] text-ink opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                    Reveal the thinking →
+                    Open case study →
                   </span>
                 </div>
               </motion.div>
