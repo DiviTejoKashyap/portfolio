@@ -82,8 +82,8 @@ export const projects: Project[] = [
     obsession:
       "The P99 latency chart recalculates every 30s, not every frame — cost-aware reactivity.",
     beforeAfter: {
-      before: "Charts re-rendered on every WebSocket tick. ~40% of browser CPU during incidents.",
-      after: "Throttled to 30s cadence with a manual 'refresh now' override. CPU: 4–6%.",
+      before: "Charts re-rendered on every WebSocket tick. ~40% browser CPU.",
+      after: "Throttled to 30s cadence with manual override. CPU: 4–6%.",
     },
     cursorDetail: "grid: 12col / gutter: 24px",
 
@@ -144,8 +144,8 @@ export const projects: Project[] = [
     obsession:
       "A Figma→CSS build script eliminates the translation step — what you see is literally what ships.",
     beforeAfter: {
-      before: "Designers exported hex values; engineers re-typed them as Tailwind tokens. 12hr lag per change.",
-      after: "Figma Variables → JSON → CSS custom properties. Design change to prod CSS: 90 seconds.",
+      before: "Designers exported hex; engineers re-typed as tokens. 12hr lag.",
+      after: "Figma Variables → JSON → CSS custom properties. 90s end-to-end.",
     },
     cursorDetail: "token: ink-60 / opacity: 0.6",
 
@@ -206,8 +206,8 @@ export const projects: Project[] = [
     obsession:
       "The ⌘K palette ranks results by recency + fuzzy score — not either one alone.",
     beforeAfter: {
-      before: "Fuzzy match only. Typing 'design' surfaced a 2-month-old board above today's active project.",
-      after: "Hybrid score: 0.6 × fuzzy + 0.4 × recency decay. Active work surfaces first, always.",
+      before: "Fuzzy match only. 'design' surfaced a 2-month-old board above today's.",
+      after: "Hybrid score: 0.6 × fuzzy + 0.4 × recency. Active work surfaces first.",
     },
     cursorDetail: "spacing: 8pt / leading: 1.6",
 
@@ -268,8 +268,8 @@ export const projects: Project[] = [
     obsession:
       "The bio-intelligence card is the only non-dismissible element — persists until acted on.",
     beforeAfter: {
-      before: "All dashboard cards swipe away. Users dismissed the recovery alert, then missed the decision window.",
-      after: "Alert card has no dismiss gesture. Only 'schedule block' or 'snooze 2hr' resolves it.",
+      before: "All cards swipe away. Users dismissed alerts, missed decision windows.",
+      after: "Alert card has no dismiss. Only 'schedule block' or 'snooze 2hr' resolves.",
     },
     cursorDetail: "3 screens / 0 nested nav",
 
@@ -331,8 +331,8 @@ export const projects: Project[] = [
     obsession:
       "The XP curve is exponential, not linear — 50 XP for a task, 8,000 XP for an S-rank Gate.",
     beforeAfter: {
-      before: "Linear XP: 100 per quest, 1,000 per gate. Ranks felt inflated; no meaningful scarcity.",
-      after: "Exponential thresholds: level 1→2 in a day, level 40→41 takes a month. Ranks earn themselves.",
+      before: "Linear XP: 100 per quest, 1K per gate. Ranks felt inflated.",
+      after: "Exponential: 1→2 in a day, 40→41 takes a month. Ranks earn themselves.",
     },
     cursorDetail: "rank: B / XP: 68,420",
 
