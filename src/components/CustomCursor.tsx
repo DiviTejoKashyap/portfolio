@@ -19,8 +19,8 @@ const CustomCursor = () => {
   const [detail, setDetail] = useState("");
   const [expanded, setExpanded] = useState(false);
 
-  const cursorX = useSpring(0, { stiffness: 200, damping: 24 });
-  const cursorY = useSpring(0, { stiffness: 200, damping: 24 });
+  const cursorX = useSpring(0, { stiffness: 380, damping: 28 });
+  const cursorY = useSpring(0, { stiffness: 380, damping: 28 });
 
   useEffect(() => {
     if (window.matchMedia("(pointer: coarse)").matches) return;
@@ -75,29 +75,29 @@ const CustomCursor = () => {
       }}
     >
       <motion.div
-        className="flex items-center"
+        className="flex items-center justify-center"
         animate={{
-          /* 6px dot collapsed. Pill sized to the detail string when expanded. */
-          height: expanded ? 26 : 6,
-          paddingLeft: expanded ? 10 : 0,
-          paddingRight: expanded ? 10 : 0,
-          borderRadius: expanded ? 4 : 999,
+          /* Collapsed: 6px dot. Expanded: pill that hugs the text content. */
+          height: expanded ? 22 : 6,
+          paddingLeft: expanded ? 8 : 0,
+          paddingRight: expanded ? 8 : 0,
+          borderRadius: expanded ? 3 : 999,
         }}
-        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
         style={{
           mixBlendMode: "difference",
           backgroundColor: "hsl(var(--ink))",
           minWidth: expanded ? "auto" : 6,
-          minHeight: expanded ? 26 : 6,
+          minHeight: expanded ? 22 : 6,
         }}
       >
         {expanded && detail && (
           <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.08, duration: 0.15 }}
+            transition={{ delay: 0.06, duration: 0.12 }}
             className="font-mono text-[10px] leading-none whitespace-nowrap"
-            style={{ color: "hsl(var(--bg))", letterSpacing: "0.04em" }}
+            style={{ color: "hsl(var(--bg))", letterSpacing: "0.02em" }}
           >
             {detail}
           </motion.span>
