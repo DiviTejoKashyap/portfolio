@@ -2,25 +2,19 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import Section from "./Section";
 import Eyebrow from "./Eyebrow";
+import Spec from "./Spec";
 import { projects } from "@/data/projects";
 
 /**
- * WorkSection — earned-minimalism revision.
+ * WorkSection — post-cursor revision.
  *
- * Three commitments per project row, in priority order:
+ * Previously: custom cursor x-ray + hover diff reveal.
+ * Now:        Spec footnotes below every project row.
  *
- * 1. VISIBLE: `obsession` — one scan-friendly detail proving the thinking.
- *    Recruiters see it without hovering. No discovery required.
- *
- * 2. REWARD: `beforeAfter` diff — revealed on hover. Shows the actual
- *    decision, not a marketing summary. Rewards exploration without
- *    hiding the core signal behind it.
- *
- * 3. X-RAY: `data-detail` — the cursor surfaces the row's spec value
- *    on hover (handled by CustomCursor).
- *
- * No skeuomorphic hover tricks. Animation budget spent on one move:
- * the diff reveal. Everything else earns its place.
+ * Every project exposes 3 values as footnotes — the cursorDetail,
+ * the obsession detail, and one derived from beforeAfter.after (the
+ * shipped state). Always visible. No hover required. Recruiter scans
+ * top-down and absorbs the system without having to hunt for it.
  */
 const WorkSection = () => {
   return (
@@ -51,150 +45,133 @@ const WorkSection = () => {
 
       {/* Project list */}
       <div>
-        {projects.map((project, idx) => (
-          <Link
-            to={`/work/${project.slug}`}
-            key={project.slug}
-            data-detail={project.cursorDetail}
-            className="group relative block border-t border-rule py-8 md:py-10 -mx-6 md:-mx-8 px-6 md:px-8 transition-colors duration-300 hover:bg-card-hover"
-          >
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start">
-              {/* Left column — 7/12 */}
-              <motion.div
-                initial={{ opacity: 0, x: -24 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.05 * idx, duration: 0.4 }}
-                className="md:col-span-7"
-              >
-                {/* Row meta: eyebrow + status */}
-                <div className="flex items-center gap-3 mb-4">
-                  <Eyebrow>{project.eyebrow}</Eyebrow>
-                  {project.status && (
-                    <>
-                      <span className="text-ink-30">·</span>
-                      <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-60">
-                        {project.status}
-                      </span>
-                    </>
-                  )}
-                </div>
+        {projects.map((project, idx) => {
+          /* Build the spec footnote row for this project. Three items:
+             one from cursorDetail (the system spec), one from obsession
+             (the behavioral decision), one from beforeAfter.after (the
+             shipped outcome, truncated to key clause). */
+          const shippedDetail = project.beforeAfter.after.split(".")[0] + ".";
 
-                <h3
-                  className="font-display text-ink leading-[1.08] mb-3 tracking-[-0.015em]"
-                  style={{ fontSize: "clamp(24px, 2.6vw, 36px)" }}
+          return (
+            <Link
+              to={`/work/${project.slug}`}
+              key={project.slug}
+              className="group relative block border-t border-rule py-8 md:py-10 -mx-6 md:-mx-8 px-6 md:px-8 transition-colors duration-300 hover:bg-card-hover"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start">
+                {/* Left column — 7/12 */}
+                <motion.div
+                  initial={{ opacity: 0, x: -24 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.05 * idx, duration: 0.4 }}
+                  className="md:col-span-7"
                 >
-                  {project.headline}
-                </h3>
-
-                {/* Body — the "what it is" line */}
-                <p className="font-sans font-light text-[15px] text-ink-60 leading-[1.6] max-w-[560px] mb-6">
-                  {project.body}
-                </p>
-
-                {/*
-                  ──────────────────────────────────────────────────────
-                  OBSESSION BLOCK — the scan-friendly proof of thinking.
-                  Always visible. The core move of this redesign.
-                  ──────────────────────────────────────────────────────
-                */}
-                <div className="max-w-[560px] mb-5">
-                  <div className="flex items-start gap-3 border-l border-accent-warm/40 pl-4">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-accent-warm shrink-0 mt-0.5">
-                      Obsession
-                    </span>
-                    <p className="font-sans text-[13px] leading-[1.55] text-ink-60">
-                      {project.obsession}
-                    </p>
+                  <div className="flex items-center gap-3 mb-4">
+                    <Eyebrow>{project.eyebrow}</Eyebrow>
+                    {project.status && (
+                      <>
+                        <span className="text-ink-30">·</span>
+                        <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-60">
+                          {project.status}
+                        </span>
+                      </>
+                    )}
                   </div>
-                </div>
 
-                {/*
-                  ──────────────────────────────────────────────────────
-                  BEFORE / AFTER DIFF — revealed on group hover/focus.
-                  Tightened to one line per row so the row stays scannable.
-                  Title attribute preserves full text on tooltip.
-                  ──────────────────────────────────────────────────────
-                */}
-                <div
-                  className="max-w-[560px] mb-5 overflow-hidden transition-[max-height,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] max-h-0 opacity-0 group-hover:max-h-[120px] group-hover:opacity-100 group-focus-within:max-h-[120px] group-focus-within:opacity-100"
-                >
-                  <div className="border border-rule rounded-[4px] bg-surface/40 font-mono text-[11px] leading-[1.5]">
-                    <div className="flex gap-3 px-3 py-1.5 border-b border-rule">
-                      <span className="text-red-500/70 shrink-0" aria-hidden="true">−</span>
-                      <span
-                        className="text-ink-60 truncate"
-                        title={project.beforeAfter.before}
-                      >
-                        {project.beforeAfter.before}
+                  <h3
+                    className="font-display text-ink leading-[1.08] mb-3 tracking-[-0.015em]"
+                    style={{ fontSize: "clamp(24px, 2.6vw, 36px)" }}
+                  >
+                    {project.headline}
+                  </h3>
+
+                  <p className="font-sans font-light text-[15px] text-ink-60 leading-[1.6] max-w-[560px] mb-6">
+                    {project.body}
+                  </p>
+
+                  {/* Obsession block — visible proof per row */}
+                  <div className="max-w-[560px] mb-5">
+                    <div className="flex items-start gap-3 border-l border-accent-warm/40 pl-4">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-accent-warm shrink-0 mt-0.5">
+                        Obsession
                       </span>
-                    </div>
-                    <div className="flex gap-3 px-3 py-1.5">
-                      <span className="text-green-600/80 shrink-0" aria-hidden="true">+</span>
-                      <span
-                        className="text-ink truncate"
-                        title={project.beforeAfter.after}
-                      >
-                        {project.beforeAfter.after}
-                      </span>
+                      <p className="font-sans text-[13px] leading-[1.55] text-ink-60">
+                        {project.obsession}
+                      </p>
                     </div>
                   </div>
-                </div>
 
-                {/* Meta row */}
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-mono text-[11px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
-                    {project.role}
-                  </span>
-                  <span className="font-mono text-[11px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
-                    {project.timeline}
-                  </span>
-                  {project.team && (
+                  {/* Meta row */}
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="font-mono text-[11px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
-                      {project.team}
+                      {project.role}
                     </span>
-                  )}
-                  {project.isLive && (
-                    <span className="font-mono text-[11px] text-green-500 border border-green-500/25 rounded-full px-3 py-1">
-                      Live ↗
+                    <span className="font-mono text-[11px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
+                      {project.timeline}
                     </span>
-                  )}
-                  <span className="ml-auto font-sans font-medium text-[13px] text-ink opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                    Open case study →
-                  </span>
-                </div>
-              </motion.div>
+                    {project.team && (
+                      <span className="font-mono text-[11px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
+                        {project.team}
+                      </span>
+                    )}
+                    {project.isLive && (
+                      <span className="font-mono text-[11px] text-accent-warm border border-accent-warm/30 rounded-full px-3 py-1">
+                        Live ↗
+                      </span>
+                    )}
+                    <span className="ml-auto font-sans font-medium text-[13px] text-ink opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                      Open case study →
+                    </span>
+                  </div>
+                </motion.div>
 
-              {/* Right column — 5/12 */}
-              <motion.div
-                initial={{ opacity: 0, x: 24 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.05 * idx + 0.05, duration: 0.4 }}
-                className="md:col-span-5"
-              >
-                <div
-                  className="rounded-[4px] overflow-hidden aspect-[16/10] transition-transform duration-500"
-                  style={{
-                    transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)",
-                    background: project.gradient,
-                  }}
+                {/* Right column — 5/12 */}
+                <motion.div
+                  initial={{ opacity: 0, x: 24 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.05 * idx + 0.05, duration: 0.4 }}
+                  className="md:col-span-5"
                 >
-                  <img
-                    src={project.banner}
-                    alt={project.title}
-                    className="w-full h-full object-cover object-center group-hover:scale-[1.015] transition-transform duration-500"
-                    style={{ transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)" }}
-                    loading={idx < 2 ? "eager" : "lazy"}
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).style.display = "none";
+                  <div
+                    className="rounded-[4px] overflow-hidden aspect-[16/10] transition-transform duration-500"
+                    style={{
+                      transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)",
+                      background: project.gradient,
                     }}
-                  />
-                </div>
-              </motion.div>
-            </div>
-          </Link>
-        ))}
+                  >
+                    <img
+                      src={project.banner}
+                      alt={project.title}
+                      className="w-full h-full object-cover object-center group-hover:scale-[1.015] transition-transform duration-500"
+                      style={{ transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)" }}
+                      loading={idx < 2 ? "eager" : "lazy"}
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).style.display = "none";
+                      }}
+                    />
+                  </div>
+                </motion.div>
+              </div>
+
+              {/*
+                ──────────────────────────────────────────────────────
+                SPEC FOOTNOTES — spans the full row width.
+                Three verifiable values per project. Always visible.
+                ──────────────────────────────────────────────────────
+              */}
+              <Spec
+                className="mt-6"
+                items={[
+                  { n: 1, text: project.cursorDetail },
+                  { n: 2, text: shippedDetail.toLowerCase() },
+                  { n: 3, text: `tags: ${project.tags.slice(0, 3).join(" / ").toLowerCase()}` },
+                ]}
+              />
+            </Link>
+          );
+        })}
 
         <div className="border-t border-rule" />
       </div>
@@ -203,7 +180,3 @@ const WorkSection = () => {
 };
 
 export default WorkSection;
-
-/* ──────────────────────────────────────────────────────────────
-   END OF FILE — WorkSection.tsx
-   ────────────────────────────────────────────────────────────── */
