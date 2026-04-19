@@ -4,19 +4,24 @@
 
 @layer base {
   :root {
-    --bg: 40 33% 97%;
-    --bg-alt: 36 22% 93%;
-    --surface: 0 0% 100%;
-    --ink: 0 4% 6%;
-    --ink-60: 0 4% 6% / 0.6;
-    --ink-30: 0 4% 6% / 0.3;
-    --ink-12: 0 4% 6% / 0.12;
-    --accent: 0 0% 10%;
-    --accent-warm: 20 68% 50%;
-    --rule: 0 4% 6% / 0.08;
-    --tag-bg: 0 4% 6% / 0.05;
-    --tag-border: 0 4% 6% / 0.10;
-    --card-hover: 0 4% 6% / 0.03;
+    /* ═══════════════════════════════════════════════════════════════
+       PALETTE — Ink on saturated cream.
+       Commitment: no pure white anywhere. Every surface has warmth.
+       The accent (rust) is punctuation, not decoration.
+       ═══════════════════════════════════════════════════════════════ */
+    --bg:       42 38% 88%;        /* #F2EAD3 — saturated cream */
+    --bg-alt:   40 30% 84%;        /*           deeper cream for sectioning */
+    --surface:  44 45% 94%;        /*           pale cream for cards */
+    --ink:      24 12% 9%;         /* #1A1817 — warm near-black */
+    --ink-60:   24 12% 9% / 0.6;
+    --ink-30:   24 12% 9% / 0.3;
+    --ink-12:   24 12% 9% / 0.12;
+    --accent:      24 12% 9%;
+    --accent-warm: 14 48% 42%;     /* #A04830 — muted rust, not orange */
+    --rule:        24 12% 9% / 0.12;
+    --tag-bg:      24 12% 9% / 0.05;
+    --tag-border:  24 12% 9% / 0.12;
+    --card-hover:  24 12% 9% / 0.03;
 
     --background: var(--bg);
     --foreground: var(--ink);
@@ -37,30 +42,29 @@
     --card-foreground: var(--ink);
     --popover: var(--surface);
     --popover-foreground: var(--ink);
-    --radius: 0.25rem; /* dropped from 0.5rem — editorial */
+    --radius: 0.25rem;
   }
 
   [data-theme="dark"] {
-    --bg: 20 12% 4%;
-    --bg-alt: 24 14% 8%;
-    --surface: 24 8% 10%;
-    --ink: 36 18% 93%;
-    --ink-60: 36 18% 93% / 0.6;
-    --ink-30: 36 18% 93% / 0.3;
-    --ink-12: 36 18% 93% / 0.12;
-    --accent: 36 18% 93%;
+    --bg:       20 12% 4%;
+    --bg-alt:   24 14% 8%;
+    --surface:  24 8% 10%;
+    --ink:      36 18% 93%;
+    --ink-60:   36 18% 93% / 0.6;
+    --ink-30:   36 18% 93% / 0.3;
+    --ink-12:   36 18% 93% / 0.12;
+    --accent:      36 18% 93%;
     --accent-warm: 20 72% 54%;
-    --rule: 36 18% 93% / 0.08;
-    --tag-bg: 36 18% 93% / 0.06;
-    --tag-border: 36 18% 93% / 0.12;
-    --card-hover: 36 18% 93% / 0.04;
+    --rule:        36 18% 93% / 0.08;
+    --tag-bg:      36 18% 93% / 0.06;
+    --tag-border:  36 18% 93% / 0.12;
+    --card-hover:  36 18% 93% / 0.04;
   }
 
   * { @apply border-border; }
 
   html {
     scroll-behavior: smooth;
-    /* Tighter body default — editorial */
     font-feature-settings: "ss01", "cv11";
   }
 
@@ -69,50 +73,25 @@
     background-color: hsl(var(--bg));
     color: hsl(var(--ink));
     transition: background-color 0.4s ease, color 0.4s ease;
-    font-size: 0.9375rem; /* 15px base */
+    font-size: 0.9375rem;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
-  /* Lock heading rhythm globally so components can't drift */
   h1, h2, h3, h4 { font-family: 'DM Sans', sans-serif; }
 }
 
 @layer components {
-  /* ──────────────────────────────────────────────────────────────
-     SECTION SYSTEM — use these on every <section> to enforce rhythm.
-     Replaces scattered py-20/py-24/py-32 across components.
-     ────────────────────────────────────────────────────────────── */
-  .section {
-    @apply py-16 md:py-24; /* 64 / 96 */
-  }
-  .section-sm {
-    @apply py-12 md:py-16; /* 48 / 64 */
-  }
-  .section-lg {
-    @apply py-20 md:py-32; /* 80 / 128 — hero only */
-  }
+  .section    { @apply py-16 md:py-24; }
+  .section-sm { @apply py-12 md:py-16; }
+  .section-lg { @apply py-20 md:py-32; }
 
-  /* Container wrapper. Apply inside section: <section class="section"><div class="container-tight">…</div></section> */
-  .container-tight {
-    @apply mx-auto w-full max-w-[1200px] px-6 md:px-8;
-  }
+  .container-tight { @apply mx-auto w-full max-w-[1200px] px-6 md:px-8; }
+  .container-prose { @apply mx-auto w-full max-w-[720px] px-6 md:px-8; }
 
-  /* Narrower for long-form case study body copy */
-  .container-prose {
-    @apply mx-auto w-full max-w-[720px] px-6 md:px-8;
-  }
-
-  /* Section label — monospace uppercase above headings (Stripe/Linear pattern) */
-  .eyebrow {
-    @apply font-mono text-label uppercase text-ink-60;
-  }
-
-  /* Hairline rule — use instead of empty spacing between related sections */
-  .rule {
-    @apply border-t border-rule;
-  }
+  .eyebrow { @apply font-mono text-label uppercase text-ink-60; }
+  .rule    { @apply border-t border-rule; }
 }
 
 @layer utilities {
@@ -123,22 +102,21 @@
 
   .font-mono-label { font-family: 'DM Mono', monospace; }
 
-  .text-ink { color: hsl(var(--ink)); }
-  .text-ink-60 { color: hsl(var(--ink-60)); }
-  .text-ink-30 { color: hsl(var(--ink-30)); }
+  .text-ink         { color: hsl(var(--ink)); }
+  .text-ink-60      { color: hsl(var(--ink-60)); }
+  .text-ink-30      { color: hsl(var(--ink-30)); }
   .text-accent-warm { color: hsl(var(--accent-warm)); }
-  .bg-page { background-color: hsl(var(--bg)); }
-  .bg-page-alt { background-color: hsl(var(--bg-alt)); }
-  .bg-surface { background-color: hsl(var(--surface)); }
-  .border-rule { border-color: hsl(var(--rule)); }
-  .bg-tag { background-color: hsl(var(--tag-bg)); }
-  .border-tag { border-color: hsl(var(--tag-border)); }
-  .bg-card-hover { background-color: hsl(var(--card-hover)); }
-  .bg-ink { background-color: hsl(var(--ink)); }
-  .text-bg { color: hsl(var(--bg)); }
+  .bg-page          { background-color: hsl(var(--bg)); }
+  .bg-page-alt      { background-color: hsl(var(--bg-alt)); }
+  .bg-surface       { background-color: hsl(var(--surface)); }
+  .border-rule      { border-color: hsl(var(--rule)); }
+  .bg-tag           { background-color: hsl(var(--tag-bg)); }
+  .border-tag       { border-color: hsl(var(--tag-border)); }
+  .bg-card-hover    { background-color: hsl(var(--card-hover)); }
+  .bg-ink           { background-color: hsl(var(--ink)); }
+  .text-bg          { color: hsl(var(--bg)); }
   .border-accent-warm { border-color: hsl(var(--accent-warm)); }
 
-  /* Subtle hover lift for interactive cards */
   .hover-lift {
     @apply transition-[transform,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)];
   }
@@ -147,7 +125,31 @@
   }
 }
 
-/* Marquee animation (unchanged — it works) */
+/* ═══════════════════════════════════════════════════════════════════
+   FOOTNOTE SPEC SYSTEM — replaces the custom cursor x-ray.
+   Design specs rendered inline as textbook-style footnotes.
+   ═══════════════════════════════════════════════════════════════════ */
+.spec-row {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: hsl(var(--ink-30));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.spec-row sup {
+  font-size: 10px;
+  font-variant-numeric: lining-nums;
+  color: hsl(var(--accent-warm));
+  padding-right: 3px;
+  vertical-align: baseline;
+  position: relative;
+  top: -0.35em;
+}
+
+/* Marquee animation (unchanged) */
 @keyframes marquee-left {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -156,24 +158,20 @@
   0% { transform: translateX(-50%); }
   100% { transform: translateX(0); }
 }
-.animate-marquee-left { animation: marquee-left 24s linear infinite; }
+.animate-marquee-left  { animation: marquee-left 24s linear infinite; }
 .animate-marquee-right { animation: marquee-right 20s linear infinite; }
 .group:hover .animate-marquee-left,
 .group:hover .animate-marquee-right { animation-play-state: paused; }
 
-/* Noise overlay (unchanged) */
+/* Noise — reduced on cream, grain reads differently against warmth */
 .noise-overlay {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.025;
+  opacity: 0.015;
 }
 [data-theme="dark"] .noise-overlay { opacity: 0.04; }
-
-@media (pointer: coarse) {
-  .custom-cursor { display: none !important; }
-}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
