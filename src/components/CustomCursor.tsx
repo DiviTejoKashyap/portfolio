@@ -1,16 +1,28 @@
 import { useEffect, useState } from "react";
 import { motion, useSpring } from "framer-motion";
 
+/**
+ * Cursor-as-design-lens.
+ *
+ * Reads the closest ancestor with a `data-detail` attribute and surfaces
+ * the actual design specification on hover — grid columns, baseline rhythm,
+ * type ramp, token names, spacing scale — instead of generic verbs.
+ *
+ * The proof is the pudding: the cursor only works because the site actually
+ * IS on an 8pt baseline with a 12-col grid. It's pointing at the system,
+ * not inventing it.
+ *
+ * Backward compatible: `data-cursor` still works for elements not yet migrated.
+ */
 const CustomCursor = () => {
   const [visible, setVisible] = useState(false);
-  const [label, setLabel] = useState("");
+  const [detail, setDetail] = useState("");
   const [expanded, setExpanded] = useState(false);
 
-  const cursorX = useSpring(0, { stiffness: 150, damping: 20 });
-  const cursorY = useSpring(0, { stiffness: 150, damping: 20 });
+  const cursorX = useSpring(0, { stiffness: 200, damping: 24 });
+  const cursorY = useSpring(0, { stiffness: 200, damping: 24 });
 
   useEffect(() => {
-    // Don't show on touch devices
     if (window.matchMedia("(pointer: coarse)").matches) return;
 
     const move = (e: MouseEvent) => {
@@ -20,18 +32,20 @@ const CustomCursor = () => {
     };
 
     const handleOver = (e: MouseEvent) => {
-      const target = (e.target as HTMLElement).closest("[data-cursor]");
+      const target = (e.target as HTMLElement).closest("[data-detail], [data-cursor]");
       if (target) {
+        const t = target as HTMLElement;
+        const value = t.dataset.detail ?? t.dataset.cursor ?? "";
+        setDetail(value);
         setExpanded(true);
-        setLabel((target as HTMLElement).dataset.cursor || "");
       }
     };
 
     const handleOut = (e: MouseEvent) => {
-      const target = (e.target as HTMLElement).closest("[data-cursor]");
+      const target = (e.target as HTMLElement).closest("[data-detail], [data-cursor]");
       if (target) {
         setExpanded(false);
-        setLabel("");
+        setDetail("");
       }
     };
 
@@ -61,24 +75,32 @@ const CustomCursor = () => {
       }}
     >
       <motion.div
-        className="rounded-full flex items-center justify-center"
+        className="flex items-center"
         animate={{
-          width: expanded ? 40 : 8,
-          height: expanded ? 40 : 8,
-          backgroundColor: expanded ? "transparent" : "hsl(var(--ink))",
-          borderWidth: expanded ? 1.5 : 0,
-          borderColor: "hsl(var(--ink))",
+          /* 6px dot collapsed. Pill sized to the detail string when expanded. */
+          height: expanded ? 26 : 6,
+          paddingLeft: expanded ? 10 : 0,
+          paddingRight: expanded ? 10 : 0,
+          borderRadius: expanded ? 4 : 999,
         }}
-        transition={{ duration: 0.25 }}
+        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
         style={{
-          mixBlendMode: "exclusion",
-          borderStyle: "solid",
+          mixBlendMode: "difference",
+          backgroundColor: "hsl(var(--ink))",
+          minWidth: expanded ? "auto" : 6,
+          minHeight: expanded ? 26 : 6,
         }}
       >
-        {expanded && label && (
-          <span className="font-mono text-[9px] uppercase tracking-widest text-ink whitespace-nowrap">
-            {label}
-          </span>
+        {expanded && detail && (
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.08, duration: 0.15 }}
+            className="font-mono text-[10px] leading-none whitespace-nowrap"
+            style={{ color: "hsl(var(--bg))", letterSpacing: "0.04em" }}
+          >
+            {detail}
+          </motion.span>
         )}
       </motion.div>
     </motion.div>
