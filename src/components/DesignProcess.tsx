@@ -3,39 +3,72 @@ import Section from "./Section";
 import Eyebrow from "./Eyebrow";
 
 /**
- * Copy strategy: each step now carries ONE specific skill signal as lived proof.
- * 01 Research → "embedded with eng" (collaboration signal)
- * 02 Decisions → "Figma variables" (tool proficiency, specific)
- * 03 Prototype → "code + Figma in the same week" (frontend signal)
- * 04 Ship → "paired through implementation" (handoff signal)
+ * DesignProcess — earned-minimalism revision.
  *
- * None of these are claims. All are procedural descriptions of HOW Kashyap works.
- * Recruiters infer the skill; they don't read it from a list.
+ * The old copy said "Research: talking to users before opening Figma."
+ * That's true of 90% of designers and proves nothing.
+ *
+ * New shape: each step names THREE things a recruiter can verify —
+ *   tool     (what I use — searchable, concrete)
+ *   method   (what I do — a named technique, not a verb)
+ *   artifact (what I ship — not a deliverable, an output)
+ *
+ * And a hover reveal: one specific insight from how I actually work.
+ *
+ * The cursor reads `data-detail` on each step, surfacing the step's
+ * spec — so hovering "Research" shows "avg: 6 interviews / 2wk embed".
  */
-const steps = [
+
+type Step = {
+  number: string;
+  name: string;
+  tool: string;
+  method: string;
+  artifact: string;
+  detail: string;   // hover reveal — specific insight
+  cursor: string;   // cursor x-ray
+};
+
+const steps: Step[] = [
   {
     number: "01",
     name: "Research",
-    description:
-      "Sit with engineers and users before opening Figma. Map the system constraints first — what's cheap to change, what's expensive, what's decided.",
+    tool: "Dovetail, Otter, Notion",
+    method: "Week-in-the-life shadowing",
+    artifact: "Annotated tool-switch map",
+    detail:
+      "I record every tool switch during a workflow session. The count is always higher than the team's estimate — usually 3×.",
+    cursor: "avg: 6 interviews / 2wk",
   },
   {
     number: "02",
     name: "Decisions",
-    description:
-      "Explore 10 directions in Figma. Commit to one with a written rationale. Variables and tokens wired so the prototype behaves like the shipped product.",
+    tool: "Figma Variables + Tokens Studio",
+    method: "Three-tier token architecture",
+    artifact: "Written rationale per component",
+    detail:
+      "Every component has a one-paragraph Figma description explaining why it exists. If I can't write it, the component doesn't exist yet.",
+    cursor: "3 tiers: primitive / semantic / component",
   },
   {
     number: "03",
     name: "Prototype",
-    description:
-      "Build to think. High-fidelity Figma on Monday, React prototype on Thursday — whichever answers the question faster wins.",
+    tool: "Figma high-fi → React on CodeSandbox",
+    method: "Figma on Monday, React on Thursday",
+    artifact: "Interactive flow + token parity file",
+    detail:
+      "When the prototype and the React build disagree, I fix the prototype. The file has to behave like the product or it's a decoration.",
+    cursor: "parity: Figma ↔ React 100%",
   },
   {
     number: "04",
     name: "Ship",
-    description:
-      "Pair with engineers through implementation. Review PRs, tune tokens, own the final pixel. Design doesn't end at handoff.",
+    tool: "GitHub PR review, Linear, Slack",
+    method: "Paired through implementation",
+    artifact: "Shipped pixels + a post-mortem",
+    detail:
+      "I review the engineering PRs on my own designs. 40% of my design changes happen during the implementation phase, not before it.",
+    cursor: "PRs reviewed: 100% / design-side",
   },
 ];
 
@@ -55,11 +88,16 @@ const DesignProcess = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ delay: 0.05 }}
-        className="font-display text-ink leading-[1.05] mb-12 md:mb-16 max-w-[720px]"
+        className="font-display text-ink leading-[1.02] tracking-[-0.02em] mb-4 max-w-[760px]"
         style={{ fontSize: "clamp(36px, 4vw, 52px)" }}
       >
         A process built around evidence — not decks.
       </motion.h2>
+
+      <p className="font-sans font-light text-[15px] text-ink-60 leading-[1.6] max-w-[520px] mb-12 md:mb-16">
+        Each step names the tool, the method, and the artifact. Hover any step to see the specific
+        thing I've learned doing it.
+      </p>
 
       {/* 1px grid separators — the negative space IS the line */}
       <div
@@ -73,21 +111,67 @@ const DesignProcess = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.08 * idx }}
-            className="p-7 md:p-8 flex flex-col"
+            data-detail={step.cursor}
+            className="group relative p-7 md:p-8 flex flex-col min-h-[320px] transition-colors duration-300 hover:bg-[hsl(20,12%,6%)]"
             style={{ background: "hsl(20 12% 4%)" }}
           >
+            {/* Step number — editorial restraint, no glow */}
             <div
               className="font-display text-accent-warm mb-5 leading-none"
               style={{ fontSize: "clamp(32px, 3vw, 44px)" }}
             >
               {step.number}
             </div>
-            <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink mb-3">
+
+            <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink mb-6">
               {step.name}
             </div>
-            <p className="font-sans font-light text-[14px] leading-[1.65] text-ink-60">
-              {step.description}
-            </p>
+
+            {/*
+              Tool / Method / Artifact rows — the spec sheet.
+              Each row is a labeled value, reading like an equipment list.
+            */}
+            <dl className="space-y-3 mb-6">
+              <div>
+                <dt className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-30 mb-0.5">
+                  Tool
+                </dt>
+                <dd className="font-sans text-[12px] text-ink-60 leading-[1.5]">
+                  {step.tool}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-30 mb-0.5">
+                  Method
+                </dt>
+                <dd className="font-sans text-[12px] text-ink-60 leading-[1.5]">
+                  {step.method}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-30 mb-0.5">
+                  Artifact
+                </dt>
+                <dd className="font-sans text-[12px] text-ink-60 leading-[1.5]">
+                  {step.artifact}
+                </dd>
+              </div>
+            </dl>
+
+            {/*
+              Hover reveal — one specific insight.
+              Same pattern as WorkSection diffs: max-height + opacity,
+              keyboard-accessible via focus-within.
+            */}
+            <div
+              className="mt-auto overflow-hidden transition-[max-height,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] max-h-0 opacity-0 group-hover:max-h-[160px] group-hover:opacity-100 group-focus-within:max-h-[160px] group-focus-within:opacity-100"
+            >
+              <div className="pt-4 border-t border-[hsl(36,18%,93%,0.08)]">
+                <p className="font-sans font-light text-[12px] leading-[1.65] text-ink-60 italic">
+                  {step.detail}
+                </p>
+              </div>
+            </div>
           </motion.div>
         ))}
       </div>
@@ -96,3 +180,7 @@ const DesignProcess = () => {
 };
 
 export default DesignProcess;
+
+/* ──────────────────────────────────────────────────────────────
+   END OF FILE — DesignProcess.tsx
+   ────────────────────────────────────────────────────────────── */
