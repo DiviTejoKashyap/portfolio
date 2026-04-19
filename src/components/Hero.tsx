@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import Section from "./Section";
 import Eyebrow from "./Eyebrow";
+import Spec from "./Spec";
 
 const headlineLines = [
   "Designing systems",
@@ -9,21 +10,26 @@ const headlineLines = [
   "that feel.",
 ];
 
-/**
- * Proof-by-affiliation row. Replaces the CountUp stats.
- * Recruiters read this in <1s. Swap logos for <img> when you have optimized SVGs.
- * For now using wordmarks in font-display to keep the editorial tone consistent.
- */
 const affiliations = [
-  { name: "Deloitte", context: "Analyst · 2023" },
-  { name: "Amazon",   context: "DART · 2022" },
-  { name: "NYU Tandon", context: "M.S. CS · '24–'26" },
+  { name: "Deloitte",    context: "Analyst · 2023" },
+  { name: "Amazon",      context: "DART · 2022" },
+  { name: "NYU Tandon",  context: "M.S. CS · '24–'26" },
+];
+
+/**
+ * Hero footnotes — real values from the hero's own typography and layout.
+ * Recruiters who notice them are reading the system; recruiters who don't
+ * still get the headline. The signal is additive, not gated.
+ */
+const heroSpecs = [
+  { n: 1, text: "headline: Instrument Serif italic, clamp(56→112)" },
+  { n: 2, text: "grid: 12col / gutter: 32px" },
+  { n: 3, text: "accent reserved for: shipped outcomes only" },
 ];
 
 const Hero = () => {
   return (
     <Section size="lg" divider={false} className="pt-28 md:pt-32">
-      {/* Eyebrow row */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -95,13 +101,6 @@ const Hero = () => {
         transition={{ delay: 0.6, duration: 0.4 }}
         className="flex flex-col md:flex-row justify-between gap-8"
       >
-        {/*
-          Intro copy — threads THREE required skill signals naturally:
-          • "embedded with engineers" (embedded designer)
-          • "ship code alongside Figma files" (frontend + handoff)
-          • "full process" (research → ship)
-          No bullet list. Just prose a recruiter reads in 6 seconds.
-        */}
         <p className="font-sans font-light text-[17px] text-ink-60 leading-[1.7] max-w-[460px]">
           I'm Tejo — a product designer embedded with engineering teams. I run
           research, own the UI, and ship code alongside the Figma file. M.S. CS at
@@ -111,7 +110,6 @@ const Hero = () => {
           <a
             href="#work"
             className="font-sans font-semibold text-[14px] text-ink border-b-[1.5px] border-ink hover:text-accent-warm hover:border-accent-warm transition-colors w-fit"
-            data-cursor="VIEW"
           >
             See the work ↓
           </a>
@@ -120,18 +118,13 @@ const Hero = () => {
             target="_blank"
             rel="noopener noreferrer"
             className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-30 hover:text-ink transition-colors w-fit"
-            data-cursor="OPEN"
           >
             Download CV →
           </a>
         </div>
       </motion.div>
 
-      {/*
-        Affiliation row — replaces the CountUp stats.
-        Proof by association. Recruiter sees three trusted names in 1 second.
-        Horizontal rule above establishes it as a distinct zone, not hero noise.
-      */}
+      {/* Affiliation row */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -155,6 +148,14 @@ const Hero = () => {
           ))}
         </div>
       </motion.div>
+
+      {/*
+        ──────────────────────────────────────────────────────────
+        HERO SPEC FOOTNOTES — replaces the custom cursor x-ray.
+        Three verifiable specs from this very section.
+        ──────────────────────────────────────────────────────────
+      */}
+      <Spec items={heroSpecs} className="mt-8" />
     </Section>
   );
 };
