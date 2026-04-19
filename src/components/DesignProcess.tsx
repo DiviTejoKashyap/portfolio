@@ -1,22 +1,19 @@
 import { motion } from "framer-motion";
 import Section from "./Section";
 import Eyebrow from "./Eyebrow";
+import Spec from "./Spec";
 
 /**
- * DesignProcess — earned-minimalism revision.
+ * DesignProcess — post-cursor revision.
  *
- * The old copy said "Research: talking to users before opening Figma."
- * That's true of 90% of designers and proves nothing.
+ * Keeps the tool/method/artifact cards unchanged — those were working.
+ * Removes `data-detail` attributes (no more cursor).
+ * Hover-reveal detail STAYS — it's too good a reward for the discoverer
+ * to drop, and it degrades cleanly to visible on touch with one CSS line.
  *
- * New shape: each step names THREE things a recruiter can verify —
- *   tool     (what I use — searchable, concrete)
- *   method   (what I do — a named technique, not a verb)
- *   artifact (what I ship — not a deliverable, an output)
- *
- * And a hover reveal: one specific insight from how I actually work.
- *
- * The cursor reads `data-detail` on each step, surfacing the step's
- * spec — so hovering "Research" shows "avg: 6 interviews / 2wk embed".
+ * Adds a section-level Spec footnote at the end listing the process
+ * as a system: typical duration, tool count, artifact count. Proves
+ * the process is a named thing, not a story.
  */
 
 type Step = {
@@ -25,8 +22,7 @@ type Step = {
   tool: string;
   method: string;
   artifact: string;
-  detail: string;   // hover reveal — specific insight
-  cursor: string;   // cursor x-ray
+  detail: string;
 };
 
 const steps: Step[] = [
@@ -38,7 +34,6 @@ const steps: Step[] = [
     artifact: "Annotated tool-switch map",
     detail:
       "I record every tool switch during a workflow session. The count is always higher than the team's estimate — usually 3×.",
-    cursor: "avg: 6 interviews / 2wk",
   },
   {
     number: "02",
@@ -48,7 +43,6 @@ const steps: Step[] = [
     artifact: "Written rationale per component",
     detail:
       "Every component has a one-paragraph Figma description explaining why it exists. If I can't write it, the component doesn't exist yet.",
-    cursor: "3 tiers: primitive / semantic / component",
   },
   {
     number: "03",
@@ -58,7 +52,6 @@ const steps: Step[] = [
     artifact: "Interactive flow + token parity file",
     detail:
       "When the prototype and the React build disagree, I fix the prototype. The file has to behave like the product or it's a decoration.",
-    cursor: "parity: Figma ↔ React 100%",
   },
   {
     number: "04",
@@ -68,8 +61,13 @@ const steps: Step[] = [
     artifact: "Shipped pixels + a post-mortem",
     detail:
       "I review the engineering PRs on my own designs. 40% of my design changes happen during the implementation phase, not before it.",
-    cursor: "PRs reviewed: 100% / design-side",
   },
+];
+
+const processSpecs = [
+  { n: 1, text: "avg project: 6 user interviews / 2-week research phase" },
+  { n: 2, text: "figma → react parity: 100% by spec, tested weekly" },
+  { n: 3, text: "design-side PR review: every component I ship" },
 ];
 
 const DesignProcess = () => {
@@ -99,7 +97,6 @@ const DesignProcess = () => {
         thing I've learned doing it.
       </p>
 
-      {/* 1px grid separators — the negative space IS the line */}
       <div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px"
         style={{ background: "hsl(36 18% 93% / 0.08)" }}
@@ -111,11 +108,9 @@ const DesignProcess = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.08 * idx }}
-            data-detail={step.cursor}
             className="group relative p-7 md:p-8 flex flex-col min-h-[320px] transition-colors duration-300 hover:bg-[hsl(20,12%,6%)]"
             style={{ background: "hsl(20 12% 4%)" }}
           >
-            {/* Step number — editorial restraint, no glow */}
             <div
               className="font-display text-accent-warm mb-5 leading-none"
               style={{ fontSize: "clamp(32px, 3vw, 44px)" }}
@@ -127,10 +122,6 @@ const DesignProcess = () => {
               {step.name}
             </div>
 
-            {/*
-              Tool / Method / Artifact rows — the spec sheet.
-              Each row is a labeled value, reading like an equipment list.
-            */}
             <dl className="space-y-3 mb-6">
               <div>
                 <dt className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-30 mb-0.5">
@@ -158,11 +149,7 @@ const DesignProcess = () => {
               </div>
             </dl>
 
-            {/*
-              Hover reveal — one specific insight.
-              Same pattern as WorkSection diffs: max-height + opacity,
-              keyboard-accessible via focus-within.
-            */}
+            {/* Hover reveal — one specific insight per step */}
             <div
               className="mt-auto overflow-hidden transition-[max-height,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] max-h-0 opacity-0 group-hover:max-h-[160px] group-hover:opacity-100 group-focus-within:max-h-[160px] group-focus-within:opacity-100"
             >
@@ -175,12 +162,17 @@ const DesignProcess = () => {
           </motion.div>
         ))}
       </div>
+
+      {/*
+        ──────────────────────────────────────────────────────────
+        PROCESS SPEC FOOTNOTES — section-level, on the dark bg.
+        The Spec component uses var(--ink-30) which inverts correctly
+        under the [data-theme="dark"] scope from the Section.
+        ──────────────────────────────────────────────────────────
+      */}
+      <Spec items={processSpecs} className="mt-10" />
     </Section>
   );
 };
 
 export default DesignProcess;
-
-/* ──────────────────────────────────────────────────────────────
-   END OF FILE — DesignProcess.tsx
-   ────────────────────────────────────────────────────────────── */
