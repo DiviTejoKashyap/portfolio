@@ -1,12 +1,19 @@
 import { motion } from "framer-motion";
 import Section from "./Section";
 import Eyebrow from "./Eyebrow";
+import Spec from "./Spec";
 
 const experience = [
   { company: "Deloitte",      role: "Analyst — Frontend & UI",  year: "2023" },
   { company: "Amazon",        role: "DART Specialist",          year: "2022" },
-  { company: "NYU Tandon",    role: "M.S. Computer Science",    year: "2024 — 2026" },
-  { company: "SRM Institute", role: "B.Tech EEE",               year: "2022" },
+  { company: "NYU Tandon School of Engineering",    role: "M.S. Computer Science",    year: "2024 — 2026" },
+  { company: "SRM Institute of Science and Technology", role: "B.Tech EEE",               year: "2018-2022" },
+];
+
+const aboutSpecs = [
+  { n: 1, text: "years shipping: 3 · currently 2 projects in parallel" },
+  { n: 2, text: "research interviews run: 40+ across 6 projects" },
+  { n: 3, text: "engineering PRs reviewed: every component I've shipped" },
 ];
 
 const AboutSection = () => {
@@ -114,6 +121,14 @@ const AboutSection = () => {
           </div>
         </motion.div>
       </div>
+
+      {/*
+        ──────────────────────────────────────────────────────────
+        ABOUT SPEC FOOTNOTES — verifiable working rhythm.
+        Three numbers. Each one checkable against the work above.
+        ──────────────────────────────────────────────────────────
+      */}
+      <Spec items={aboutSpecs} className="mt-12 md:mt-16 border-t border-rule pt-6" />
     </Section>
   );
 };
