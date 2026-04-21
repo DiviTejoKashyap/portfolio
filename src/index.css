@@ -5,27 +5,23 @@
 @layer base {
   :root {
     /* ═══════════════════════════════════════════════════════════════
-       PALETTE — warm magazine editorial.
-       Beige/cream background, dark brown ink, cobalt + burgundy.
-       No pure white, no pure black.
+       PALETTE — Ink on saturated cream (LIGHT).
+       No pure white anywhere. Every surface has warmth.
+       Accent rust is punctuation, not decoration.
        ═══════════════════════════════════════════════════════════════ */
-    --bg:       32 28% 93%;   /* #F5F1ED — warm cream */
-    --bg-alt:   30 24% 88%;   /*           slightly deeper cream for surfaces */
-    --surface:  32 28% 93%;
-    --ink:      22 22% 12%;   /* #2D1F17 — dark brown, warmer than black */
-    --ink-60:   22 22% 12% / 0.62;
-    --ink-30:   22 22% 12% / 0.38;
-    --ink-12:   22 22% 12% / 0.14;
-
-    --cobalt:   214 72% 52%;  /* #4A90E2-ish — interactive accent */
-    --burgundy: 8 42% 28%;    /* #5C2E2A-ish — decorative accent */
-
-    --accent:      22 22% 12%;
-    --accent-warm: 214 72% 52%;    /* cobalt as primary accent */
-    --rule:        22 22% 12% / 0.14;
-    --tag-bg:      22 22% 12% / 0.05;
-    --tag-border:  22 22% 12% / 0.18;
-    --card-hover:  22 22% 12% / 0.03;
+    --bg:       42 38% 88%;        /* cream */
+    --bg-alt:   40 30% 84%;        /* deeper cream */
+    --surface:  44 45% 94%;        /* pale cream for cards */
+    --ink:      24 12% 9%;         /* warm near-black */
+    --ink-60:   24 12% 9% / 0.6;
+    --ink-30:   24 12% 9% / 0.3;
+    --ink-12:   24 12% 9% / 0.12;
+    --accent:      24 12% 9%;
+    --accent-warm: 14 48% 42%;     /* muted rust */
+    --rule:        24 12% 9% / 0.12;
+    --tag-bg:      24 12% 9% / 0.05;
+    --tag-border:  24 12% 9% / 0.12;
+    --card-hover:  24 12% 9% / 0.03;
 
     --background: var(--bg);
     --foreground: var(--ink);
@@ -46,219 +42,133 @@
     --card-foreground: var(--ink);
     --popover: var(--surface);
     --popover-foreground: var(--ink);
-    --radius: 0.375rem;
+    --radius: 0.25rem;
   }
 
+  /* ═══════════════════════════════════════════════════════════════════
+     DARK — warm paper to warm ink. Keeps the editorial voice.
+     Not a high-contrast "black theme" — more like reading at night.
+     ═══════════════════════════════════════════════════════════════════ */
   [data-theme="dark"] {
-    /* The brief says "warm, inviting — no dark theme."
-       Keeping a dark variant as a fallback for the data-theme="dark"
-       sections in case study pages that expect one. Muted, not high-contrast. */
-    --bg:       22 22% 10%;
-    --bg-alt:   22 18% 14%;
-    --surface:  22 18% 14%;
-    --ink:      32 28% 93%;
-    --ink-60:   32 28% 93% / 0.62;
-    --ink-30:   32 28% 93% / 0.38;
-    --ink-12:   32 28% 93% / 0.14;
-    --cobalt:   214 72% 58%;
-    --burgundy: 8 42% 38%;
-    --accent-warm: 214 72% 58%;
-    --rule:        32 28% 93% / 0.1;
-    --tag-bg:      32 28% 93% / 0.06;
-    --tag-border:  32 28% 93% / 0.14;
-    --card-hover:  32 28% 93% / 0.04;
+    --bg:       24 14% 8%;         /* warm near-black, not #000 */
+    --bg-alt:   22 12% 12%;
+    --surface:  22 10% 14%;
+    --ink:      42 22% 88%;        /* soft cream foreground */
+    --ink-60:   42 22% 88% / 0.6;
+    --ink-30:   42 22% 88% / 0.3;
+    --ink-12:   42 22% 88% / 0.12;
+    --accent:      42 22% 88%;
+    --accent-warm: 14 58% 58%;     /* rust brightens slightly on dark */
+    --rule:        42 22% 88% / 0.1;
+    --tag-bg:      42 22% 88% / 0.05;
+    --tag-border:  42 22% 88% / 0.14;
+    --card-hover:  42 22% 88% / 0.04;
   }
 
   * { @apply border-border; }
 
-  html { scroll-behavior: smooth; }
+  html {
+    scroll-behavior: smooth;
+    font-feature-settings: "ss01", "cv11";
+  }
 
   body {
     font-family: "Inter", system-ui, sans-serif;
     background-color: hsl(var(--bg));
     color: hsl(var(--ink));
     transition: background-color 0.4s ease, color 0.4s ease;
-    font-size: 1rem;
+    font-size: 0.9375rem;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
-  /* Display = Playfair Display (NOT italic by default per brief; italics used intentionally) */
+  /* Fraunces replaces Instrument Serif on display text. NOT italic by default. */
   h1, h2, h3, h4 {
-    font-family: "Playfair Display", Georgia, serif;
+    font-family: "Fraunces", Georgia, serif;
     font-style: normal;
+    font-variation-settings: "opsz" 48, "SOFT" 50;
   }
-
-  /* All links: default dark brown, cobalt on hover per brief */
-  a {
-    color: inherit;
-    text-decoration: none;
-    transition: color 200ms ease;
-  }
-  a:hover { color: hsl(var(--cobalt)); }
 }
 
 @layer components {
-  .section    { @apply py-20 md:py-28; }
+  .section    { @apply py-16 md:py-24; }
   .section-sm { @apply py-12 md:py-16; }
+  .section-lg { @apply py-20 md:py-32; }
 
-  .container-wide  { @apply mx-auto w-full max-w-[1440px] px-6 md:px-10 lg:px-12; }
-  .container-tight { @apply mx-auto w-full max-w-[1200px] px-6 md:px-10; }
+  .container-tight { @apply mx-auto w-full max-w-[1200px] px-6 md:px-8; }
+  .container-prose { @apply mx-auto w-full max-w-[720px] px-6 md:px-8; }
 
   .eyebrow {
-    font-family: "Inter", sans-serif;
-    font-size: 13px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
     font-weight: 500;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
     color: hsl(var(--ink-60));
     display: block;
   }
-
-  /* Decorative italic — "designer", "about me", "project 1", etc. */
-  .italic-flourish {
-    font-family: "Playfair Display", Georgia, serif;
-    font-style: italic;
-    font-weight: 500;
-    color: hsl(var(--ink));
-  }
-
-  /* Filename-below-decorative-element label from reference */
-  .filename-label {
-    font-family: "Inter", sans-serif;
-    font-size: 12px;
-    font-weight: 400;
-    color: hsl(var(--ink-60));
-    letter-spacing: 0.01em;
-  }
+  .rule { @apply border-t border-rule; }
 }
 
 @layer utilities {
   .font-display {
-    font-family: "Playfair Display", Georgia, serif;
+    font-family: "Fraunces", Georgia, serif;
     font-style: normal;
   }
   .font-display-italic {
-    font-family: "Playfair Display", Georgia, serif;
+    font-family: "Fraunces", Georgia, serif;
     font-style: italic;
   }
+  .font-mono-label { font-family: "IBM Plex Mono", monospace; }
 
   .text-ink         { color: hsl(var(--ink)); }
   .text-ink-60      { color: hsl(var(--ink-60)); }
   .text-ink-30      { color: hsl(var(--ink-30)); }
-  .text-cobalt      { color: hsl(var(--cobalt)); }
-  .text-burgundy    { color: hsl(var(--burgundy)); }
+  .text-accent-warm { color: hsl(var(--accent-warm)); }
   .bg-page          { background-color: hsl(var(--bg)); }
   .bg-page-alt      { background-color: hsl(var(--bg-alt)); }
   .bg-surface       { background-color: hsl(var(--surface)); }
-  .bg-cobalt        { background-color: hsl(var(--cobalt)); }
-  .bg-burgundy      { background-color: hsl(var(--burgundy)); }
   .border-rule      { border-color: hsl(var(--rule)); }
-  .border-cobalt    { border-color: hsl(var(--cobalt)); }
-  .border-burgundy  { border-color: hsl(var(--burgundy)); }
   .bg-tag           { background-color: hsl(var(--tag-bg)); }
   .border-tag       { border-color: hsl(var(--tag-border)); }
   .bg-card-hover    { background-color: hsl(var(--card-hover)); }
   .bg-ink           { background-color: hsl(var(--ink)); }
   .text-bg          { color: hsl(var(--bg)); }
-}
+  .border-accent-warm { border-color: hsl(var(--accent-warm)); }
 
-/* ═══════════════════════════════════════════════════════════════════
-   FOLDER ICON — reusable decorative element per reference.
-   Pure CSS with SVG fallback; cobalt fill, subtle rounded tab.
-   ═══════════════════════════════════════════════════════════════════ */
-.folder-icon {
-  display: inline-block;
-  width: 56px;
-  height: 44px;
-  position: relative;
-  flex-shrink: 0;
-}
-
-.folder-icon::before {
-  /* tab */
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 40%;
-  height: 10px;
-  background: hsl(var(--cobalt));
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
-}
-.folder-icon::after {
-  /* body */
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 7px;
-  right: 0;
-  bottom: 0;
-  background: hsl(var(--cobalt));
-  border-radius: 3px 6px 4px 4px;
-}
-
-.folder-icon.is-burgundy::before,
-.folder-icon.is-burgundy::after {
-  background: hsl(var(--burgundy));
-}
-.folder-icon.is-ink::before,
-.folder-icon.is-ink::after {
-  background: hsl(var(--ink));
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   DECORATIVE SYMBOLS — asterisk, floral ornaments.
-   ═══════════════════════════════════════════════════════════════════ */
-.deco-asterisk {
-  font-family: "Playfair Display", serif;
-  font-size: 1em;
-  line-height: 1;
-  color: hsl(var(--burgundy));
-  display: inline-block;
-  user-select: none;
-}
-.deco-flower::before {
-  content: "✿";
-  color: hsl(var(--burgundy));
-  font-size: 1em;
-}
-.deco-ornament::before {
-  content: "❋";
-  color: hsl(var(--burgundy));
-  font-size: 1em;
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   MINIMAL DOT CURSOR (only renders on fine pointer devices).
-   ═══════════════════════════════════════════════════════════════════ */
-.minimal-cursor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: hsl(var(--ink));
-  pointer-events: none;
-  z-index: 9998;
-  mix-blend-mode: difference;
-  will-change: transform;
-}
-
-@media (pointer: coarse) {
-  .minimal-cursor { display: none !important; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.3s !important;
+  .hover-lift {
+    @apply transition-[transform,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)];
+  }
+  .hover-lift:hover {
+    @apply -translate-y-0.5 bg-card-hover;
   }
 }
 
-/* Marquee (kept in case other components still reference it) */
+/* ═══════════════════════════════════════════════════════════════════
+   FOOTNOTE SPEC SYSTEM
+   ═══════════════════════════════════════════════════════════════════ */
+.spec-row {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: hsl(var(--ink-30));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.spec-row sup {
+  font-size: 10px;
+  font-variant-numeric: lining-nums;
+  color: hsl(var(--accent-warm));
+  padding-right: 3px;
+  vertical-align: baseline;
+  position: relative;
+  top: -0.35em;
+}
+
+/* Marquee animation (unchanged) */
 @keyframes marquee-left {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -269,6 +179,8 @@
 }
 .animate-marquee-left  { animation: marquee-left 24s linear infinite; }
 .animate-marquee-right { animation: marquee-right 20s linear infinite; }
+.group:hover .animate-marquee-left,
+.group:hover .animate-marquee-right { animation-play-state: paused; }
 
 .noise-overlay {
   position: fixed;
@@ -276,4 +188,15 @@
   pointer-events: none;
   z-index: 9999;
   opacity: 0.015;
+}
+[data-theme="dark"] .noise-overlay { opacity: 0.04; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.3s !important;
+  }
+  .animate-marquee-left, .animate-marquee-right {
+    animation-duration: 48s !important;
+  }
 }
