@@ -1,19 +1,11 @@
 import { motion } from "framer-motion";
-import Section from "./Section";
-import Eyebrow from "./Eyebrow";
-import Spec from "./Spec";
 
 /**
- * DesignProcess — post-cursor revision.
- *
- * Keeps the tool/method/artifact cards unchanged — those were working.
- * Removes `data-detail` attributes (no more cursor).
- * Hover-reveal detail STAYS — it's too good a reward for the discoverer
- * to drop, and it degrades cleanly to visible on touch with one CSS line.
- *
- * Adds a section-level Spec footnote at the end listing the process
- * as a system: typical duration, tool count, artifact count. Proves
- * the process is a named thing, not a story.
+ * DesignProcess — 4-column full-bleed grid.
+ * • Alternating light/dark per step (light, dark, light, dark per brief).
+ * • On hover: SVG border animates in via stroke-dasharray (.process-card
+ *   styles in index.css).
+ * • Text color shifts to accent red on hover.
  */
 
 type Step = {
@@ -64,114 +56,136 @@ const steps: Step[] = [
   },
 ];
 
-const processSpecs = [
-  { n: 1, text: "avg project: 6 user interviews / 2-week research phase" },
-  { n: 2, text: "figma → react parity: 100% by spec, tested weekly" },
-  { n: 3, text: "design-side PR review: every component I ship" },
-];
-
 const DesignProcess = () => {
   return (
-    <Section inverted size="md">
-      <motion.div
-        initial={{ opacity: 0, x: -16 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true }}
-      >
-        <Eyebrow tone="ink" className="mb-4">— How I Work</Eyebrow>
-      </motion.div>
-
-      <motion.h2
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.05 }}
-        className="font-display text-ink leading-[1.02] tracking-[-0.02em] mb-4 max-w-[760px]"
-        style={{ fontSize: "clamp(36px, 4vw, 52px)" }}
-      >
-        A process built around evidence — not decks.
-      </motion.h2>
-
-      <p className="font-sans font-light text-[15px] text-ink-60 leading-[1.6] max-w-[520px] mb-12 md:mb-16">
-        Each step names the tool, the method, and the artifact. Hover any step to see the specific
-        thing I've learned doing it.
-      </p>
-
+    <section className="relative w-full border-t border-rule">
+      {/* Header */}
       <div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px"
-        style={{ background: "hsl(36 18% 93% / 0.08)" }}
+        className="pt-20 md:pt-32 pb-12 md:pb-16"
+        style={{ paddingLeft: "clamp(24px, 4vw, 60px)", paddingRight: "clamp(24px, 4vw, 60px)" }}
       >
-        {steps.map((step, idx) => (
-          <motion.div
-            key={step.number}
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.08 * idx }}
-            className="group relative p-7 md:p-8 flex flex-col min-h-[320px] transition-colors duration-300 hover:bg-[hsl(20,12%,6%)]"
-            style={{ background: "hsl(20 12% 4%)" }}
-          >
-            <div
-              className="font-display text-accent-warm mb-5 leading-none"
-              style={{ fontSize: "clamp(32px, 3vw, 44px)" }}
-            >
-              {step.number}
-            </div>
-
-            <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink mb-6">
-              {step.name}
-            </div>
-
-            <dl className="space-y-3 mb-6">
-              <div>
-                <dt className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-30 mb-0.5">
-                  Tool
-                </dt>
-                <dd className="font-sans text-[12px] text-ink-60 leading-[1.5]">
-                  {step.tool}
-                </dd>
-              </div>
-              <div>
-                <dt className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-30 mb-0.5">
-                  Method
-                </dt>
-                <dd className="font-sans text-[12px] text-ink-60 leading-[1.5]">
-                  {step.method}
-                </dd>
-              </div>
-              <div>
-                <dt className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-30 mb-0.5">
-                  Artifact
-                </dt>
-                <dd className="font-sans text-[12px] text-ink-60 leading-[1.5]">
-                  {step.artifact}
-                </dd>
-              </div>
-            </dl>
-
-            {/* Hover reveal — one specific insight per step */}
-            <div
-              className="mt-auto overflow-hidden transition-[max-height,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] max-h-0 opacity-0 group-hover:max-h-[160px] group-hover:opacity-100 group-focus-within:max-h-[160px] group-focus-within:opacity-100"
-            >
-              <div className="pt-4 border-t border-[hsl(36,18%,93%,0.08)]">
-                <p className="font-sans font-light text-[12px] leading-[1.65] text-ink-60 italic">
-                  {step.detail}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        ))}
+        <span className="eyebrow mb-4">— How I Work</span>
+        <h2
+          className="font-display text-ink tracking-tightest mt-3 max-w-[760px]"
+          style={{ fontSize: "clamp(36px, 5.5vw, 72px)", lineHeight: 1.0, fontWeight: 500 }}
+        >
+          A process built around evidence — not decks.
+        </h2>
+        <p
+          className="mt-6 max-w-[520px] text-body text-ink-60"
+          style={{ fontFamily: '"Inter", sans-serif', fontWeight: 300 }}
+        >
+          Each step names the tool, the method, and the artifact. Hover any step to see the specific
+          thing I've learned doing it.
+        </p>
       </div>
 
-      {/*
-        ──────────────────────────────────────────────────────────
-        PROCESS SPEC FOOTNOTES — section-level, on the dark bg.
-        The Spec component uses var(--ink-30) which inverts correctly
-        under the [data-theme="dark"] scope from the Section.
-        ──────────────────────────────────────────────────────────
-      */}
-      <Spec items={processSpecs} className="mt-10" />
-    </Section>
+      {/* 4-column grid — full-bleed, alternating backgrounds */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 w-full">
+        {steps.map((step, idx) => {
+          // Alternating: light/dark/light/dark per brief
+          const isDark = idx % 2 === 1;
+          const bg = isDark ? "hsl(var(--ink))" : "hsl(var(--bg))";
+          const fg = isDark ? "hsl(var(--bg))" : "hsl(var(--ink))";
+          const dim = isDark ? "hsl(0 0% 100% / 0.5)" : "hsl(var(--ink-60))";
+          const faint = isDark ? "hsl(0 0% 100% / 0.25)" : "hsl(var(--ink-30))";
+
+          return (
+            <motion.div
+              key={step.number}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.08 * idx, duration: 0.4 }}
+              className="process-card group relative flex flex-col min-h-[420px] p-8 md:p-10"
+              style={{ background: bg, color: fg }}
+              data-cursor-hot
+            >
+              {/* SVG border overlay — animates in on hover */}
+              <svg
+                className="border-svg pointer-events-none absolute inset-0 w-full h-full"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M 1 1 L 99.9% 1 L 99.9% 99.9% L 1 99.9% Z"
+                  fill="none"
+                  stroke="hsl(var(--accent-warm))"
+                  strokeWidth="2"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </svg>
+
+              <div className="relative z-10 flex flex-col h-full">
+                {/* Step number — EB Garamond large */}
+                <div
+                  className="font-display leading-none mb-6 group-hover:text-accent-warm transition-colors duration-300"
+                  style={{ fontSize: "clamp(40px, 3.5vw, 56px)", fontWeight: 500, color: fg }}
+                >
+                  {step.number}
+                </div>
+
+                <div
+                  className="uppercase tracking-[0.14em] mb-8 text-[12px] group-hover:text-accent-warm transition-colors duration-300"
+                  style={{ fontFamily: '"IBM Plex Mono", monospace', fontWeight: 500, color: fg }}
+                >
+                  {step.name}
+                </div>
+
+                {/* Spec list — labels go bolder on hover per brief */}
+                <dl className="space-y-4 mb-8">
+                  <div>
+                    <dt
+                      className="text-[10px] uppercase tracking-[0.14em] mb-1 transition-all duration-200 group-hover:font-semibold"
+                      style={{ fontFamily: '"IBM Plex Mono", monospace', color: faint }}
+                    >
+                      Tool
+                    </dt>
+                    <dd className="text-[13px]" style={{ fontFamily: '"Inter", sans-serif', color: dim }}>
+                      {step.tool}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt
+                      className="text-[10px] uppercase tracking-[0.14em] mb-1 transition-all duration-200 group-hover:font-semibold"
+                      style={{ fontFamily: '"IBM Plex Mono", monospace', color: faint }}
+                    >
+                      Method
+                    </dt>
+                    <dd className="text-[13px]" style={{ fontFamily: '"Inter", sans-serif', color: dim }}>
+                      {step.method}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt
+                      className="text-[10px] uppercase tracking-[0.14em] mb-1 transition-all duration-200 group-hover:font-semibold"
+                      style={{ fontFamily: '"IBM Plex Mono", monospace', color: faint }}
+                    >
+                      Artifact
+                    </dt>
+                    <dd className="text-[13px]" style={{ fontFamily: '"Inter", sans-serif', color: dim }}>
+                      {step.artifact}
+                    </dd>
+                  </div>
+                </dl>
+
+                {/* Hover reveal */}
+                <div className="mt-auto overflow-hidden transition-[max-height,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] max-h-0 opacity-0 group-hover:max-h-[160px] group-hover:opacity-100 group-focus-within:max-h-[160px] group-focus-within:opacity-100">
+                  <div className="pt-4" style={{ borderTop: `1px solid ${faint}` }}>
+                    <p
+                      className="text-[12px] leading-[1.6] italic"
+                      style={{ fontFamily: '"Inter", sans-serif', color: dim, fontWeight: 300 }}
+                    >
+                      {step.detail}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </section>
   );
 };
 
