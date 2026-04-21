@@ -9,41 +9,49 @@ export default {
       center: true,
       padding: {
         DEFAULT: "1.5rem",
-        md: "2.5rem",
-        lg: "3rem",
+        md: "2rem",
+        lg: "2rem",
       },
       screens: {
         sm: "640px",
         md: "768px",
         lg: "1024px",
-        xl: "1280px",
-        "2xl": "1440px",
+        xl: "1200px",
+        "2xl": "1200px",
       },
     },
     extend: {
       fontFamily: {
-        display: ['"Playfair Display"', "Georgia", "serif"],
+        display: ['"Fraunces"', "Georgia", "serif"],
         sans:    ['"Inter"', "system-ui", "sans-serif"],
-        mono:    ['"Inter"', "system-ui", "sans-serif"], // brief doesn't call for mono; keep Inter
+        mono:    ['"IBM Plex Mono"', "ui-monospace", "monospace"],
+      },
+
+      spacing: {
+        "section-y-sm": "4rem",
+        "section-y":    "6rem",
+        "section-y-lg": "8rem",
+        "block":        "3rem",
+        "stack":        "1.5rem",
+        "tight":        "0.5rem",
       },
 
       fontSize: {
-        "hero":       ["clamp(72px, 13vw, 180px)",  { lineHeight: "0.9",  letterSpacing: "-0.03em" }],
-        "display-xl": ["clamp(56px, 8vw, 120px)",   { lineHeight: "0.95", letterSpacing: "-0.025em" }],
-        "display-lg": ["clamp(40px, 6vw, 96px)",    { lineHeight: "1.0",  letterSpacing: "-0.02em" }],
-        "display-md": ["clamp(32px, 4vw, 64px)",    { lineHeight: "1.05", letterSpacing: "-0.02em" }],
+        "display-xl": ["clamp(3.5rem, 7vw, 5.5rem)",  { lineHeight: "1.02", letterSpacing: "-0.025em" }],
+        "display-lg": ["clamp(2.75rem, 5vw, 4rem)",   { lineHeight: "1.05", letterSpacing: "-0.02em" }],
+        "display-md": ["clamp(2rem, 3.5vw, 2.75rem)", { lineHeight: "1.1",  letterSpacing: "-0.015em" }],
 
-        "h1": ["2.75rem", { lineHeight: "1.1",  letterSpacing: "-0.02em" }],
-        "h2": ["2.25rem", { lineHeight: "1.15", letterSpacing: "-0.02em" }],
-        "h3": ["1.625rem",{ lineHeight: "1.25", letterSpacing: "-0.015em" }],
-        "h4": ["1.25rem", { lineHeight: "1.35", letterSpacing: "-0.01em" }],
+        "h1": ["2.5rem",   { lineHeight: "1.1",  letterSpacing: "-0.02em" }],
+        "h2": ["2rem",     { lineHeight: "1.15", letterSpacing: "-0.02em" }],
+        "h3": ["1.5rem",   { lineHeight: "1.25", letterSpacing: "-0.015em" }],
+        "h4": ["1.125rem", { lineHeight: "1.35", letterSpacing: "-0.01em" }],
 
-        "body-lg": ["1.125rem",  { lineHeight: "1.6" }],
-        "body":    ["1rem",      { lineHeight: "1.6" }],
-        "body-sm": ["0.9375rem", { lineHeight: "1.55" }],
+        "body-lg":  ["1.0625rem", { lineHeight: "1.6" }],
+        "body":     ["0.9375rem", { lineHeight: "1.6" }],
+        "body-sm":  ["0.875rem",  { lineHeight: "1.55" }],
 
-        "meta":    ["0.8125rem", { lineHeight: "1.4", letterSpacing: "0.02em" }],
-        "label":   ["0.75rem",   { lineHeight: "1.3", letterSpacing: "0.06em" }],
+        "label":    ["0.75rem",   { lineHeight: "1.3", letterSpacing: "0.08em" }],
+        "caption":  ["0.8125rem", { lineHeight: "1.5" }],
       },
 
       colors: {
@@ -80,16 +88,12 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        /* Reference-specific semantic tokens */
-        cobalt:   "hsl(var(--cobalt))",     /* primary accent — interactive */
-        burgundy: "hsl(var(--burgundy))",   /* secondary accent — decorative */
       },
 
-      // Small corner radius per reference — soft but not pill
       borderRadius: {
-        lg: "0.375rem",  /* 6px */
-        md: "0.25rem",   /* 4px */
-        sm: "0.125rem",  /* 2px */
+        lg: "0.375rem",
+        md: "0.25rem",
+        sm: "0.125rem",
       },
 
       keyframes: {
@@ -101,15 +105,10 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "fade-slide-up": {
-          "0%":   { opacity: "0", transform: "translateY(16px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up":   "accordion-up 0.2s ease-out",
-        "fade-slide-up":  "fade-slide-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both",
       },
     },
   },
