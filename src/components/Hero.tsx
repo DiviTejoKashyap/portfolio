@@ -1,189 +1,197 @@
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 
 /**
- * Hero — full-viewport, asymmetric, bounce-in letters.
- * Per brief: 100vh, EB Garamond at 180px+, no centered container,
- * headline left (60px from edge), stats right (absolute).
- * Letters animate in individually with back-out overshoot easing.
+ * Hero — "desktop file" metaphor per reference.
+ *
+ * Layout:
+ *   • Massive Playfair Display headline (regular weight), left-aligned.
+ *   • Italic "designer" flourish overlaid asymmetrically.
+ *   • Year in parentheses small below.
+ *   • Scattered folder icons with filename labels ("lume_sys.fig", etc.)
+ *     absolutely positioned around the headline — the "desktop" feel.
+ *   • Subtle decorative asterisks/flowers for balance.
  */
 
-const HEADLINE = "Designing systems that think.";
-const STATS = [
-  { value: "2.4M", label: "Requests / day monitored" },
-  { value: "128",  label: "Components shipped" },
-  { value: "8",    label: "Weeks zero to production" },
-  { value: "5mo+", label: "Daily-active personal build" },
+type ScatterFile = {
+  id: string;
+  name: string;
+  top: string;
+  left?: string;
+  right?: string;
+  rotate?: number;
+  color?: "cobalt" | "burgundy" | "ink";
+  hiddenOnMobile?: boolean;
+};
+
+// Files scattered around the hero — each a real project filename
+const scatter: ScatterFile[] = [
+  { id: "1", name: "lume_sys.fig",      top: "14%", left: "6%",   rotate: -6  },
+  { id: "2", name: "vault_ds.fig",      top: "22%", right: "10%", rotate: 4, color: "burgundy" },
+  { id: "3", name: "sync_collab.fig",   top: "58%", left: "4%",   rotate: 3 },
+  { id: "4", name: "pulse.fig",         top: "66%", right: "7%",  rotate: -5 },
+  { id: "5", name: "solo_leveling.fig", top: "82%", left: "16%",  rotate: 2, color: "ink", hiddenOnMobile: true },
+  { id: "6", name: "resume_2026.pdf",   top: "84%", right: "18%", rotate: -3, color: "burgundy", hiddenOnMobile: true },
 ];
-
-function Letters({ text }: { text: string }) {
-  // Split into words so whitespace stays natural, then individual chars.
-  const [ready, setReady] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setReady(true), 0);
-    return () => clearTimeout(t);
-  }, []);
-
-  const words = text.split(" ");
-  let charIndex = 0;
-
-  return (
-    <h1
-      className="font-display text-hero tracking-tightest text-ink"
-      style={{ fontWeight: 400 }}
-      aria-label={text}
-    >
-      {words.map((word, wi) => (
-        <span key={wi} className="inline-block whitespace-nowrap" style={{ marginRight: "0.22em" }}>
-          {word.split("").map((ch, ci) => {
-            const i = charIndex++;
-            return (
-              <span
-                key={ci}
-                className="inline-block"
-                style={{
-                  animation: ready
-                    ? `letter-in 520ms cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 30}ms both`
-                    : undefined,
-                  opacity: ready ? undefined : 0,
-                }}
-                aria-hidden="true"
-              >
-                {ch}
-              </span>
-            );
-          })}
-        </span>
-      ))}
-    </h1>
-  );
-}
 
 const Hero = () => {
   return (
     <section
       id="top"
-      className="relative min-h-screen w-full overflow-hidden"
+      className="relative w-full overflow-hidden min-h-screen"
       style={{ background: "hsl(var(--bg))" }}
     >
-      {/* Pulsing grain */}
-      <div className="grain-bg" />
-
-      {/* Content — left-aligned, 60px from left edge per brief */}
-      <div className="relative z-10 min-h-screen flex flex-col justify-between">
-        {/* Top row — eyebrow, date */}
+      <div className="relative container-wide py-16 md:py-24 lg:py-28 min-h-screen flex flex-col">
+        {/* Top bar */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0, duration: 0.3 }}
-          className="flex items-center justify-between pt-8 md:pt-10"
-          style={{ paddingLeft: "clamp(24px, 4vw, 60px)", paddingRight: "clamp(24px, 4vw, 60px)" }}
+          transition={{ delay: 0.1, duration: 0.4 }}
+          className="flex items-center justify-between mb-12 md:mb-20 relative z-10"
         >
-          <span className="eyebrow">— Product Designer & Design Engineer</span>
-          <span className="eyebrow hidden md:block">NYC · NYU Tandon · '26</span>
+          <span className="eyebrow">Tejo Kashyap Divi</span>
+          <div className="flex items-center gap-6">
+            <a href="#work" className="eyebrow">Work</a>
+            <a href="#about" className="eyebrow">About</a>
+            <a href="#contact" className="eyebrow">Contact</a>
+          </div>
         </motion.div>
 
-        {/* Middle — asymmetric split */}
-        <div
-          className="flex-1 flex items-center"
-          style={{ paddingLeft: "clamp(24px, 4vw, 60px)", paddingRight: "clamp(24px, 4vw, 60px)" }}
-        >
-          <div className="grid grid-cols-12 gap-6 w-full items-end">
-            {/* Headline — 8/12 (70% per brief rounded to grid) */}
-            <div className="col-span-12 lg:col-span-8">
-              <Letters text={HEADLINE} />
+        {/* Center — headline stack */}
+        <div className="relative flex-1 flex flex-col justify-center items-start py-8 md:py-16">
+          {/* Decorative asterisk top-right of headline zone */}
+          <span
+            className="deco-asterisk absolute text-[80px] md:text-[120px] leading-none"
+            style={{ top: "-4%", right: "2%" }}
+            aria-hidden="true"
+          >
+            *
+          </span>
 
-              {/* Sub-line below headline */}
-              <motion.p
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9, duration: 0.35 }}
-                className="mt-8 md:mt-10 max-w-[520px] text-body-lg text-ink-60"
-                style={{ fontFamily: '"Inter", sans-serif', fontWeight: 300 }}
-              >
-                Tejo — product designer embedded with engineering teams. Research,
-                UI, shipped code alongside the Figma file. M.S. CS at NYU Tandon.
-                Previously at Deloitte and Amazon.
-              </motion.p>
+          {/* "designer portfolio" subtitle */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="flex items-center gap-3 mb-6 md:mb-8 relative z-10"
+          >
+            <span className="italic-flourish text-[20px] md:text-[28px] text-burgundy">
+              designer
+            </span>
+            <span className="text-ink-60 text-[15px] md:text-[17px]">portfolio</span>
+          </motion.div>
 
-              {/* CTAs */}
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.0, duration: 0.35 }}
-                className="mt-10 flex gap-6 items-center"
-              >
-                <a
-                  href="#work"
-                  className="inline-flex items-center gap-2 px-6 py-3 text-[13px] font-mono uppercase tracking-[0.12em] transition-colors duration-200"
-                  style={{
-                    background: "hsl(var(--ink))",
-                    color: "hsl(var(--bg))",
-                    fontWeight: 500,
-                  }}
-                  data-cursor-hot
-                >
-                  See the work →
-                </a>
-                <a
-                  href="/resume.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[13px] font-mono uppercase tracking-[0.12em] text-ink-60"
-                  data-cursor-hot
-                >
-                  Download CV
-                </a>
-              </motion.div>
-            </div>
-
-            {/* Stats — 4/12 (right column, asymmetric) */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.1, duration: 0.4 }}
-              className="col-span-12 lg:col-span-4 hidden lg:block"
+          {/* Main headline — huge, left-aligned, Playfair Display */}
+          <motion.h1
+            initial={{ opacity: 0, y: 32 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="font-display text-ink relative z-10"
+            style={{
+              fontSize: "clamp(64px, 13vw, 180px)",
+              lineHeight: "0.92",
+              letterSpacing: "-0.03em",
+              fontWeight: 500,
+            }}
+          >
+            Tejo Kashyap<br />
+            <span className="text-ink">Divi</span>
+            {/* Italic flourish inline */}
+            <span
+              className="font-display-italic text-burgundy ml-3 md:ml-5 align-baseline"
+              style={{ fontSize: "0.42em", fontWeight: 400 }}
             >
-              <div className="border-t border-rule pt-6">
-                <div className="eyebrow mb-6">Selected numbers</div>
-                <dl className="space-y-5">
-                  {STATS.map((s) => (
-                    <div key={s.label} className="flex items-baseline justify-between gap-4 border-b border-rule pb-3">
-                      <dt
-                        className="text-[11px] font-mono uppercase tracking-[0.12em] text-ink-60"
-                        style={{ fontFamily: '"IBM Plex Mono", monospace' }}
-                      >
-                        {s.label}
-                      </dt>
-                      <dd
-                        className="font-display text-ink"
-                        style={{ fontSize: "clamp(24px, 2vw, 32px)", fontWeight: 500 }}
-                      >
-                        {s.value}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            </motion.div>
-          </div>
+              (2026)
+            </span>
+          </motion.h1>
+
+          {/* Subhead below */}
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+            className="mt-8 md:mt-12 max-w-[540px] text-[16px] md:text-[18px] leading-[1.7] text-ink-60 relative z-10"
+          >
+            I'm a product designer embedded with engineering teams. I run user
+            research, own the UI, and ship code alongside the Figma file. M.S.
+            Computer Science at NYU Tandon, previously at{" "}
+            <span className="text-ink">Deloitte</span> and{" "}
+            <span className="text-ink">Amazon</span>.
+          </motion.p>
+
+          {/* CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.5 }}
+            className="mt-10 md:mt-14 flex flex-wrap items-center gap-5 relative z-10"
+          >
+            <a
+              href="#work"
+              className="inline-flex items-center gap-2 px-6 py-3 text-[14px] font-medium transition-colors duration-200"
+              style={{
+                background: "hsl(var(--ink))",
+                color: "hsl(var(--bg))",
+                borderRadius: "6px",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "hsl(var(--cobalt))"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "hsl(var(--ink))"; }}
+            >
+              See selected work →
+            </a>
+            <a
+              href="/resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[14px] font-medium text-ink-60"
+            >
+              Download CV ↗
+            </a>
+          </motion.div>
         </div>
 
-        {/* Bottom row — affiliations, scroll marker */}
+        {/* Scattered folders with filenames — desktop metaphor */}
+        {scatter.map((file, i) => (
+          <motion.div
+            key={file.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 + i * 0.08, duration: 0.5 }}
+            className={`absolute flex flex-col items-center gap-2 pointer-events-none ${
+              file.hiddenOnMobile ? "hidden md:flex" : ""
+            }`}
+            style={{
+              top: file.top,
+              left: file.left,
+              right: file.right,
+              transform: `rotate(${file.rotate ?? 0}deg)`,
+              zIndex: 1,
+            }}
+            aria-hidden="true"
+          >
+            <div
+              className={`folder-icon ${
+                file.color === "burgundy" ? "is-burgundy" :
+                file.color === "ink"      ? "is-ink"      : ""
+              }`}
+            />
+            <span className="filename-label whitespace-nowrap">{file.name}</span>
+          </motion.div>
+        ))}
+
+        {/* Bottom status row */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.35 }}
-          className="flex items-end justify-between pb-8 md:pb-10"
-          style={{ paddingLeft: "clamp(24px, 4vw, 60px)", paddingRight: "clamp(24px, 4vw, 60px)" }}
+          transition={{ delay: 1.1, duration: 0.5 }}
+          className="flex items-end justify-between pt-12 md:pt-16 relative z-10"
         >
-          <div className="flex flex-wrap gap-x-8 gap-y-2 items-baseline">
-            <span className="eyebrow">Previously</span>
-            <span className="text-[14px] font-mono text-ink">Deloitte</span>
-            <span className="text-[14px] font-mono text-ink">Amazon</span>
-            <span className="text-[14px] font-mono text-ink-60">NYU Tandon</span>
+          <div className="flex items-baseline gap-3">
+            <span className="w-1.5 h-1.5 rounded-full bg-cobalt inline-block" aria-hidden="true" />
+            <span className="italic-flourish text-[15px] md:text-[18px] text-ink">
+              available for Summer 2026
+            </span>
           </div>
-          <span className="eyebrow hidden md:block">Scroll ↓</span>
+          <span className="eyebrow hidden md:block">Scroll to explore ↓</span>
         </motion.div>
       </div>
     </section>
