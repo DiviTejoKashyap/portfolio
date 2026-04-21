@@ -1,182 +1,193 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import Section from "./Section";
-import Eyebrow from "./Eyebrow";
-import Spec from "./Spec";
-import { projects } from "@/data/projects";
+import { useEffect, useState } from "react";
 
 /**
- * WorkSection — post-cursor revision.
- *
- * Previously: custom cursor x-ray + hover diff reveal.
- * Now:        Spec footnotes below every project row.
- *
- * Every project exposes 3 values as footnotes — the cursorDetail,
- * the obsession detail, and one derived from beforeAfter.after (the
- * shipped state). Always visible. No hover required. Recruiter scans
- * top-down and absorbs the system without having to hunt for it.
+ * Hero — full-viewport, asymmetric, bounce-in letters.
+ * Per brief: 100vh, EB Garamond at 180px+, no centered container,
+ * headline left (60px from edge), stats right (absolute).
+ * Letters animate in individually with back-out overshoot easing.
  */
-const WorkSection = () => {
+
+const HEADLINE = "Designing systems that think.";
+const STATS = [
+  { value: "2.4M", label: "Requests / day monitored" },
+  { value: "128",  label: "Components shipped" },
+  { value: "8",    label: "Weeks zero to production" },
+  { value: "5mo+", label: "Daily-active personal build" },
+];
+
+function Letters({ text }: { text: string }) {
+  // Split into words so whitespace stays natural, then individual chars.
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setReady(true), 0);
+    return () => clearTimeout(t);
+  }, []);
+
+  const words = text.split(" ");
+  let charIndex = 0;
+
   return (
-    <Section id="work">
-      {/* Section header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 md:mb-16 gap-4">
-        <div>
-          <motion.div
-            initial={{ opacity: 0, x: -16 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-          >
-            <Eyebrow className="mb-4">01 — Selected Work</Eyebrow>
-          </motion.div>
-          <motion.h2
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.05 }}
-            className="font-display leading-[1.02] tracking-[-0.02em]"
-            style={{ fontSize: "clamp(36px, 4vw, 52px)" }}
-          >
-            {projects.length} projects. One system of thinking.
-          </motion.h2>
-        </div>
-        <Eyebrow>© 2024–2026</Eyebrow>
-      </div>
+    <h1
+      className="font-display text-hero tracking-tightest text-ink"
+      style={{ fontWeight: 400 }}
+      aria-label={text}
+    >
+      {words.map((word, wi) => (
+        <span key={wi} className="inline-block whitespace-nowrap" style={{ marginRight: "0.22em" }}>
+          {word.split("").map((ch, ci) => {
+            const i = charIndex++;
+            return (
+              <span
+                key={ci}
+                className="inline-block"
+                style={{
+                  animation: ready
+                    ? `letter-in 520ms cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 30}ms both`
+                    : undefined,
+                  opacity: ready ? undefined : 0,
+                }}
+                aria-hidden="true"
+              >
+                {ch}
+              </span>
+            );
+          })}
+        </span>
+      ))}
+    </h1>
+  );
+}
 
-      {/* Project list */}
-      <div>
-        {projects.map((project, idx) => {
-          /* Build the spec footnote row for this project. Three items:
-             one from cursorDetail (the system spec), one from obsession
-             (the behavioral decision), one from beforeAfter.after (the
-             shipped outcome, truncated to key clause). */
-          const shippedDetail = project.beforeAfter.after.split(".")[0] + ".";
+const Hero = () => {
+  return (
+    <section
+      id="top"
+      className="relative min-h-screen w-full overflow-hidden"
+      style={{ background: "hsl(var(--bg))" }}
+    >
+      {/* Pulsing grain */}
+      <div className="grain-bg" />
 
-          return (
-            <Link
-              to={`/work/${project.slug}`}
-              key={project.slug}
-              className="group relative block border-t border-rule py-8 md:py-10 -mx-6 md:-mx-8 px-6 md:px-8 transition-colors duration-300 hover:bg-card-hover"
+      {/* Content — left-aligned, 60px from left edge per brief */}
+      <div className="relative z-10 min-h-screen flex flex-col justify-between">
+        {/* Top row — eyebrow, date */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0, duration: 0.3 }}
+          className="flex items-center justify-between pt-8 md:pt-10"
+          style={{ paddingLeft: "clamp(24px, 4vw, 60px)", paddingRight: "clamp(24px, 4vw, 60px)" }}
+        >
+          <span className="eyebrow">— Product Designer & Design Engineer</span>
+          <span className="eyebrow hidden md:block">NYC · NYU Tandon · '26</span>
+        </motion.div>
+
+        {/* Middle — asymmetric split */}
+        <div
+          className="flex-1 flex items-center"
+          style={{ paddingLeft: "clamp(24px, 4vw, 60px)", paddingRight: "clamp(24px, 4vw, 60px)" }}
+        >
+          <div className="grid grid-cols-12 gap-6 w-full items-end">
+            {/* Headline — 8/12 (70% per brief rounded to grid) */}
+            <div className="col-span-12 lg:col-span-8">
+              <Letters text={HEADLINE} />
+
+              {/* Sub-line below headline */}
+              <motion.p
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9, duration: 0.35 }}
+                className="mt-8 md:mt-10 max-w-[520px] text-body-lg text-ink-60"
+                style={{ fontFamily: '"Inter", sans-serif', fontWeight: 300 }}
+              >
+                Tejo — product designer embedded with engineering teams. Research,
+                UI, shipped code alongside the Figma file. M.S. CS at NYU Tandon.
+                Previously at Deloitte and Amazon.
+              </motion.p>
+
+              {/* CTAs */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.0, duration: 0.35 }}
+                className="mt-10 flex gap-6 items-center"
+              >
+                <a
+                  href="#work"
+                  className="inline-flex items-center gap-2 px-6 py-3 text-[13px] font-mono uppercase tracking-[0.12em] transition-colors duration-200"
+                  style={{
+                    background: "hsl(var(--ink))",
+                    color: "hsl(var(--bg))",
+                    fontWeight: 500,
+                  }}
+                  data-cursor-hot
+                >
+                  See the work →
+                </a>
+                <a
+                  href="/resume.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[13px] font-mono uppercase tracking-[0.12em] text-ink-60"
+                  data-cursor-hot
+                >
+                  Download CV
+                </a>
+              </motion.div>
+            </div>
+
+            {/* Stats — 4/12 (right column, asymmetric) */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.1, duration: 0.4 }}
+              className="col-span-12 lg:col-span-4 hidden lg:block"
             >
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start">
-                {/* Left column — 7/12 */}
-                <motion.div
-                  initial={{ opacity: 0, x: -24 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.05 * idx, duration: 0.4 }}
-                  className="md:col-span-7"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <Eyebrow>{project.eyebrow}</Eyebrow>
-                    {project.status && (
-                      <>
-                        <span className="text-ink-30">·</span>
-                        <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-60">
-                          {project.status}
-                        </span>
-                      </>
-                    )}
-                  </div>
-
-                  <h3
-                    className="font-display text-ink leading-[1.08] mb-3 tracking-[-0.015em]"
-                    style={{ fontSize: "clamp(24px, 2.6vw, 36px)" }}
-                  >
-                    {project.headline}
-                  </h3>
-
-                  <p className="font-sans font-light text-[15px] text-ink-60 leading-[1.6] max-w-[560px] mb-6">
-                    {project.body}
-                  </p>
-
-                  {/* Obsession block — visible proof per row */}
-                  <div className="max-w-[560px] mb-5">
-                    <div className="flex items-start gap-3 border-l border-accent-warm/40 pl-4">
-                      <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-accent-warm shrink-0 mt-0.5">
-                        Obsession
-                      </span>
-                      <p className="font-sans text-[13px] leading-[1.55] text-ink-60">
-                        {project.obsession}
-                      </p>
+              <div className="border-t border-rule pt-6">
+                <div className="eyebrow mb-6">Selected numbers</div>
+                <dl className="space-y-5">
+                  {STATS.map((s) => (
+                    <div key={s.label} className="flex items-baseline justify-between gap-4 border-b border-rule pb-3">
+                      <dt
+                        className="text-[11px] font-mono uppercase tracking-[0.12em] text-ink-60"
+                        style={{ fontFamily: '"IBM Plex Mono", monospace' }}
+                      >
+                        {s.label}
+                      </dt>
+                      <dd
+                        className="font-display text-ink"
+                        style={{ fontSize: "clamp(24px, 2vw, 32px)", fontWeight: 500 }}
+                      >
+                        {s.value}
+                      </dd>
                     </div>
-                  </div>
-
-                  {/* Meta row */}
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-[11px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
-                      {project.role}
-                    </span>
-                    <span className="font-mono text-[11px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
-                      {project.timeline}
-                    </span>
-                    {project.team && (
-                      <span className="font-mono text-[11px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
-                        {project.team}
-                      </span>
-                    )}
-                    {project.isLive && (
-                      <span className="font-mono text-[11px] text-accent-warm border border-accent-warm/30 rounded-full px-3 py-1">
-                        Live ↗
-                      </span>
-                    )}
-                    <span className="ml-auto font-sans font-medium text-[13px] text-ink opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                      Open case study →
-                    </span>
-                  </div>
-                </motion.div>
-
-                {/* Right column — 5/12 */}
-                <motion.div
-                  initial={{ opacity: 0, x: 24 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.05 * idx + 0.05, duration: 0.4 }}
-                  className="md:col-span-5"
-                >
-                  <div
-                    className="rounded-[4px] overflow-hidden aspect-[16/10] transition-transform duration-500"
-                    style={{
-                      transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)",
-                      background: project.gradient,
-                    }}
-                  >
-                    <img
-                      src={project.banner}
-                      alt={project.title}
-                      className="w-full h-full object-cover object-center group-hover:scale-[1.015] transition-transform duration-500"
-                      style={{ transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)" }}
-                      loading={idx < 2 ? "eager" : "lazy"}
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).style.display = "none";
-                      }}
-                    />
-                  </div>
-                </motion.div>
+                  ))}
+                </dl>
               </div>
+            </motion.div>
+          </div>
+        </div>
 
-              {/*
-                ──────────────────────────────────────────────────────
-                SPEC FOOTNOTES — spans the full row width.
-                Three verifiable values per project. Always visible.
-                ──────────────────────────────────────────────────────
-              */}
-              <Spec
-                className="mt-6"
-                items={[
-                  { n: 1, text: project.cursorDetail },
-                  { n: 2, text: shippedDetail.toLowerCase() },
-                  { n: 3, text: `tags: ${project.tags.slice(0, 3).join(" / ").toLowerCase()}` },
-                ]}
-              />
-            </Link>
-          );
-        })}
-
-        <div className="border-t border-rule" />
+        {/* Bottom row — affiliations, scroll marker */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2, duration: 0.35 }}
+          className="flex items-end justify-between pb-8 md:pb-10"
+          style={{ paddingLeft: "clamp(24px, 4vw, 60px)", paddingRight: "clamp(24px, 4vw, 60px)" }}
+        >
+          <div className="flex flex-wrap gap-x-8 gap-y-2 items-baseline">
+            <span className="eyebrow">Previously</span>
+            <span className="text-[14px] font-mono text-ink">Deloitte</span>
+            <span className="text-[14px] font-mono text-ink">Amazon</span>
+            <span className="text-[14px] font-mono text-ink-60">NYU Tandon</span>
+          </div>
+          <span className="eyebrow hidden md:block">Scroll ↓</span>
+        </motion.div>
       </div>
-    </Section>
+    </section>
   );
 };
 
-export default WorkSection;
+export default Hero;
