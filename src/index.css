@@ -5,23 +5,23 @@
 @layer base {
   :root {
     /* ═══════════════════════════════════════════════════════════════
-       PALETTE — Ink on saturated cream.
-       Commitment: no pure white anywhere. Every surface has warmth.
-       The accent (rust) is punctuation, not decoration.
+       PALETTE — bold mode.
+       White / near-black / strategic red. Flat. No gradients.
+       Red appears only on interactive elements and obsession markers.
        ═══════════════════════════════════════════════════════════════ */
-    --bg:       42 38% 88%;        /* #F2EAD3 — saturated cream */
-    --bg-alt:   40 30% 84%;        /*           deeper cream for sectioning */
-    --surface:  44 45% 94%;        /*           pale cream for cards */
-    --ink:      24 12% 9%;         /* #1A1817 — warm near-black */
-    --ink-60:   24 12% 9% / 0.6;
-    --ink-30:   24 12% 9% / 0.3;
-    --ink-12:   24 12% 9% / 0.12;
-    --accent:      24 12% 9%;
-    --accent-warm: 14 48% 42%;     /* #A04830 — muted rust, not orange */
-    --rule:        24 12% 9% / 0.12;
-    --tag-bg:      24 12% 9% / 0.05;
-    --tag-border:  24 12% 9% / 0.12;
-    --card-hover:  24 12% 9% / 0.03;
+    --bg:       0 0% 100%;         /* #FFFFFF */
+    --bg-alt:   0 0% 96%;          /* #F5F5F5 */
+    --surface:  0 0% 96%;          /* #F5F5F5 */
+    --ink:      0 0% 4%;           /* #0A0A0A */
+    --ink-60:   0 0% 4% / 0.6;
+    --ink-30:   0 0% 4% / 0.3;
+    --ink-12:   0 0% 4% / 0.12;
+    --accent:      0 0% 4%;
+    --accent-warm: 355 82% 56%;    /* #E63946 — strategic red */
+    --rule:        0 0% 4% / 0.08;
+    --tag-bg:      0 0% 4% / 0.04;
+    --tag-border:  0 0% 4% / 0.12;
+    --card-hover:  0 0% 4% / 0.02;
 
     --background: var(--bg);
     --foreground: var(--ink);
@@ -42,65 +42,94 @@
     --card-foreground: var(--ink);
     --popover: var(--surface);
     --popover-foreground: var(--ink);
-    --radius: 0.25rem;
+    --radius: 0;
   }
 
   [data-theme="dark"] {
-    --bg:       20 12% 4%;
-    --bg-alt:   24 14% 8%;
-    --surface:  24 8% 10%;
-    --ink:      36 18% 93%;
-    --ink-60:   36 18% 93% / 0.6;
-    --ink-30:   36 18% 93% / 0.3;
-    --ink-12:   36 18% 93% / 0.12;
-    --accent:      36 18% 93%;
-    --accent-warm: 20 72% 54%;
-    --rule:        36 18% 93% / 0.08;
-    --tag-bg:      36 18% 93% / 0.06;
-    --tag-border:  36 18% 93% / 0.12;
-    --card-hover:  36 18% 93% / 0.04;
+    --bg:       0 0% 4%;           /* #0A0A0A */
+    --bg-alt:   0 0% 10%;          /* #1A1A1A */
+    --surface:  0 0% 10%;
+    --ink:      0 0% 100%;
+    --ink-60:   0 0% 100% / 0.6;
+    --ink-30:   0 0% 100% / 0.3;
+    --ink-12:   0 0% 100% / 0.12;
+    --accent:      0 0% 100%;
+    --accent-warm: 355 82% 56%;
+    --rule:        0 0% 100% / 0.08;
+    --tag-bg:      0 0% 100% / 0.04;
+    --tag-border:  0 0% 100% / 0.12;
+    --card-hover:  0 0% 100% / 0.04;
   }
 
   * { @apply border-border; }
 
   html {
     scroll-behavior: smooth;
-    font-feature-settings: "ss01", "cv11";
   }
 
   body {
-    font-family: 'DM Sans', sans-serif;
+    font-family: "Inter", system-ui, sans-serif;
     background-color: hsl(var(--bg));
     color: hsl(var(--ink));
     transition: background-color 0.4s ease, color 0.4s ease;
-    font-size: 0.9375rem;
+    font-size: 1rem;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    font-feature-settings: "ss01", "cv11";
   }
 
-  h1, h2, h3, h4 { font-family: 'DM Sans', sans-serif; }
+  /* Display = EB Garamond (regular, NOT italic per brief) */
+  h1, h2, h3, h4 {
+    font-family: "EB Garamond", Georgia, serif;
+    font-style: normal;
+  }
+
+  /* Square inputs, square buttons — per brief's "no rounded corners" */
+  input, textarea, select, button {
+    border-radius: 0 !important;
+  }
+
+  /* All links get a red underline on hover (text-decoration, not border) */
+  a {
+    text-decoration: none;
+    transition: color 150ms ease, text-decoration-color 150ms ease;
+  }
+  a:hover {
+    text-decoration: underline;
+    text-decoration-color: hsl(var(--accent-warm));
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+    color: hsl(var(--accent-warm));
+  }
 }
 
 @layer components {
-  .section    { @apply py-16 md:py-24; }
+  .section    { @apply py-20 md:py-32; }
   .section-sm { @apply py-12 md:py-16; }
   .section-lg { @apply py-20 md:py-32; }
 
   .container-tight { @apply mx-auto w-full max-w-[1200px] px-6 md:px-8; }
   .container-prose { @apply mx-auto w-full max-w-[720px] px-6 md:px-8; }
 
-  .eyebrow { @apply font-mono text-label uppercase text-ink-60; }
-  .rule    { @apply border-t border-rule; }
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: hsl(var(--ink-60));
+    display: block;
+  }
+  .rule { @apply border-t border-rule; }
 }
 
 @layer utilities {
   .font-display {
-    font-family: 'Instrument Serif', serif;
-    font-style: italic;
+    font-family: "EB Garamond", Georgia, serif;
+    font-style: normal;
   }
-
-  .font-mono-label { font-family: 'DM Mono', monospace; }
+  .font-mono-label { font-family: "IBM Plex Mono", monospace; }
 
   .text-ink         { color: hsl(var(--ink)); }
   .text-ink-60      { color: hsl(var(--ink-60)); }
@@ -115,23 +144,18 @@
   .bg-card-hover    { background-color: hsl(var(--card-hover)); }
   .bg-ink           { background-color: hsl(var(--ink)); }
   .text-bg          { color: hsl(var(--bg)); }
+  .bg-accent-warm   { background-color: hsl(var(--accent-warm)); }
   .border-accent-warm { border-color: hsl(var(--accent-warm)); }
 
-  .hover-lift {
-    @apply transition-[transform,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)];
-  }
-  .hover-lift:hover {
-    @apply -translate-y-0.5 bg-card-hover;
-  }
+  .tracking-tightest { letter-spacing: -0.03em; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   FOOTNOTE SPEC SYSTEM — replaces the custom cursor x-ray.
-   Design specs rendered inline as textbook-style footnotes.
+   SPEC FOOTNOTE SYSTEM (kept from previous pass)
    ═══════════════════════════════════════════════════════════════════ */
 .spec-row {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
   line-height: 1.5;
   letter-spacing: 0.02em;
   color: hsl(var(--ink-30));
@@ -140,13 +164,55 @@
   gap: 20px;
 }
 .spec-row sup {
-  font-size: 10px;
+  font-size: 11px;
   font-variant-numeric: lining-nums;
   color: hsl(var(--accent-warm));
   padding-right: 3px;
   vertical-align: baseline;
   position: relative;
   top: -0.35em;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PROJECT ROW — red accent line animates in on hover.
+   Uses scaleY so it draws top-to-bottom from origin top.
+   ═══════════════════════════════════════════════════════════════════ */
+.project-row {
+  position: relative;
+}
+.project-row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: hsl(var(--accent-warm));
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.project-row:hover::before {
+  transform: scaleY(1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DESIGNPROCESS CARD — stroke-dasharray border on hover.
+   SVG overlay handles the actual draw animation; this just hides the
+   static border when the animation is active.
+   ═══════════════════════════════════════════════════════════════════ */
+.process-card {
+  position: relative;
+}
+.process-card .border-svg path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  transition: stroke-dashoffset 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.process-card:hover .border-svg path,
+.process-card:focus-within .border-svg path {
+  stroke-dashoffset: 0;
 }
 
 /* Marquee animation (unchanged) */
@@ -163,15 +229,29 @@
 .group:hover .animate-marquee-left,
 .group:hover .animate-marquee-right { animation-play-state: paused; }
 
-/* Noise — reduced on cream, grain reads differently against warmth */
+/* Grain overlay — pulsing for hero per brief */
 .noise-overlay {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.015;
+  opacity: 0.025;
 }
 [data-theme="dark"] .noise-overlay { opacity: 0.04; }
+
+.grain-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+  animation: grain-pulse 4s ease-in-out infinite;
+}
+
+@keyframes grain-pulse {
+  0%, 100% { opacity: 0.02; }
+  50%      { opacity: 0.05; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
