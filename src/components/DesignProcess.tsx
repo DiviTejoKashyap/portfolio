@@ -1,123 +1,163 @@
 import { motion } from "framer-motion";
+import Section from "./Section";
+import Eyebrow from "./Eyebrow";
+import Spec from "./Spec";
 
-/**
- * DesignProcess — simplified per brief ("remove or redesign — simple list,
- * not cards"). Magazine editorial column list.
- *
- * Layout: left column = italic section header + intro. Right column =
- * numbered process list with paragraph explanations. No cards, no
- * alternating backgrounds, no stroke-dasharray borders.
- */
 
-const steps = [
+
+type Step = {
+  number: string;
+  name: string;
+  tool: string;
+  method: string;
+  artifact: string;
+  detail: string;
+  cursor: string;
+};
+
+const steps: Step[] = [
   {
     number: "01",
-    name: "research",
-    body: "Embedded shadowing with users and engineers. Weeks-in-the-life mapping, recorded tool switches, annotated workflow diagrams. The research artifact is always a written document with a hypothesis, not a slide deck.",
+    name: "Research",
+    tool: "Dovetail, Otter, Notion",
+    method: "Week-in-the-life shadowing",
+    artifact: "Annotated tool-switch map",
+    detail:
+      "I record every tool switch during a workflow session. The count always comes back higher than the team's estimate. Usually around 3x higher.",
+    cursor: "avg: 6 interviews / 2wk",
   },
   {
     number: "02",
-    name: "decisions",
-    body: "Figma Variables and a three-tier token system drive every layout decision. Each component ships with a written rationale in the description field. If I can't write the paragraph, the component doesn't exist yet.",
+    name: "Decisions",
+    tool: "Figma Variables + Tokens Studio",
+    method: "Three-tier token architecture",
+    artifact: "Written rationale per component",
+    detail:
+      "Every component gets a one-paragraph Figma description explaining why it exists. If I can't write the paragraph, the component doesn't exist yet.",
+    cursor: "3 tiers: primitive / semantic / component",
   },
   {
     number: "03",
-    name: "prototype",
-    body: "High-fidelity Figma on Monday, React prototype on Thursday — whichever answers the next open question faster. When prototype and shipped build disagree, I fix the prototype. Files have to behave like the product.",
+    name: "Prototype",
+    tool: "Figma high-fi → React on CodeSandbox",
+    method: "Figma on Monday, React on Thursday",
+    artifact: "Interactive flow + token parity file",
+    detail:
+      "When the prototype and the React build disagree, I fix the prototype. The file has to behave like the product. Otherwise it's a decoration.",
+    cursor: "parity: Figma ↔ React 100%",
   },
   {
     number: "04",
-    name: "ship",
-    body: "Pair with engineers through implementation. Review PRs on my own designs. Roughly 40% of design changes happen during the implementation phase, not before it. The final pixel is part of the design file.",
+    name: "Ship",
+    tool: "GitHub PR review, Linear, Slack",
+    method: "Paired through implementation",
+    artifact: "Shipped pixels + a post-mortem",
+    detail:
+      "I review the engineering PRs on my own designs. Something like 40% of design changes happen during implementation, not before it.",
+    cursor: "PRs reviewed: 100% / design-side",
   },
+];
+
+const processSpecs = [
+  { n: 1, text: "avg project: 6 user interviews / 2-week research phase" },
+  { n: 2, text: "figma to react parity: 100% by spec, tested weekly" },
+  { n: 3, text: "design-side PR review: every component I ship" },
 ];
 
 const DesignProcess = () => {
   return (
-    <section className="relative w-full border-t border-rule">
-      <div className="container-wide py-20 md:py-28">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
-          {/* LEFT — section heading column */}
+    <Section inverted size="md">
+      <motion.div
+        initial={{ opacity: 0, x: -16 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+      >
+        <Eyebrow tone="ink" className="mb-4">How I work</Eyebrow>
+      </motion.div>
+
+      <motion.h2
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.05 }}
+        className="font-display text-ink leading-[1.02] tracking-[-0.02em] mb-4 max-w-[760px]"
+        style={{ fontSize: "clamp(36px, 4vw, 52px)", fontWeight: 500 }}
+      >
+        A process built around evidence, not decks.
+      </motion.h2>
+
+      <p className="font-sans font-light text-[15px] text-ink-60 leading-[1.6] max-w-[520px] mb-12 md:mb-16">
+        Each step names the tool, the method, and the artifact. Hover any step
+        to see the specific thing I've learned doing it.
+      </p>
+
+      <div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px"
+        style={{ background: "hsl(36 18% 93% / 0.08)" }}
+      >
+        {steps.map((step, idx) => (
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            key={step.number}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="lg:col-span-5 lg:sticky lg:top-20 self-start"
+            transition={{ delay: 0.08 * idx }}
+            className="group relative p-7 md:p-8 flex flex-col min-h-[320px] transition-colors duration-300 hover:bg-[hsl(20,12%,6%)]"
+            style={{ background: "hsl(20 12% 4%)" }}
           >
-            <div className="flex items-baseline gap-3 mb-4">
-              <span className="italic-flourish text-burgundy text-[22px] md:text-[28px]">
-                how i work
-              </span>
-              <span className="deco-asterisk text-[24px]" aria-hidden="true">*</span>
-            </div>
-            <h2
-              className="font-display text-ink mb-6"
-              style={{
-                fontSize: "clamp(40px, 5.5vw, 72px)",
-                lineHeight: "0.98",
-                letterSpacing: "-0.02em",
-                fontWeight: 500,
-              }}
+            <div
+              className="font-display text-accent-warm mb-5 leading-none"
+              style={{ fontSize: "clamp(32px, 3vw, 44px)", fontWeight: 500 }}
             >
-              a process built around{" "}
-              <span className="font-display-italic">evidence</span> —<br />
-              not decks.
-            </h2>
-            <p className="text-[16px] md:text-[17px] leading-[1.7] text-ink-60 max-w-[420px]">
-              Four steps, each with a tool I use and an artifact that comes out
-              of it. The specifics matter more than the shape — names of methods,
-              paragraphs of rationale, PRs I've reviewed.
-            </p>
+              {step.number}
+            </div>
+
+            <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink mb-6">
+              {step.name}
+            </div>
+
+            <dl className="space-y-3 mb-6">
+              <div>
+                <dt className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-30 mb-0.5">
+                  Tool
+                </dt>
+                <dd className="font-sans text-[12px] text-ink-60 leading-[1.5]">
+                  {step.tool}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-30 mb-0.5">
+                  Method
+                </dt>
+                <dd className="font-sans text-[12px] text-ink-60 leading-[1.5]">
+                  {step.method}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-30 mb-0.5">
+                  Artifact
+                </dt>
+                <dd className="font-sans text-[12px] text-ink-60 leading-[1.5]">
+                  {step.artifact}
+                </dd>
+              </div>
+            </dl>
+
+            <div
+              className="mt-auto overflow-hidden transition-[max-height,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] max-h-0 opacity-0 group-hover:max-h-[180px] group-hover:opacity-100 group-focus-within:max-h-[180px] group-focus-within:opacity-100"
+            >
+              <div className="pt-4 border-t border-[hsl(36,18%,93%,0.08)]">
+                <p className="font-sans font-light text-[12px] leading-[1.65] text-ink-60 italic">
+                  {step.detail}
+                </p>
+              </div>
+            </div>
           </motion.div>
-
-          {/* RIGHT — numbered list */}
-          <div className="lg:col-span-7">
-            <ol className="space-y-12 md:space-y-16">
-              {steps.map((step, i) => (
-                <motion.li
-                  key={step.number}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.05 }}
-                  className="flex items-start gap-6 md:gap-10 border-b border-rule pb-10 md:pb-14 last:border-b-0"
-                >
-                  {/* Number — large Playfair */}
-                  <div
-                    className="font-display text-cobalt shrink-0"
-                    style={{
-                      fontSize: "clamp(40px, 5vw, 72px)",
-                      lineHeight: "1",
-                      fontWeight: 500,
-                      letterSpacing: "-0.02em",
-                    }}
-                  >
-                    {step.number}
-                  </div>
-
-                  <div className="flex-1 pt-1 md:pt-3">
-                    <h3
-                      className="font-display-italic text-ink mb-3"
-                      style={{
-                        fontSize: "clamp(24px, 2.8vw, 38px)",
-                        lineHeight: "1.1",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {step.name}
-                    </h3>
-                    <p className="text-[16px] md:text-[17px] leading-[1.7] text-ink max-w-[560px]">
-                      {step.body}
-                    </p>
-                  </div>
-                </motion.li>
-              ))}
-            </ol>
-          </div>
-        </div>
+        ))}
       </div>
-    </section>
+
+      <Spec items={processSpecs} className="mt-10" />
+    </Section>
   );
 };
 
