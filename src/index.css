@@ -5,23 +5,27 @@
 @layer base {
   :root {
     /* ═══════════════════════════════════════════════════════════════
-       PALETTE — bold mode.
-       White / near-black / strategic red. Flat. No gradients.
-       Red appears only on interactive elements and obsession markers.
+       PALETTE — warm magazine editorial.
+       Beige/cream background, dark brown ink, cobalt + burgundy.
+       No pure white, no pure black.
        ═══════════════════════════════════════════════════════════════ */
-    --bg:       0 0% 100%;         /* #FFFFFF */
-    --bg-alt:   0 0% 96%;          /* #F5F5F5 */
-    --surface:  0 0% 96%;          /* #F5F5F5 */
-    --ink:      0 0% 4%;           /* #0A0A0A */
-    --ink-60:   0 0% 4% / 0.6;
-    --ink-30:   0 0% 4% / 0.3;
-    --ink-12:   0 0% 4% / 0.12;
-    --accent:      0 0% 4%;
-    --accent-warm: 355 82% 56%;    /* #E63946 — strategic red */
-    --rule:        0 0% 4% / 0.08;
-    --tag-bg:      0 0% 4% / 0.04;
-    --tag-border:  0 0% 4% / 0.12;
-    --card-hover:  0 0% 4% / 0.02;
+    --bg:       32 28% 93%;   /* #F5F1ED — warm cream */
+    --bg-alt:   30 24% 88%;   /*           slightly deeper cream for surfaces */
+    --surface:  32 28% 93%;
+    --ink:      22 22% 12%;   /* #2D1F17 — dark brown, warmer than black */
+    --ink-60:   22 22% 12% / 0.62;
+    --ink-30:   22 22% 12% / 0.38;
+    --ink-12:   22 22% 12% / 0.14;
+
+    --cobalt:   214 72% 52%;  /* #4A90E2-ish — interactive accent */
+    --burgundy: 8 42% 28%;    /* #5C2E2A-ish — decorative accent */
+
+    --accent:      22 22% 12%;
+    --accent-warm: 214 72% 52%;    /* cobalt as primary accent */
+    --rule:        22 22% 12% / 0.14;
+    --tag-bg:      22 22% 12% / 0.05;
+    --tag-border:  22 22% 12% / 0.18;
+    --card-hover:  22 22% 12% / 0.03;
 
     --background: var(--bg);
     --foreground: var(--ink);
@@ -42,30 +46,32 @@
     --card-foreground: var(--ink);
     --popover: var(--surface);
     --popover-foreground: var(--ink);
-    --radius: 0;
+    --radius: 0.375rem;
   }
 
   [data-theme="dark"] {
-    --bg:       0 0% 4%;           /* #0A0A0A */
-    --bg-alt:   0 0% 10%;          /* #1A1A1A */
-    --surface:  0 0% 10%;
-    --ink:      0 0% 100%;
-    --ink-60:   0 0% 100% / 0.6;
-    --ink-30:   0 0% 100% / 0.3;
-    --ink-12:   0 0% 100% / 0.12;
-    --accent:      0 0% 100%;
-    --accent-warm: 355 82% 56%;
-    --rule:        0 0% 100% / 0.08;
-    --tag-bg:      0 0% 100% / 0.04;
-    --tag-border:  0 0% 100% / 0.12;
-    --card-hover:  0 0% 100% / 0.04;
+    /* The brief says "warm, inviting — no dark theme."
+       Keeping a dark variant as a fallback for the data-theme="dark"
+       sections in case study pages that expect one. Muted, not high-contrast. */
+    --bg:       22 22% 10%;
+    --bg-alt:   22 18% 14%;
+    --surface:  22 18% 14%;
+    --ink:      32 28% 93%;
+    --ink-60:   32 28% 93% / 0.62;
+    --ink-30:   32 28% 93% / 0.38;
+    --ink-12:   32 28% 93% / 0.14;
+    --cobalt:   214 72% 58%;
+    --burgundy: 8 42% 38%;
+    --accent-warm: 214 72% 58%;
+    --rule:        32 28% 93% / 0.1;
+    --tag-bg:      32 28% 93% / 0.06;
+    --tag-border:  32 28% 93% / 0.14;
+    --card-hover:  32 28% 93% / 0.04;
   }
 
   * { @apply border-border; }
 
-  html {
-    scroll-behavior: smooth;
-  }
+  html { scroll-behavior: smooth; }
 
   body {
     font-family: "Inter", system-ui, sans-serif;
@@ -76,146 +82,183 @@
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    font-feature-settings: "ss01", "cv11";
   }
 
-  /* Display = EB Garamond (regular, NOT italic per brief) */
+  /* Display = Playfair Display (NOT italic by default per brief; italics used intentionally) */
   h1, h2, h3, h4 {
-    font-family: "EB Garamond", Georgia, serif;
+    font-family: "Playfair Display", Georgia, serif;
     font-style: normal;
   }
 
-  /* Square inputs, square buttons — per brief's "no rounded corners" */
-  input, textarea, select, button {
-    border-radius: 0 !important;
-  }
-
-  /* All links get a red underline on hover (text-decoration, not border) */
+  /* All links: default dark brown, cobalt on hover per brief */
   a {
+    color: inherit;
     text-decoration: none;
-    transition: color 150ms ease, text-decoration-color 150ms ease;
+    transition: color 200ms ease;
   }
-  a:hover {
-    text-decoration: underline;
-    text-decoration-color: hsl(var(--accent-warm));
-    text-decoration-thickness: 2px;
-    text-underline-offset: 4px;
-    color: hsl(var(--accent-warm));
-  }
+  a:hover { color: hsl(var(--cobalt)); }
 }
 
 @layer components {
-  .section    { @apply py-20 md:py-32; }
+  .section    { @apply py-20 md:py-28; }
   .section-sm { @apply py-12 md:py-16; }
-  .section-lg { @apply py-20 md:py-32; }
 
-  .container-tight { @apply mx-auto w-full max-w-[1200px] px-6 md:px-8; }
-  .container-prose { @apply mx-auto w-full max-w-[720px] px-6 md:px-8; }
+  .container-wide  { @apply mx-auto w-full max-w-[1440px] px-6 md:px-10 lg:px-12; }
+  .container-tight { @apply mx-auto w-full max-w-[1200px] px-6 md:px-10; }
 
   .eyebrow {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 12px;
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
     font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    letter-spacing: 0.04em;
     color: hsl(var(--ink-60));
     display: block;
   }
-  .rule { @apply border-t border-rule; }
+
+  /* Decorative italic — "designer", "about me", "project 1", etc. */
+  .italic-flourish {
+    font-family: "Playfair Display", Georgia, serif;
+    font-style: italic;
+    font-weight: 500;
+    color: hsl(var(--ink));
+  }
+
+  /* Filename-below-decorative-element label from reference */
+  .filename-label {
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: hsl(var(--ink-60));
+    letter-spacing: 0.01em;
+  }
 }
 
 @layer utilities {
   .font-display {
-    font-family: "EB Garamond", Georgia, serif;
+    font-family: "Playfair Display", Georgia, serif;
     font-style: normal;
   }
-  .font-mono-label { font-family: "IBM Plex Mono", monospace; }
+  .font-display-italic {
+    font-family: "Playfair Display", Georgia, serif;
+    font-style: italic;
+  }
 
   .text-ink         { color: hsl(var(--ink)); }
   .text-ink-60      { color: hsl(var(--ink-60)); }
   .text-ink-30      { color: hsl(var(--ink-30)); }
-  .text-accent-warm { color: hsl(var(--accent-warm)); }
+  .text-cobalt      { color: hsl(var(--cobalt)); }
+  .text-burgundy    { color: hsl(var(--burgundy)); }
   .bg-page          { background-color: hsl(var(--bg)); }
   .bg-page-alt      { background-color: hsl(var(--bg-alt)); }
   .bg-surface       { background-color: hsl(var(--surface)); }
+  .bg-cobalt        { background-color: hsl(var(--cobalt)); }
+  .bg-burgundy      { background-color: hsl(var(--burgundy)); }
   .border-rule      { border-color: hsl(var(--rule)); }
+  .border-cobalt    { border-color: hsl(var(--cobalt)); }
+  .border-burgundy  { border-color: hsl(var(--burgundy)); }
   .bg-tag           { background-color: hsl(var(--tag-bg)); }
   .border-tag       { border-color: hsl(var(--tag-border)); }
   .bg-card-hover    { background-color: hsl(var(--card-hover)); }
   .bg-ink           { background-color: hsl(var(--ink)); }
   .text-bg          { color: hsl(var(--bg)); }
-  .bg-accent-warm   { background-color: hsl(var(--accent-warm)); }
-  .border-accent-warm { border-color: hsl(var(--accent-warm)); }
-
-  .tracking-tightest { letter-spacing: -0.03em; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   SPEC FOOTNOTE SYSTEM (kept from previous pass)
+   FOLDER ICON — reusable decorative element per reference.
+   Pure CSS with SVG fallback; cobalt fill, subtle rounded tab.
    ═══════════════════════════════════════════════════════════════════ */
-.spec-row {
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 11px;
-  line-height: 1.5;
-  letter-spacing: 0.02em;
-  color: hsl(var(--ink-30));
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-.spec-row sup {
-  font-size: 11px;
-  font-variant-numeric: lining-nums;
-  color: hsl(var(--accent-warm));
-  padding-right: 3px;
-  vertical-align: baseline;
+.folder-icon {
+  display: inline-block;
+  width: 56px;
+  height: 44px;
   position: relative;
-  top: -0.35em;
-  font-weight: 500;
+  flex-shrink: 0;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   PROJECT ROW — red accent line animates in on hover.
-   Uses scaleY so it draws top-to-bottom from origin top.
-   ═══════════════════════════════════════════════════════════════════ */
-.project-row {
-  position: relative;
-}
-.project-row::before {
+.folder-icon::before {
+  /* tab */
   content: "";
   position: absolute;
   left: 0;
   top: 0;
-  bottom: 0;
-  width: 3px;
-  background: hsl(var(--accent-warm));
-  transform: scaleY(0);
-  transform-origin: top;
-  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 40%;
+  height: 10px;
+  background: hsl(var(--cobalt));
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
 }
-.project-row:hover::before {
-  transform: scaleY(1);
+.folder-icon::after {
+  /* body */
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  right: 0;
+  bottom: 0;
+  background: hsl(var(--cobalt));
+  border-radius: 3px 6px 4px 4px;
+}
+
+.folder-icon.is-burgundy::before,
+.folder-icon.is-burgundy::after {
+  background: hsl(var(--burgundy));
+}
+.folder-icon.is-ink::before,
+.folder-icon.is-ink::after {
+  background: hsl(var(--ink));
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   DESIGNPROCESS CARD — stroke-dasharray border on hover.
-   SVG overlay handles the actual draw animation; this just hides the
-   static border when the animation is active.
+   DECORATIVE SYMBOLS — asterisk, floral ornaments.
    ═══════════════════════════════════════════════════════════════════ */
-.process-card {
-  position: relative;
+.deco-asterisk {
+  font-family: "Playfair Display", serif;
+  font-size: 1em;
+  line-height: 1;
+  color: hsl(var(--burgundy));
+  display: inline-block;
+  user-select: none;
 }
-.process-card .border-svg path {
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  transition: stroke-dashoffset 400ms cubic-bezier(0.4, 0, 0.2, 1);
+.deco-flower::before {
+  content: "✿";
+  color: hsl(var(--burgundy));
+  font-size: 1em;
 }
-.process-card:hover .border-svg path,
-.process-card:focus-within .border-svg path {
-  stroke-dashoffset: 0;
+.deco-ornament::before {
+  content: "❋";
+  color: hsl(var(--burgundy));
+  font-size: 1em;
 }
 
-/* Marquee animation (unchanged) */
+/* ═══════════════════════════════════════════════════════════════════
+   MINIMAL DOT CURSOR (only renders on fine pointer devices).
+   ═══════════════════════════════════════════════════════════════════ */
+.minimal-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: hsl(var(--ink));
+  pointer-events: none;
+  z-index: 9998;
+  mix-blend-mode: difference;
+  will-change: transform;
+}
+
+@media (pointer: coarse) {
+  .minimal-cursor { display: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.3s !important;
+  }
+}
+
+/* Marquee (kept in case other components still reference it) */
 @keyframes marquee-left {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -226,39 +269,11 @@
 }
 .animate-marquee-left  { animation: marquee-left 24s linear infinite; }
 .animate-marquee-right { animation: marquee-right 20s linear infinite; }
-.group:hover .animate-marquee-left,
-.group:hover .animate-marquee-right { animation-play-state: paused; }
 
-/* Grain overlay — pulsing for hero per brief */
 .noise-overlay {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.025;
-}
-[data-theme="dark"] .noise-overlay { opacity: 0.04; }
-
-.grain-bg {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  mix-blend-mode: multiply;
-  animation: grain-pulse 4s ease-in-out infinite;
-}
-
-@keyframes grain-pulse {
-  0%, 100% { opacity: 0.02; }
-  50%      { opacity: 0.05; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.3s !important;
-  }
-  .animate-marquee-left, .animate-marquee-right {
-    animation-duration: 48s !important;
-  }
+  opacity: 0.015;
 }
