@@ -1,202 +1,132 @@
 import { motion } from "framer-motion";
-
-/**
- * AboutSection — portrait left, italic greeting right per reference.
- *
- * Layout:
- *   Left (5/12): square portrait placeholder (or real image at /avatar.jpg
- *                if present, with graceful fallback to a monogram tile)
- *   Right (7/12): italic "Hi, I'm Tejo!" → intro → Experience / Skills /
- *                 Contacts in simple list format with italic section headers
- *
- * No decorative scatter here — reference keeps About calm so the Work grids
- * can be busy.
- */
+import Section from "./Section";
+import Eyebrow from "./Eyebrow";
+import Spec from "./Spec";
 
 const experience = [
-  { company: "Deloitte",      role: "Analyst — Frontend & UI",  year: "2023" },
-  { company: "Amazon",        role: "DART Specialist",          year: "2022" },
-  { company: "NYU Tandon",    role: "M.S. Computer Science",    year: "2024 — 2026" },
-  { company: "SRM Institute", role: "B.Tech EEE",               year: "2022" },
+  { company: "Deloitte",      role: "Analyst, Frontend & UI",  year: "2023" },
+  { company: "Amazon",        role: "DART Specialist",         year: "2022" },
+  { company: "NYU Tandon",    role: "M.S. Computer Science",   year: "2024 to 2026" },
+  { company: "SRM Institute", role: "B.Tech EEE",              year: "2022" },
 ];
 
-const skills = {
-  design: ["Figma", "Prototyping", "Design Systems", "UX Research", "Information Architecture", "WCAG Accessibility"],
-  code:   ["React", "Next.js", "TypeScript", "Framer Motion", "Storybook", "Design Tokens", "HTML/CSS"],
-  stack:  ["Java", "Python", "Spring Boot", "SQL", "Git"],
-};
-
-const contacts = [
-  { label: "Email",    value: "divitejokashyap@gmail.com", href: "mailto:divitejokashyap@gmail.com" },
-  { label: "LinkedIn", value: "linkedin.com/in/divitejokashyap", href: "https://www.linkedin.com/in/divitejokashyap/" },
-  { label: "CV",       value: "resume_2026.pdf",           href: "/resume.pdf" },
+const aboutSpecs = [
+  { n: 1, text: "years shipping: 3 · currently 2 projects in parallel" },
+  { n: 2, text: "research interviews run: 40+ across 6 projects" },
+  { n: 3, text: "engineering PRs reviewed: every component I've shipped" },
 ];
 
 const AboutSection = () => {
   return (
-    <section id="about" className="w-full border-t border-rule">
-      <div className="container-wide py-20 md:py-28">
-        {/* Section heading */}
+    <Section id="about">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16">
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, x: -24 }}
+          whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-14 md:mb-20 flex items-baseline gap-4"
+          className="md:col-span-5"
         >
-          <span className="italic-flourish text-burgundy text-[22px] md:text-[28px]">
-            about me
-          </span>
-          <span className="deco-asterisk text-[24px]" aria-hidden="true">*</span>
+          <Eyebrow className="mb-4">About</Eyebrow>
+          <h2
+            className="font-display leading-[1.0] mb-8 tracking-[-0.02em]"
+            style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 500 }}
+          >
+            Designing the interface between{" "}
+            <span className="font-display-italic text-accent-warm">AI</span>{" "}
+            and human{" "}
+            <span className="font-display-italic text-accent-warm">
+              decision-making.
+            </span>
+          </h2>
+
+          <p className="font-sans font-light text-[16px] text-ink-60 leading-[1.7] max-w-[440px] mb-10">
+            I started as an EEE engineer. Moved into software at Deloitte and
+            Amazon. Kept gravitating toward the layer between the system and the
+            person using it. Now I'm at NYU Tandon finishing my M.S. in CS, and
+            I'm building that layer on purpose.
+          </p>
+
+          <div className="space-y-3">
+            {experience.map((exp) => (
+              <div
+                key={exp.company}
+                className="flex items-baseline justify-between gap-4 border-b border-rule pb-3"
+              >
+                <div>
+                  <p className="font-sans font-medium text-[14px] text-ink">
+                    {exp.company}
+                  </p>
+                  <p className="font-sans font-light text-[13px] text-ink-60 mt-0.5">
+                    {exp.role}
+                  </p>
+                </div>
+                <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-30 shrink-0">
+                  {exp.year}
+                </span>
+              </div>
+            ))}
+          </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
-          {/* LEFT — portrait */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="lg:col-span-5"
+        <motion.div
+          initial={{ opacity: 0, x: 24 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.15 }}
+          className="md:col-span-7"
+        >
+          <Eyebrow className="mb-4">How I work</Eyebrow>
+          <h3
+            className="font-display leading-[1.15] mb-8 tracking-[-0.015em] text-ink"
+            style={{ fontSize: "clamp(22px, 2.2vw, 30px)", fontWeight: 500 }}
           >
-            <div className="relative aspect-square max-w-[460px] overflow-hidden rounded-[6px] bg-page-alt">
-              <img
-                src="/avatar.jpg"
-                alt="Tejo Kashyap Divi"
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  // Hide the broken img, let the tile fallback (with monogram) show
-                  (e.currentTarget as HTMLImageElement).style.display = "none";
-                }}
-              />
-              {/* Monogram fallback — renders behind the img */}
-              <div
-                className="absolute inset-0 flex items-center justify-center font-display text-burgundy pointer-events-none"
-                style={{ fontSize: "clamp(72px, 10vw, 140px)", fontWeight: 500 }}
-                aria-hidden="true"
-              >
-                TKD
-              </div>
-            </div>
-            <div className="mt-4 flex items-center justify-between">
-              <span className="filename-label">tejo_portrait.jpg</span>
-              <span className="filename-label">2026</span>
-            </div>
-          </motion.div>
+            A product designer who ships alongside the engineers building it.
+          </h3>
 
-          {/* RIGHT — greeting + lists */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="lg:col-span-7"
-          >
-            {/* Italic greeting */}
-            <h2
-              className="font-display-italic text-ink mb-8"
-              style={{
-                fontSize: "clamp(40px, 6vw, 88px)",
-                lineHeight: "0.98",
-                letterSpacing: "-0.02em",
-                fontWeight: 500,
-              }}
-            >
-              Hi, I'm Tejo!
-            </h2>
-
-            <p className="text-[17px] md:text-[18px] leading-[1.7] text-ink max-w-[580px] mb-10">
-              I started as an EEE engineer, moved into software at{" "}
-              <span className="text-burgundy">Deloitte</span> and{" "}
-              <span className="text-burgundy">Amazon</span>, and kept
-              gravitating toward the layer between the system and the person
-              using it. Now at NYU Tandon finishing my M.S. in CS, and building
-              that layer on purpose.
-            </p>
-
-            {/* Experience */}
-            <div className="mb-12">
-              <div className="italic-flourish text-burgundy text-[17px] md:text-[20px] mb-5">
-                experience
-              </div>
-              <ul className="space-y-3">
-                {experience.map((exp) => (
-                  <li
-                    key={exp.company}
-                    className="flex items-baseline justify-between gap-4 border-b border-rule pb-3"
-                  >
-                    <div>
-                      <span className="text-[15px] md:text-[16px] font-medium text-ink">
-                        {exp.company}
-                      </span>
-                      <span className="text-[14px] text-ink-60 ml-3">
-                        {exp.role}
-                      </span>
-                    </div>
-                    <span className="text-[13px] text-ink-60 shrink-0">{exp.year}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Skills */}
-            <div className="mb-12">
-              <div className="italic-flourish text-burgundy text-[17px] md:text-[20px] mb-5">
-                skills
-              </div>
-              <dl className="space-y-4">
-                <div className="flex flex-col md:flex-row md:gap-6">
-                  <dt className="text-[13px] text-ink-60 md:w-[140px] shrink-0 mb-1 md:mb-0">
-                    Product Design
-                  </dt>
-                  <dd className="text-[15px] text-ink leading-[1.7]">
-                    {skills.design.join(", ")}
-                  </dd>
-                </div>
-                <div className="flex flex-col md:flex-row md:gap-6">
-                  <dt className="text-[13px] text-ink-60 md:w-[140px] shrink-0 mb-1 md:mb-0">
-                    Design Engineering
-                  </dt>
-                  <dd className="text-[15px] text-ink leading-[1.7]">
-                    {skills.code.join(", ")}
-                  </dd>
-                </div>
-                <div className="flex flex-col md:flex-row md:gap-6">
-                  <dt className="text-[13px] text-ink-60 md:w-[140px] shrink-0 mb-1 md:mb-0">
-                    Core Engineering
-                  </dt>
-                  <dd className="text-[15px] text-ink leading-[1.7]">
-                    {skills.stack.join(", ")}
-                  </dd>
-                </div>
-              </dl>
-            </div>
-
-            {/* Contacts */}
+          <div className="space-y-8 font-sans font-light text-[16px] text-ink-60 leading-[1.75] max-w-[600px]">
             <div>
-              <div className="italic-flourish text-burgundy text-[17px] md:text-[20px] mb-5">
-                contacts
-              </div>
-              <ul className="space-y-3">
-                {contacts.map((c) => (
-                  <li key={c.label} className="flex items-baseline justify-between gap-4 border-b border-rule pb-3">
-                    <span className="text-[13px] text-ink-60 shrink-0 w-[80px]">{c.label}</span>
-                    <a
-                      href={c.href}
-                      className="text-[15px] text-ink flex-1 text-left hover:text-cobalt"
-                      target={c.href.startsWith("http") ? "_blank" : undefined}
-                      rel={c.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                    >
-                      {c.value}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink mb-3">
+                Embedded, not thrown over the wall
+              </p>
+              <p>
+                I work as an embedded designer inside engineering-led teams. I
+                sit in standups. I review PRs. I write production CSS when it's
+                faster than documenting it. On Vault, I paired with three
+                engineers through the whole implementation phase and wrote the
+                Tailwind tokens the team shipped with.
+              </p>
             </div>
-          </motion.div>
-        </div>
+
+            <div>
+              <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink mb-3">
+                Figma as a thinking tool, not a delivery format
+              </p>
+              <p>
+                My prototypes aren't demos. They're decisions, made visible. I
+                use Figma variables to drive state, auto-layout to enforce the
+                grid, and component properties so the file behaves like the
+                product. When the prototype and the shipped build disagree, I
+                fix the prototype.
+              </p>
+            </div>
+
+            <div>
+              <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink mb-3">
+                Full process, two or three projects at a time
+              </p>
+              <p>
+                I run research. I own the UI. I see the work through to
+                shipped. Usually two or three projects in parallel. Right now
+                Vault and Pulse are both live. Prioritization is part of the
+                job, not a distraction from it.
+              </p>
+            </div>
+          </div>
+        </motion.div>
       </div>
-    </section>
+
+      <Spec items={aboutSpecs} className="mt-12 md:mt-16 border-t border-rule pt-6" />
+    </Section>
   );
 };
 
