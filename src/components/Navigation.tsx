@@ -1,118 +1,115 @@
-import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 
-const Navigation = () => {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const location = useLocation();
-  const isHome = location.pathname === "/";
+type Theme = "light" | "dark";
 
+type NavigationProps = {
+  theme?: Theme;
+  onToggleTheme?: () => void;
+};
+
+/**
+ * Navigation — minimal fixed top bar.
+ *
+ * Left: name/monogram link to home.
+ * Right: work / about / contact anchors + sun/moon theme toggle.
+ *
+ * The toggle reads optional props from the parent useTheme hook. If not
+ * provided, it manages its own data-theme attribute on <html> so the
+ * component works standalone too.
+ */
+const Navigation = ({ theme: propTheme, onToggleTheme }: NavigationProps) => {
+  const [localTheme, setLocalTheme] = useState<Theme>("light");
+
+  // If parent isn't passing theme, we self-manage and reflect OS preference
+  // on first mount.
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 60);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    if (propTheme !== undefined) return;
+    const stored = typeof window !== "undefined"
+      ? (localStorage.getItem("theme") as Theme | null)
+      : null;
+    const prefersDark = typeof window !== "undefined"
+      && window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+    const initial: Theme = stored ?? (prefersDark ? "dark" : "light");
+    setLocalTheme(initial);
+    document.documentElement.setAttribute("data-theme", initial);
+  }, [propTheme]);
 
-  const navLinks = [
-    { label: "Work", href: "/#work" },
-    { label: "About", href: "/#about" },
-    { label: "Contact", href: "/#contact" },
-  ];
+  const activeTheme: Theme = propTheme ?? localTheme;
 
-  const scrollToSection = (href: string) => {
-    setMobileOpen(false);
-    if (isHome) {
-      const id = href.replace("/#", "");
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-    } else {
-      window.location.href = href;
+  const toggle = () => {
+    if (onToggleTheme) {
+      onToggleTheme();
+      return;
+    }
+    const next: Theme = activeTheme === "dark" ? "light" : "dark";
+    setLocalTheme(next);
+    document.documentElement.setAttribute("data-theme", next);
+    try {
+      localStorage.setItem("theme", next);
+    } catch {
+      /* ignore */
     }
   };
 
+  const isDark = activeTheme === "dark";
+
   return (
-    <>
-      <motion.nav
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className={`fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-6 md:px-10 transition-all duration-300 ${
-          scrolled ? "bg-page/80 backdrop-blur-xl border-b border-rule" : ""
-        }`}
-      >
-        {/* Left: Logo */}
-        <Link to="/" className="flex items-center gap-1.5" data-cursor="OPEN">
-          <span className="font-sans font-bold text-[15px] text-ink">TKD</span>
-          <span className="text-accent-warm text-xs align-super">°</span>
-          <span className="font-mono-label text-[10px] uppercase tracking-[0.18em] text-ink-30 hidden sm:inline">
-            · PORTFOLIO
-          </span>
-        </Link>
+    <nav
+      className="fixed top-0 left-0 right-0 z-40 bg-page/80 backdrop-blur-sm border-b border-rule"
+      style={{ WebkitBackdropFilter: "blur(8px)", backdropFilter: "blur(8px)" }}
+    >
+      <div className="mx-auto w-full max-w-[1200px] px-6 md:px-8 h-14 md:h-16 flex items-center justify-between">
+        <a
+          href="#top"
+          className="font-mono text-[12px] uppercase tracking-[0.14em] text-ink hover:text-accent-warm transition-colors"
+        >
+          Tejo K. Divi
+        </a>
 
-        {/* Center: Nav Links (desktop) */}
-        <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <button
-              key={link.label}
-              onClick={() => scrollToSection(link.href)}
-              className="relative font-sans text-[13px] text-ink-60 hover:text-ink transition-colors group"
-              data-cursor="VIEW"
-            >
-              {link.label}
-              <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-ink group-hover:w-full transition-all duration-200" />
-            </button>
-          ))}
-        </div>
-
-        {/* Right */}
-        <div className="flex items-center gap-3">
-          {/* Available pill */}
-          <div className="hidden sm:flex items-center gap-2 border border-green-500/30 rounded-full px-3 py-1">
-            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            <span className="font-mono-label text-[10px] text-ink-60">Available for work</span>
-          </div>
-
-          {/* Mobile hamburger */}
-          <button
-            onClick={() => setMobileOpen(true)}
-            className="md:hidden text-ink-60 p-1"
+        <div className="flex items-center gap-6 md:gap-8">
+          <a
+            href="#work"
+            className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-60 hover:text-ink transition-colors hidden sm:inline"
           >
-            <Menu size={20} />
+            Work
+          </a>
+          <a
+            href="#about"
+            className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-60 hover:text-ink transition-colors hidden sm:inline"
+          >
+            About
+          </a>
+          <a
+            href="#contact"
+            className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-60 hover:text-ink transition-colors hidden sm:inline"
+          >
+            Contact
+          </a>
+
+          {/* Sun/moon toggle */}
+          <button
+            type="button"
+            onClick={toggle}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            className="w-8 h-8 flex items-center justify-center text-ink-60 hover:text-ink transition-colors"
+          >
+            {isDark ? (
+              /* Sun icon — shown when we're currently dark, click to go light */
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+              </svg>
+            ) : (
+              /* Moon icon — shown when we're currently light, click to go dark */
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            )}
           </button>
         </div>
-      </motion.nav>
-
-      {/* Mobile overlay */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-page flex flex-col items-center justify-center"
-          >
-            <button
-              onClick={() => setMobileOpen(false)}
-              className="absolute top-4 right-6 text-ink"
-            >
-              <X size={24} />
-            </button>
-            <div className="flex flex-col items-center gap-8">
-              {navLinks.map((link) => (
-                <button
-                  key={link.label}
-                  onClick={() => scrollToSection(link.href)}
-                  className="font-display text-4xl text-ink hover:text-accent-warm transition-colors"
-                >
-                  {link.label}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+      </div>
+    </nav>
   );
 };
 
