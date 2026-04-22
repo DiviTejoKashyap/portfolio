@@ -1,155 +1,106 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import Section from "./Section";
-import Eyebrow from "./Eyebrow";
-import Spec from "./Spec";
 import { projects } from "@/data/projects";
-
 
 const WorkSection = () => {
   return (
-    <Section id="work">
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 md:mb-16 gap-4">
-        <div>
-          <motion.div
-            initial={{ opacity: 0, x: -16 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-          >
-            <Eyebrow className="mb-4">01. Selected work</Eyebrow>
-          </motion.div>
-          <motion.h2
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.05 }}
-            className="font-display leading-[1.05] tracking-[-0.02em]"
-            style={{ fontSize: "clamp(36px, 4vw, 52px)", fontWeight: 500 }}
-          >
-            {projects.length} projects. One system of thinking.
-          </motion.h2>
+    <section id="work" className="app-shell pt-0">
+      <div className="glass section-pad">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <div className="eyebrow">Selected work</div>
+            <h2 className="display-lg mt-3">Case studies & product explorations</h2>
+          </div>
+          <div className="pill">Dense, clean, premium</div>
         </div>
-        <Eyebrow>Shipped between 2024 and 2026</Eyebrow>
-      </div>
 
-      <div>
-        {projects.map((project, idx) => {
-          const shippedDetail = project.beforeAfter.after.split(".")[0] + ".";
-
-          return (
-            <Link
-              to={`/work/${project.slug}`}
+        <div className="mt-8 space-y-5">
+          {projects.map((project, index) => (
+            <motion.article
               key={project.slug}
-              className="group relative block border-t border-rule py-8 md:py-10 -mx-6 md:-mx-8 px-6 md:px-8 transition-colors duration-300 hover:bg-card-hover"
+              initial={{ opacity: 0, y: 22 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.04 }}
+              className="glass-soft section-pad hover-lift"
             >
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start">
-                <motion.div
-                  initial={{ opacity: 0, x: -24 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.05 * idx, duration: 0.4 }}
-                  className="md:col-span-7"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <Eyebrow>{project.eyebrow}</Eyebrow>
-                    {project.status && (
-                      <>
-                        <span className="text-ink-30">·</span>
-                        <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-60">
-                          {project.status}
-                        </span>
-                      </>
-                    )}
+              <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="pill">0{index + 1}</span>
+                    <span className="pill">{project.eyebrow}</span>
+                    {project.tags.slice(0, 2).map((tag) => (
+                      <span key={tag} className="pill">
+                        {tag}
+                      </span>
+                    ))}
                   </div>
 
-                  <h3
-                    className="font-display text-ink leading-[1.08] mb-3 tracking-[-0.015em]"
-                    style={{ fontSize: "clamp(24px, 2.6vw, 36px)", fontWeight: 500 }}
-                  >
-                    {project.headline}
-                  </h3>
-
-                  <p className="font-sans font-light text-[15px] text-ink-60 leading-[1.6] max-w-[560px] mb-6">
-                    {project.body}
+                  <h3 className="display-md mt-5 max-w-[16ch]">{project.title}</h3>
+                  <p className="mt-3 text-base muted max-w-[70ch]">
+                    {project.subtitle}
                   </p>
 
-                  <div className="max-w-[560px] mb-5">
-                    <div className="flex items-start gap-3 border-l border-accent-warm/40 pl-4">
-                      <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-accent-warm shrink-0 mt-0.5">
-                        Obsession
-                      </span>
-                      <p className="font-sans text-[13px] leading-[1.55] text-ink-60">
-                        {project.obsession}
-                      </p>
+                  <div className="grid gap-4 md:grid-cols-2 mt-6">
+                    <div className="glass-soft p-4">
+                      <div className="eyebrow">Problem</div>
+                      <p className="mt-3 text-sm muted">{project.problem}</p>
+                    </div>
+                    <div className="glass-soft p-4">
+                      <div className="eyebrow">Outcome</div>
+                      <p className="mt-3 text-sm muted">{project.outcome}</p>
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-[11px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
-                      {project.role}
-                    </span>
-                    <span className="font-mono text-[11px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
-                      {project.timeline}
-                    </span>
-                    {project.team && (
-                      <span className="font-mono text-[11px] bg-tag border border-tag rounded-full px-3 py-1 text-ink-60">
-                        {project.team}
-                      </span>
-                    )}
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    <Link to={`/case-study/${project.slug}`} className="cta">
+                      Open case study
+                    </Link>
                     {project.isLive && (
-                      <span className="font-mono text-[11px] text-accent-warm border border-accent-warm/30 rounded-full px-3 py-1">
-                        Live ↗
-                      </span>
+                      <a
+                        href={project.previewFile}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="cta-secondary"
+                      >
+                        Live preview
+                      </a>
                     )}
-                    <span className="ml-auto font-sans font-medium text-[13px] text-ink opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                      Read it →
-                    </span>
                   </div>
-                </motion.div>
+                </div>
 
-                <motion.div
-                  initial={{ opacity: 0, x: 24 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.05 * idx + 0.05, duration: 0.4 }}
-                  className="md:col-span-5"
-                >
-                  <div
-                    className="rounded-[4px] overflow-hidden aspect-[16/10] transition-transform duration-500"
-                    style={{
-                      transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)",
-                      background: project.gradient,
-                    }}
-                  >
-                    <img
-                      src={project.banner}
-                      alt={project.title}
-                      className="w-full h-full object-cover object-center group-hover:scale-[1.015] transition-transform duration-500"
-                      style={{ transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)" }}
-                      loading={idx < 2 ? "eager" : "lazy"}
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).style.display = "none";
-                      }}
-                    />
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="project-thumb hover-lift p-4 flex items-end">
+                    <div>
+                      <div className="kicker">Preview</div>
+                      <div className="mt-1 text-white font-medium">
+                        Interface system
+                      </div>
+                    </div>
                   </div>
-                </motion.div>
+                  <div className="project-thumb tall hover-lift p-4 flex items-end">
+                    <div>
+                      <div className="kicker">Flow</div>
+                      <div className="mt-1 text-white font-medium">
+                        UX architecture
+                      </div>
+                    </div>
+                  </div>
+                  <div className="project-thumb wide hover-lift col-span-2 p-4 flex items-end">
+                    <div>
+                      <div className="kicker">Impact</div>
+                      <div className="mt-1 text-white font-medium">
+                        Product narrative + polished execution
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-
-              <Spec
-                className="mt-6"
-                items={[
-                  { n: 1, text: project.cursorDetail },
-                  { n: 2, text: shippedDetail.toLowerCase() },
-                  { n: 3, text: `tags: ${project.tags.slice(0, 3).join(" / ").toLowerCase()}` },
-                ]}
-              />
-            </Link>
-          );
-        })}
-
-        <div className="border-t border-rule" />
+            </motion.article>
+          ))}
+        </div>
       </div>
-    </Section>
+    </section>
   );
 };
 

@@ -1,132 +1,139 @@
 import { motion } from "framer-motion";
-import Section from "./Section";
-import Eyebrow from "./Eyebrow";
-import Spec from "./Spec";
 
-const experience = [
-  { company: "Deloitte",      role: "Analyst, Frontend & UI",  year: "2023" },
-  { company: "Amazon",        role: "DART Specialist",         year: "2022" },
-  { company: "NYU Tandon",    role: "M.S. Computer Science",   year: "2024 to 2026" },
-  { company: "SRM Institute", role: "B.Tech EEE",              year: "2022" },
+const tools = [
+  "Figma",
+  "Framer",
+  "React",
+  "Tailwind",
+  "Prototyping",
+  "Wireframing",
+  "Systems thinking",
+  "Usability",
 ];
 
-const aboutSpecs = [
-  { n: 1, text: "years shipping: 3 · currently 2 projects in parallel" },
-  { n: 2, text: "research interviews run: 40+ across 6 projects" },
-  { n: 3, text: "engineering PRs reviewed: every component I've shipped" },
+const timeline = [
+  {
+    title: "NYU Tandon",
+    meta: "M.S. Computer Science / 2024—2026",
+  },
+  {
+    title: "Deloitte",
+    meta: "Analyst / frontend + UX-adjacent problem solving",
+  },
+  {
+    title: "Amazon",
+    meta: "Ops + systems exposure / speed, clarity, scale",
+  },
 ];
 
 const AboutSection = () => {
   return (
-    <Section id="about">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16">
+    <section id="about" className="app-shell pt-0">
+      <div className="bento-grid">
         <motion.div
-          initial={{ opacity: 0, x: -24 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="md:col-span-5"
+          className="glass col-span-12 lg:col-span-5 section-pad hover-lift min-h-[520px]"
         >
-          <Eyebrow className="mb-4">About</Eyebrow>
-          <h2
-            className="font-display leading-[1.0] mb-8 tracking-[-0.02em]"
-            style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 500 }}
-          >
-            Designing the interface between{" "}
-            <span className="font-display-italic text-accent-warm">AI</span>{" "}
-            and human{" "}
-            <span className="font-display-italic text-accent-warm">
-              decision-making.
-            </span>
-          </h2>
+          <div className="eyebrow">About</div>
+          <div className="mt-5">
+            <h2 className="display-lg max-w-[8ch]">
+              Product designer with an engineer brain.
+            </h2>
+            <p className="mt-5 text-lg muted">
+              I care about clean interaction logic, sharp visual hierarchy, and
+              interfaces that don’t collapse the second real complexity shows up.
+            </p>
+          </div>
 
-          <p className="font-sans font-light text-[16px] text-ink-60 leading-[1.7] max-w-[440px] mb-10">
-            I started as an EEE engineer. Moved into software at Deloitte and
-            Amazon. Kept gravitating toward the layer between the system and the
-            person using it. Now I'm at NYU Tandon finishing my M.S. in CS, and
-            I'm building that layer on purpose.
-          </p>
+          <div className="mt-8 glass-soft p-4">
+            <div className="kicker">Quick read</div>
+            <p className="mt-3 text-sm muted">
+              I move between UX thinking, visual systems, and implementation.
+              Basically: not just pretty screens. Actual product behavior.
+            </p>
+          </div>
 
-          <div className="space-y-3">
-            {experience.map((exp) => (
-              <div
-                key={exp.company}
-                className="flex items-baseline justify-between gap-4 border-b border-rule pb-3"
-              >
-                <div>
-                  <p className="font-sans font-medium text-[14px] text-ink">
-                    {exp.company}
-                  </p>
-                  <p className="font-sans font-light text-[13px] text-ink-60 mt-0.5">
-                    {exp.role}
-                  </p>
-                </div>
-                <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-30 shrink-0">
-                  {exp.year}
+          <div className="mt-8">
+            <div className="eyebrow mb-3">Core strengths</div>
+            <div className="flex flex-wrap gap-2">
+              {tools.map((tool) => (
+                <span key={tool} className="pill">
+                  {tool}
                 </span>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+          viewport={{ once: true }}
+          className="glass-soft col-span-12 lg:col-span-3 section-pad hover-lift min-h-[520px]"
+        >
+          <div className="eyebrow">Profile</div>
+          <div className="mt-5 project-thumb tall flex items-end p-5">
+            <div>
+              <div className="kicker">Portrait</div>
+              <div className="mt-1 text-white text-2xl font-semibold tracking-[-0.04em]">
+                TD
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-5 space-y-4">
+            <div>
+              <div className="kicker">Based in</div>
+              <div className="mt-1 text-white">Jersey City</div>
+            </div>
+            <div>
+              <div className="kicker">Looking for</div>
+              <div className="mt-1 text-white">Product Design / UI UX / Design Systems</div>
+            </div>
+            <div>
+              <div className="kicker">Edge</div>
+              <div className="mt-1 text-white">Design + implementation literacy</div>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+          viewport={{ once: true }}
+          className="glass-soft col-span-12 lg:col-span-4 section-pad hover-lift min-h-[520px]"
+        >
+          <div className="eyebrow">Timeline</div>
+          <div className="mt-5 space-y-4">
+            {timeline.map((item, index) => (
+              <div key={item.title} className="glass-soft p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-white font-medium">{item.title}</div>
+                    <div className="mt-1 text-sm muted">{item.meta}</div>
+                  </div>
+                  <div className="pill">{String(index + 1).padStart(2, "0")}</div>
+                </div>
               </div>
             ))}
           </div>
-        </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, x: 24 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.15 }}
-          className="md:col-span-7"
-        >
-          <Eyebrow className="mb-4">How I work</Eyebrow>
-          <h3
-            className="font-display leading-[1.15] mb-8 tracking-[-0.015em] text-ink"
-            style={{ fontSize: "clamp(22px, 2.2vw, 30px)", fontWeight: 500 }}
-          >
-            A product designer who ships alongside the engineers building it.
-          </h3>
+          <div className="mini-divider my-5" />
 
-          <div className="space-y-8 font-sans font-light text-[16px] text-ink-60 leading-[1.75] max-w-[600px]">
-            <div>
-              <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink mb-3">
-                Embedded, not thrown over the wall
-              </p>
-              <p>
-                I work as an embedded designer inside engineering-led teams. I
-                sit in standups. I review PRs. I write production CSS when it's
-                faster than documenting it. On Vault, I paired with three
-                engineers through the whole implementation phase and wrote the
-                Tailwind tokens the team shipped with.
-              </p>
-            </div>
-
-            <div>
-              <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink mb-3">
-                Figma as a thinking tool, not a delivery format
-              </p>
-              <p>
-                My prototypes aren't demos. They're decisions, made visible. I
-                use Figma variables to drive state, auto-layout to enforce the
-                grid, and component properties so the file behaves like the
-                product. When the prototype and the shipped build disagree, I
-                fix the prototype.
-              </p>
-            </div>
-
-            <div>
-              <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink mb-3">
-                Full process, two or three projects at a time
-              </p>
-              <p>
-                I run research. I own the UI. I see the work through to
-                shipped. Usually two or three projects in parallel. Right now
-                Vault and Pulse are both live. Prioritization is part of the
-                job, not a distraction from it.
-              </p>
-            </div>
+          <div>
+            <div className="eyebrow">Now / Next</div>
+            <p className="mt-3 text-sm muted">
+              Building stronger case studies, refining execution quality, and
+              positioning for recruiters who want product taste plus systems rigor.
+            </p>
           </div>
         </motion.div>
       </div>
-
-      <Spec items={aboutSpecs} className="mt-12 md:mt-16 border-t border-rule pt-6" />
-    </Section>
+    </section>
   );
 };
 

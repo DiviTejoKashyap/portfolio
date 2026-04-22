@@ -1,116 +1,39 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: [
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
-    container: {
-      center: true,
-      padding: {
-        DEFAULT: "1.5rem",
-        md: "2rem",
-        lg: "2rem",
-      },
-      screens: {
-        sm: "640px",
-        md: "768px",
-        lg: "1024px",
-        xl: "1200px",
-        "2xl": "1200px",
-      },
-    },
     extend: {
       fontFamily: {
-        display: ['"Fraunces"', "Georgia", "serif"],
-        sans:    ['"Inter"', "system-ui", "sans-serif"],
-        mono:    ['"IBM Plex Mono"', "ui-monospace", "monospace"],
+        sans: ['"Inter"', "system-ui", "sans-serif"],
       },
-
-      spacing: {
-        "section-y-sm": "4rem",
-        "section-y":    "6rem",
-        "section-y-lg": "8rem",
-        "block":        "3rem",
-        "stack":        "1.5rem",
-        "tight":        "0.5rem",
-      },
-
-      fontSize: {
-        "display-xl": ["clamp(3.5rem, 7vw, 5.5rem)",  { lineHeight: "1.02", letterSpacing: "-0.025em" }],
-        "display-lg": ["clamp(2.75rem, 5vw, 4rem)",   { lineHeight: "1.05", letterSpacing: "-0.02em" }],
-        "display-md": ["clamp(2rem, 3.5vw, 2.75rem)", { lineHeight: "1.1",  letterSpacing: "-0.015em" }],
-
-        "h1": ["2.5rem",   { lineHeight: "1.1",  letterSpacing: "-0.02em" }],
-        "h2": ["2rem",     { lineHeight: "1.15", letterSpacing: "-0.02em" }],
-        "h3": ["1.5rem",   { lineHeight: "1.25", letterSpacing: "-0.015em" }],
-        "h4": ["1.125rem", { lineHeight: "1.35", letterSpacing: "-0.01em" }],
-
-        "body-lg":  ["1.0625rem", { lineHeight: "1.6" }],
-        "body":     ["0.9375rem", { lineHeight: "1.6" }],
-        "body-sm":  ["0.875rem",  { lineHeight: "1.55" }],
-
-        "label":    ["0.75rem",   { lineHeight: "1.3", letterSpacing: "0.08em" }],
-        "caption":  ["0.8125rem", { lineHeight: "1.5" }],
-      },
-
       colors: {
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent-color))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
+        card: "hsl(var(--card))",
+        primary: "hsl(var(--primary))",
+        secondary: "hsl(var(--secondary))",
+        muted: "hsl(var(--muted))",
+        accent: "hsl(var(--accent))",
       },
-
       borderRadius: {
-        lg: "0.375rem",
-        md: "0.25rem",
-        sm: "0.125rem",
+        xl2: "1.75rem",
       },
-
-      keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
-      },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up":   "accordion-up 0.2s ease-out",
+      boxShadow: {
+        glass: "0 20px 60px rgba(0,0,0,0.34)",
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 } satisfies Config;

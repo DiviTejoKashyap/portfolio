@@ -1,131 +1,124 @@
 import { motion } from "framer-motion";
-import Section from "./Section";
-import Eyebrow from "./Eyebrow";
-import Spec from "./Spec";
 
+const chips = [
+  "Product Design",
+  "UI Systems",
+  "Design Engineering",
+  "Framer / React",
+];
 
-const heroSpecs = [
-  { n: 1, text: "question asked: reframed weekly" },
-  { n: 2, text: "current answer: see projects 01 to 05" },
-  { n: 3, text: "next check-in: next release" },
+const metrics = [
+  { value: "4+", label: "years across product, ops, and frontend-adjacent work" },
+  { value: "10+", label: "shipped case studies, concepts, and portfolio builds" },
+  { value: "2026", label: "target full-time product design opportunities" },
 ];
 
 const Hero = () => {
   return (
-    <Section size="lg" divider={false} className="pt-24 md:pt-28">
-      {/* Top meta row */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.1, duration: 0.3 }}
-        className="flex items-center gap-4 mb-14 md:mb-20"
-      >
-        <Eyebrow className="whitespace-nowrap">
-          Portfolio / Tejo Kashyap Divi
-        </Eyebrow>
+    <section className="app-shell pt-2">
+      <div className="bento-grid min-h-[calc(100svh-18px)] auto-rows-[minmax(120px,auto)]">
         <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: "100%" }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-          className="h-px bg-ink/[0.08] flex-1"
-        />
-        <Eyebrow className="whitespace-nowrap hidden md:block">
-          Last updated April 2026
-        </Eyebrow>
-      </motion.div>
-
-      {/* The question */}
-      <div className="mb-14 md:mb-20 max-w-[1100px]">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25, duration: 0.4 }}
-          className="mb-6"
+          transition={{ duration: 0.55 }}
+          className="glass col-span-12 lg:col-span-8 row-span-3 section-pad flex flex-col justify-between"
         >
-          <Eyebrow>The question I'm working on</Eyebrow>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <span className="eyebrow">Tejo Kashyap Divi / Product Designer</span>
+            <span className="pill">Open to full-time roles</span>
+          </div>
+
+          <div className="py-6 md:py-10">
+            <h1 className="display-xl max-w-[10ch]">
+              Dark, polished,
+              <br />
+              high-intent
+              <br />
+              product design.
+            </h1>
+            <p className="mt-6 max-w-[720px] text-lg muted">
+              I build interfaces that feel premium, structured, and alive —
+              where product thinking, visual systems, and front-end execution
+              stop acting like separate departments.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <a href="#work" className="cta">
+              View work
+            </a>
+            <a href="#about" className="cta-secondary">
+              About me
+            </a>
+            <a href="#contact" className="cta-secondary">
+              Contact
+            </a>
+          </div>
         </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="font-display leading-[1.03] tracking-[-0.02em] text-ink"
-          style={{
-            fontSize: "clamp(44px, 6.5vw, 96px)",
-            fontWeight: 400,
-          }}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1, duration: 0.55 }}
+          className="glass-soft col-span-12 lg:col-span-4 row-span-2 section-pad hover-lift"
         >
-          When does a prototype stop being a demo{" "}
-          <span className="font-display-italic text-accent-warm">
-            and start being the product?
-          </span>
-        </motion.h1>
+          <div className="eyebrow">Live status</div>
+          <div className="mt-4 flex items-center gap-3">
+            <span className="h-3 w-3 rounded-full bg-emerald-400 shadow-[0_0_18px_rgba(74,222,128,0.7)]" />
+            <span className="text-sm text-white">Available for 2026 roles</span>
+          </div>
+
+          <div className="mini-divider my-5" />
+
+          <div className="space-y-4">
+            <div>
+              <div className="kicker">Current focus</div>
+              <div className="mt-1 text-white">Product design × portfolio systems × interaction craft</div>
+            </div>
+            <div>
+              <div className="kicker">Location</div>
+              <div className="mt-1 text-white">Jersey City / New York</div>
+            </div>
+            <div>
+              <div className="kicker">Education</div>
+              <div className="mt-1 text-white">M.S. Computer Science, NYU Tandon</div>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 22 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.18, duration: 0.55 }}
+          className="glass-soft col-span-12 lg:col-span-4 row-span-1 section-pad hover-lift"
+        >
+          <div className="eyebrow">Tool stack</div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {chips.map((chip) => (
+              <span key={chip} className="pill">
+                {chip}
+              </span>
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 22 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.24, duration: 0.55 }}
+          className="glass-soft col-span-12 lg:col-span-8 row-span-1 section-pad hover-lift"
+        >
+          <div className="grid gap-6 md:grid-cols-3">
+            {metrics.map((item) => (
+              <div key={item.label}>
+                <div className="stat-xl">{item.value}</div>
+                <p className="mt-2 text-sm muted">{item.label}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
       </div>
-
-      {/* Sub-paragraph. Written like a person, not a press release. */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.55, duration: 0.4 }}
-        className="flex flex-col md:flex-row justify-between gap-10 md:gap-16"
-      >
-        <div className="max-w-[540px] space-y-4">
-          <p className="text-[17px] text-ink leading-[1.7]">
-            I'm Tejo. I design products and write the code that ships them.
-            Mostly for engineering-led teams who don't have time to wait on
-            handoffs.
-          </p>
-          <p className="text-[17px] text-ink-60 leading-[1.7]">
-            Right now I'm finishing an M.S. in Computer Science at NYU Tandon.
-            Before that, I was an analyst at Deloitte and a DART specialist at
-            Amazon. I think about the gap between what a system can do and what
-            the person using it actually needs to get done. That gap is the
-            whole job.
-          </p>
-        </div>
-
-        <div className="flex flex-col gap-3 shrink-0">
-          <a
-            href="#work"
-            className="font-sans font-medium text-[14px] text-ink border-b-[1.5px] border-ink hover:text-accent-warm hover:border-accent-warm transition-colors w-fit"
-          >
-            The work, five projects ↓
-          </a>
-          <a
-            href="/resume.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-30 hover:text-ink transition-colors w-fit"
-          >
-            Resume (PDF)
-          </a>
-        </div>
-      </motion.div>
-
-      {/* Bottom rule: affiliation and availability inline, no bold affiliation row */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8, duration: 0.3 }}
-        className="mt-16 md:mt-20 border-t border-rule pt-6 flex flex-col md:flex-row items-start md:items-baseline justify-between gap-4"
-      >
-        <p className="text-[13px] text-ink-60">
-          Previously at{" "}
-          <span className="text-ink">Deloitte</span> and{" "}
-          <span className="text-ink">Amazon</span>. Currently at{" "}
-          <span className="text-ink">NYU Tandon</span>.
-        </p>
-        <p className="text-[13px] text-ink-60 flex items-center gap-2">
-          <span
-            className="inline-block w-[7px] h-[7px] rounded-full bg-accent-warm"
-            aria-hidden="true"
-          />
-          Available for roles starting Summer 2026
-        </p>
-      </motion.div>
-
-      <Spec items={heroSpecs} className="mt-10" />
-    </Section>
+    </section>
   );
 };
 
