@@ -1,199 +1,300 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import { portfolioContent } from "@/data/portfolioContent";
 
-/**
- * Hero — "desktop file" metaphor per reference.
- *
- * Layout:
- *   • Massive Playfair Display headline (regular weight), left-aligned.
- *   • Italic "designer" flourish overlaid asymmetrically.
- *   • Year in parentheses small below.
- *   • Scattered folder icons with filename labels ("lume_sys.fig", etc.)
- *     absolutely positioned around the headline — the "desktop" feel.
- *   • Subtle decorative asterisks/flowers for balance.
- */
+const ease: [number, number, number, number] = [0.22, 1, 0.36, 1];
+const { person } = portfolioContent;
 
-type ScatterFile = {
-  id: string;
-  name: string;
-  top: string;
-  left?: string;
-  right?: string;
-  rotate?: number;
-  color?: "cobalt" | "burgundy" | "ink";
-  hiddenOnMobile?: boolean;
-};
+interface HeroProps { revealed?: boolean; }
 
-// Files scattered around the hero — each a real project filename
-const scatter: ScatterFile[] = [
-  { id: "1", name: "lume_sys.fig",      top: "14%", left: "6%",   rotate: -6  },
-  { id: "2", name: "vault_ds.fig",      top: "22%", right: "10%", rotate: 4, color: "burgundy" },
-  { id: "3", name: "sync_collab.fig",   top: "58%", left: "4%",   rotate: 3 },
-  { id: "4", name: "pulse.fig",         top: "66%", right: "7%",  rotate: -5 },
-  { id: "5", name: "solo_leveling.fig", top: "82%", left: "16%",  rotate: 2, color: "ink", hiddenOnMobile: true },
-  { id: "6", name: "resume_2026.pdf",   top: "84%", right: "18%", rotate: -3, color: "burgundy", hiddenOnMobile: true },
-];
+const Hero = ({ revealed = true }: HeroProps) => {
+  const reduce = useReducedMotion();
 
-const Hero = () => {
+  const anim = (delay: number, yOffset = 18) => {
+    const skip = Boolean(reduce) || revealed;
+    return {
+      initial:    skip ? (false as const) : ({ opacity: 0, y: yOffset } as const),
+      animate:    revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: yOffset },
+      transition: reduce ? { duration: 0 } : { duration: 0.65, delay, ease },
+    };
+  };
+
   return (
-    <section
-      id="top"
-      className="relative w-full overflow-hidden min-h-screen"
-      style={{ background: "hsl(var(--bg))" }}
-    >
-      <div className="relative container-wide py-16 md:py-24 lg:py-28 min-h-screen flex flex-col">
-        {/* Top bar */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.1, duration: 0.4 }}
-          className="flex items-center justify-between mb-12 md:mb-20 relative z-10"
-        >
-          <span className="eyebrow">Tejo Kashyap Divi</span>
-          <div className="flex items-center gap-6">
-            <a href="#work" className="eyebrow">Work</a>
-            <a href="#about" className="eyebrow">About</a>
-            <a href="#contact" className="eyebrow">Contact</a>
+    <section id="top" className="hero-section">
+
+      {/* ── Editorial canvas panel ── */}
+      <motion.div {...anim(0.04, 24)} className="hero-panel">
+
+        {/* macOS-style window bar */}
+        <div className="hero-window-bar" aria-hidden="true">
+          <div className="window-controls">
+            <span className="window-dot red" />
+            <span className="window-dot yellow" />
+            <span className="window-dot green" />
           </div>
-        </motion.div>
-
-        {/* Center — headline stack */}
-        <div className="relative flex-1 flex flex-col justify-center items-start py-8 md:py-16">
-          {/* Decorative asterisk top-right of headline zone */}
-          <span
-            className="deco-asterisk absolute text-[80px] md:text-[120px] leading-none"
-            style={{ top: "-4%", right: "2%" }}
-            aria-hidden="true"
-          >
-            *
+          <span className="hero-window-meta font-mono-label">
+            {person.name} · {person.role} · {person.location}
           </span>
-
-          {/* "designer portfolio" subtitle */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="flex items-center gap-3 mb-6 md:mb-8 relative z-10"
-          >
-            <span className="italic-flourish text-[20px] md:text-[28px] text-burgundy">
-              designer
-            </span>
-            <span className="text-ink-60 text-[15px] md:text-[17px]">portfolio</span>
-          </motion.div>
-
-          {/* Main headline — huge, left-aligned, Playfair Display */}
-          <motion.h1
-            initial={{ opacity: 0, y: 32 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="font-display text-ink relative z-10"
-            style={{
-              fontSize: "clamp(64px, 13vw, 180px)",
-              lineHeight: "0.92",
-              letterSpacing: "-0.03em",
-              fontWeight: 500,
-            }}
-          >
-            Tejo Kashyap<br />
-            <span className="text-ink">Divi</span>
-            {/* Italic flourish inline */}
-            <span
-              className="font-display-italic text-burgundy ml-3 md:ml-5 align-baseline"
-              style={{ fontSize: "0.42em", fontWeight: 400 }}
-            >
-              (2026)
-            </span>
-          </motion.h1>
-
-          {/* Subhead below */}
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
-            className="mt-8 md:mt-12 max-w-[540px] text-[16px] md:text-[18px] leading-[1.7] text-ink-60 relative z-10"
-          >
-            I'm a product designer embedded with engineering teams. I run user
-            research, own the UI, and ship code alongside the Figma file. M.S.
-            Computer Science at NYU Tandon, previously at{" "}
-            <span className="text-ink">Deloitte</span> and{" "}
-            <span className="text-ink">Amazon</span>.
-          </motion.p>
-
-          {/* CTAs */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.5 }}
-            className="mt-10 md:mt-14 flex flex-wrap items-center gap-5 relative z-10"
-          >
-            <a
-              href="#work"
-              className="inline-flex items-center gap-2 px-6 py-3 text-[14px] font-medium transition-colors duration-200"
-              style={{
-                background: "hsl(var(--ink))",
-                color: "hsl(var(--bg))",
-                borderRadius: "6px",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "hsl(var(--cobalt))"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "hsl(var(--ink))"; }}
-            >
-              See selected work →
-            </a>
-            <a
-              href="/resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[14px] font-medium text-ink-60"
-            >
-              Download CV ↗
-            </a>
-          </motion.div>
+          <span className="hero-window-year font-mono-label">2026</span>
         </div>
 
-        {/* Scattered folders with filenames — desktop metaphor */}
-        {scatter.map((file, i) => (
-          <motion.div
-            key={file.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 + i * 0.08, duration: 0.5 }}
-            className={`absolute flex flex-col items-center gap-2 pointer-events-none ${
-              file.hiddenOnMobile ? "hidden md:flex" : ""
-            }`}
-            style={{
-              top: file.top,
-              left: file.left,
-              right: file.right,
-              transform: `rotate(${file.rotate ?? 0}deg)`,
-              zIndex: 1,
-            }}
-            aria-hidden="true"
-          >
-            <div
-              className={`folder-icon ${
-                file.color === "burgundy" ? "is-burgundy" :
-                file.color === "ink"      ? "is-ink"      : ""
-              }`}
-            />
-            <span className="filename-label whitespace-nowrap">{file.name}</span>
-          </motion.div>
-        ))}
+        {/* Panel body */}
+        <div className="hero-panel-body">
 
-        {/* Bottom status row */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.1, duration: 0.5 }}
-          className="flex items-end justify-between pt-12 md:pt-16 relative z-10"
-        >
-          <div className="flex items-baseline gap-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-cobalt inline-block" aria-hidden="true" />
-            <span className="italic-flourish text-[15px] md:text-[18px] text-ink">
-              available for Summer 2026
-            </span>
+          {/* Headline — Fraunces editorial serif */}
+          <motion.h1 {...anim(0.12, 28)} className="hero-headline font-display">
+            I design product&nbsp;systems
+            {" "}that feel sharp, useful,
+            {" "}and built for{" "}
+            <em className="hero-hl-italic font-display-italic">real behavior</em>
+            <span className="hero-dot-accent">.</span>
+          </motion.h1>
+
+          {/* Lower row: intro + CTA block */}
+          <div className="hero-lower">
+
+            <motion.p {...anim(0.24)} className="hero-intro">
+              {person.intro}
+            </motion.p>
+
+            <motion.div {...anim(0.32)} className="hero-cta-block">
+              <div className="hero-avail">
+                <span
+                  className="hero-avail-dot"
+                  style={{ animation: "hero-pulse 2.2s ease-in-out infinite" }}
+                />
+                <span className="font-mono-label hero-avail-label">
+                  {person.availability}
+                </span>
+              </div>
+              <a href="#work" className="hero-cta-pill">
+                View work →
+              </a>
+            </motion.div>
+
           </div>
-          <span className="eyebrow hidden md:block">Scroll to explore ↓</span>
-        </motion.div>
-      </div>
+        </div>
+
+
+      </motion.div>
+
+      <style>{`
+        /* ── Section shell ── */
+        .hero-section {
+          background: hsl(var(--bg));
+          padding-top: clamp(112px, 14vh, 150px);
+          padding-bottom: clamp(56px, 8vh, 88px);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        /* ── Editorial canvas panel ── */
+        .hero-panel {
+          position: relative;
+          width: calc(100vw - 64px);
+          max-width: 1200px;
+          min-height: clamp(500px, 66vh, 700px);
+          border-radius: 32px;
+          border: 1px solid hsl(var(--rule));
+          background: hsl(var(--surface));
+          box-shadow: var(--sh-panel);
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+        }
+
+        /* ── macOS window bar ── */
+        .hero-window-bar {
+          display: grid;
+          grid-template-columns: auto 1fr auto;
+          align-items: center;
+          gap: 16px;
+          min-height: 44px;
+          padding-inline: clamp(18px, 2vw, 28px);
+          border-bottom: 1px solid hsl(var(--rule));
+          background: hsl(var(--bg-alt) / 0.62);
+          flex-shrink: 0;
+        }
+
+        .window-controls {
+          display: flex;
+          gap: 8px;
+          align-items: center;
+        }
+
+        .window-dot {
+          width: 10px;
+          height: 10px;
+          border-radius: 999px;
+          flex-shrink: 0;
+          box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+        }
+
+        .window-dot.red    { background: #ff5f57; }
+        .window-dot.yellow { background: #ffbd2e; }
+        .window-dot.green  { background: #28c840; }
+
+        .hero-window-meta {
+          font-size: 10px;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: hsl(var(--ink-60));
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .hero-window-year {
+          font-size: 10px;
+          letter-spacing: 0.14em;
+          color: hsl(var(--ink-30));
+          white-space: nowrap;
+        }
+
+        /* ── Panel body ── */
+        .hero-panel-body {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          padding:
+            clamp(40px, 5.5vw, 72px)
+            clamp(36px, 5.5vw, 72px)
+            clamp(36px, 5vw, 56px);
+        }
+
+        /* ── Headline ── */
+        .hero-headline {
+          font-size: clamp(2.8rem, 5.4vw, 6.2rem);
+          line-height: 0.97;
+          letter-spacing: -0.045em;
+          color: hsl(var(--ink));
+          margin: 0;
+          font-style: normal;
+          font-variation-settings: '"opsz" 120';
+        }
+
+        .hero-hl-italic {
+          font-style: italic;
+          font-size: 0.94em;
+          letter-spacing: -0.02em;
+          color: hsl(var(--cobalt));
+          font-variation-settings: '"opsz" 144';
+        }
+
+        .hero-dot-accent {
+          color: hsl(var(--cobalt));
+        }
+
+        /* ── Lower row ── */
+        .hero-lower {
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+          margin-top: clamp(32px, 4.5vw, 52px);
+        }
+
+        .hero-intro {
+          font-size: clamp(14px, 1.3vw, 17px);
+          line-height: 1.72;
+          color: hsl(var(--ink-60));
+          max-width: 480px;
+          margin: 0;
+        }
+
+        .hero-cta-block {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          align-self: flex-start;
+        }
+
+        .hero-avail {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .hero-avail-dot {
+          display: block;
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: hsl(var(--cobalt));
+          flex-shrink: 0;
+        }
+
+        .hero-avail-label {
+          font-size: 11px;
+          letter-spacing: 0.08em;
+          color: hsl(var(--ink-60));
+        }
+
+        /* View work pill */
+        .hero-cta-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 11px 22px;
+          border-radius: 999px;
+          border: 1px solid hsl(var(--ink));
+          background: hsl(var(--ink));
+          color: hsl(var(--bg));
+          font-size: 14px;
+          font-weight: 500;
+          letter-spacing: 0.01em;
+          text-decoration: none;
+          white-space: nowrap;
+          transition: background 200ms ease, border-color 200ms ease, color 200ms ease;
+          align-self: flex-start;
+        }
+
+        .hero-cta-pill:hover {
+          background: hsl(var(--cobalt));
+          border-color: hsl(var(--cobalt));
+          color: hsl(0 0% 100%);
+        }
+
+        /* ── Desktop: lower becomes flex row ── */
+        @media (min-width: 860px) {
+          .hero-lower {
+            flex-direction: row;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 48px;
+          }
+
+          .hero-cta-block {
+            align-self: flex-end;
+            align-items: flex-end;
+          }
+
+          .hero-avail {
+            justify-content: flex-end;
+          }
+        }
+
+        /* ── Mobile ── */
+        @media (max-width: 600px) {
+          .hero-panel {
+            width: calc(100vw - 32px);
+            border-radius: 22px;
+            min-height: 0;
+          }
+          .hero-window-bar {
+            gap: 10px;
+            padding-inline: 18px;
+          }
+          .hero-window-year {
+            display: none;
+          }
+        }
+
+        @keyframes hero-pulse {
+          0%, 100% { opacity: 1;   transform: scale(1); }
+          50%       { opacity: 0.4; transform: scale(0.75); }
+        }
+      `}</style>
     </section>
   );
 };

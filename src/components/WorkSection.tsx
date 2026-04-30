@@ -1,231 +1,257 @@
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, useSpring, useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { projects } from "@/data/projects";
+import { portfolioContent } from "@/data/portfolioContent";
+import type { PortfolioProject } from "@/data/portfolioContent";
 
-/**
- * WorkSection — magazine-style per-project layout.
- *
- * Per-project structure from reference:
- *   Left column (40%): project title, "About the project:", "Result:"
- *   Right column (60%): grid of 3–4 images with varied aspect ratios,
- *     filename labels below each image
- *   Bottom-right of each project: italic "project 1", "project 2" marker
- *
- * Only the main `banner` image is guaranteed per-project. We render the
- * banner as the hero image in the grid and populate the other 2-3 tiles
- * as varied-aspect decorative echoes (gradient + label) so the layout
- * reads correctly even without additional asset files.
- */
+const ease: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
-type TileSpec = {
-  src?: string;
-  gradient: string;
-  label: string;
-  aspect: string; // tailwind aspect ratio
-  span?: string;  // tailwind col/row span
-};
-
-/** Build a tile set for a given project. Banner first, then echoes. */
-function buildTiles(project: (typeof projects)[number]): TileSpec[] {
-  const slug = project.slug;
-  return [
-    {
-      src: project.banner,
-      gradient: project.gradient,
-      label: `${slug}_hero.png`,
-      aspect: "aspect-[4/3]",
-      span: "col-span-2 row-span-2",
-    },
-    {
-      gradient: project.gradient,
-      label: `${slug}_02.jpeg`,
-      aspect: "aspect-square",
-    },
-    {
-      gradient: project.gradient,
-      label: `${slug}_flow.jpeg`,
-      aspect: "aspect-[3/4]",
-    },
-    {
-      gradient: project.gradient,
-      label: `${slug}_detail.png`,
-      aspect: "aspect-square",
-    },
-  ];
-}
+// 12-column bento — two balanced rows
+// Row 1: Lume.Sys (6) | Vault DS (6)
+// Row 2: Sync.Collab (4) | Pulse (4) | Solo Leveling OS (4)
+const SPANS: Array<{ col: string; row: string }> = [
+  { col: "1 / 7",  row: "1 / 2" },
+  { col: "7 / 13", row: "1 / 2" },
+  { col: "1 / 5",  row: "2 / 3" },
+  { col: "5 / 9",  row: "2 / 3" },
+  { col: "9 / 13", row: "2 / 3" },
+];
 
 const WorkSection = () => {
+  const { projects } = portfolioContent;
+  const reduce = useReducedMotion();
+
+  const [activeSlug, setActiveSlug] = useState<string | null>(null);
+  const previewX = useSpring(0, { stiffness: 160, damping: 24 });
+  const previewY = useSpring(0, { stiffness: 160, damping: 24 });
+  const lastProject = useRef<PortfolioProject | null>(null);
+  const activeProject = projects.find((p) => p.slug === activeSlug) ?? null;
+  if (activeProject) lastProject.current = activeProject;
+
+  useEffect(() => {
+    if (reduce) return;
+    const onMove = (e: MouseEvent) => {
+      previewX.set(e.clientX + 28);
+      previewY.set(e.clientY - 28);
+    };
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => window.removeEventListener("mousemove", onMove);
+  }, [previewX, previewY, reduce]);
+
   return (
-    <section id="work" className="relative w-full border-t border-rule">
-      {/* Section heading */}
-      <div className="container-wide pt-20 md:pt-28 pb-10 md:pb-16">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="flex items-end justify-between gap-8 flex-wrap"
+    <section
+      id="work"
+      className="w-full border-t border-rule"
+      style={{ paddingBottom: "clamp(72px, 7vw, 96px)" }}
+    >
+      {/* ── Section header ── */}
+      <motion.div
+        className="container-wide"
+        initial={reduce ? false : { opacity: 0, y: 12 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, ease }}
+        style={{
+          paddingTop: "clamp(40px, 5vw, 64px)",
+          paddingBottom: "clamp(20px, 2.5vw, 32px)",
+          display: "flex",
+          alignItems: "baseline",
+          justifyContent: "space-between",
+          gap: "16px",
+        }}
+      >
+        <p
+          className="font-mono-label text-ink-60"
+          style={{ fontSize: "11px", letterSpacing: "0.14em", textTransform: "uppercase" }}
         >
-          <div>
-            <div className="flex items-baseline gap-3 mb-4">
-              <span className="italic-flourish text-burgundy text-[22px] md:text-[28px]">
-                selected
-              </span>
-              <span className="eyebrow">work</span>
-              <span className="deco-asterisk text-[24px] ml-2" aria-hidden="true">*</span>
-            </div>
-            <h2
-              className="font-display text-ink"
-              style={{
-                fontSize: "clamp(48px, 7vw, 96px)",
-                lineHeight: "0.95",
-                letterSpacing: "-0.02em",
-                fontWeight: 500,
-              }}
-            >
-              projects <span className="font-display-italic text-burgundy">(2024—26)</span>
-            </h2>
-          </div>
-          <p className="italic-flourish text-ink-60 text-[15px] md:text-[17px] max-w-[320px]">
-            a collection of shipped work — design systems, full-stack SaaS, and
-            personal products built end-to-end.
-          </p>
-        </motion.div>
+          Selected work
+        </p>
+        <span
+          className="font-mono-label text-ink-30"
+          style={{ fontSize: "10px", letterSpacing: "0.1em" }}
+          aria-hidden="true"
+        >
+          2024 to 2026
+        </span>
+      </motion.div>
+
+      {/* ── Bento grid ── */}
+      <div className="container-wide work-bento-grid">
+        {projects.map((project, idx) => (
+          <BentoCard
+            key={project.slug}
+            project={project}
+            index={idx}
+            span={SPANS[idx] ?? { col: "auto", row: "auto" }}
+            lineClamp={idx < 2 ? 4 : 3}
+            onEnter={() => setActiveSlug(project.slug)}
+            onLeave={() => setActiveSlug(null)}
+          />
+        ))}
       </div>
 
-      {/* Each project — 2-column magazine layout */}
-      <div>
-        {projects.map((project, idx) => {
-          const tiles = buildTiles(project);
-          const projectNum = String(idx + 1).padStart(2, "0");
-
-          return (
-            <motion.article
-              key={project.slug}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-10%" }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="relative border-t border-rule"
-            >
-              <div className="container-wide py-16 md:py-24">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
-                  {/* LEFT — text column ~40% (5/12) */}
-                  <div className="lg:col-span-5 flex flex-col">
-                    <div className="flex items-baseline gap-3 mb-6">
-                      <span className="eyebrow text-cobalt">{project.eyebrow.replace(/^\d+\s*—\s*/, "")}</span>
-                      {project.isLive && (
-                        <span className="italic-flourish text-burgundy text-[15px]">live ↗</span>
-                      )}
-                    </div>
-
-                    {/* Project title — large Playfair */}
-                    <h3
-                      className="font-display text-ink mb-6"
-                      style={{
-                        fontSize: "clamp(36px, 4.5vw, 64px)",
-                        lineHeight: "0.98",
-                        letterSpacing: "-0.02em",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {project.title}
-                    </h3>
-
-                    <p className="text-[16px] md:text-[17px] leading-[1.7] text-ink-60 mb-10 max-w-[480px]">
-                      {project.body}
-                    </p>
-
-                    {/* About the project */}
-                    <div className="mb-8 max-w-[480px]">
-                      <div className="italic-flourish text-burgundy text-[15px] md:text-[17px] mb-3">
-                        about the project:
-                      </div>
-                      <p className="text-[15px] md:text-[16px] leading-[1.7] text-ink">
-                        {project.problem}
-                      </p>
-                    </div>
-
-                    {/* Result */}
-                    <div className="mb-10 max-w-[480px]">
-                      <div className="italic-flourish text-burgundy text-[15px] md:text-[17px] mb-3">
-                        result:
-                      </div>
-                      <p className="text-[15px] md:text-[16px] leading-[1.7] text-ink">
-                        {project.beforeAfter?.after ?? project.outcome.split(".")[0] + "."}
-                      </p>
-                    </div>
-
-                    {/* Badge row — "More Like This", "Save", "Permalink" style */}
-                    <div className="flex flex-wrap items-center gap-2 mb-8">
-                      <span className="px-3 py-1 border border-tag text-[12px] rounded">
-                        {project.role}
-                      </span>
-                      <span className="px-3 py-1 border border-tag text-[12px] rounded">
-                        {project.timeline}
-                      </span>
-                      <span className="px-3 py-1 border border-tag text-[12px] rounded">
-                        {project.team}
-                      </span>
-                    </div>
-
-                    <Link
-                      to={`/work/${project.slug}`}
-                      className="inline-flex items-center gap-2 text-[14px] font-medium text-ink group w-fit"
-                    >
-                      <span className="underline underline-offset-4 decoration-1">open full case study</span>
-                      <span className="transition-transform group-hover:translate-x-1">→</span>
-                    </Link>
-                  </div>
-
-                  {/* RIGHT — image grid ~60% (7/12), varied aspect ratios */}
-                  <div className="lg:col-span-7 relative">
-                    <div className="grid grid-cols-3 gap-3 md:gap-4">
-                      {tiles.map((tile, tIdx) => (
-                        <figure
-                          key={tIdx}
-                          className={`${tile.span ?? ""} flex flex-col gap-2`}
-                        >
-                          <div
-                            className={`${tile.aspect} overflow-hidden rounded-[4px] transition-transform duration-400 hover:scale-[1.02] hover:shadow-sm`}
-                            style={{
-                              background: tile.gradient,
-                              transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)",
-                            }}
-                          >
-                            {tile.src && (
-                              <img
-                                src={tile.src}
-                                alt={tile.label}
-                                className="w-full h-full object-cover"
-                                loading={idx < 2 && tIdx === 0 ? "eager" : "lazy"}
-                                onError={(e) => {
-                                  (e.currentTarget as HTMLImageElement).style.display = "none";
-                                }}
-                              />
-                            )}
-                          </div>
-                          <figcaption className="filename-label">{tile.label}</figcaption>
-                        </figure>
-                      ))}
-                    </div>
-
-                    {/* "project N" italic label — bottom-right of image grid */}
-                    <div className="flex items-baseline gap-2 justify-end mt-6">
-                      <span className="deco-asterisk text-[18px]" aria-hidden="true">*</span>
-                      <span className="italic-flourish text-burgundy text-[18px] md:text-[22px]">
-                        project {projectNum}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.article>
-          );
-        })}
-      </div>
+      {/* ── Cursor-following preview (desktop / pointer:fine only) ── */}
+      <motion.div
+        className="work-preview-float"
+        style={{ x: previewX, y: previewY }}
+        animate={{ opacity: activeSlug ? 1 : 0, scale: activeSlug ? 1 : 0.94 }}
+        transition={{ opacity: { duration: 0.14 }, scale: { duration: 0.2, ease } }}
+        aria-hidden="true"
+      >
+        <div
+          style={{
+            width: "clamp(260px, 24vw, 380px)",
+            aspectRatio: "16 / 10",
+            borderRadius: "18px",
+            overflow: "hidden",
+            border: "1px solid hsl(var(--rule))",
+            boxShadow: "var(--sh-card)",
+            background: lastProject.current?.gradient ?? "hsl(var(--bg-alt))",
+          }}
+        >
+          {lastProject.current && (
+            <img
+              src={lastProject.current.banner}
+              alt=""
+              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              onError={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = "0"; }}
+            />
+          )}
+        </div>
+      </motion.div>
     </section>
   );
 };
+
+function BentoCard({
+  project,
+  index,
+  span,
+  lineClamp,
+  onEnter,
+  onLeave,
+}: {
+  project: PortfolioProject;
+  index: number;
+  span: { col: string; row: string };
+  lineClamp: number;
+  onEnter: () => void;
+  onLeave: () => void;
+}) {
+  const reduce = useReducedMotion();
+
+  return (
+    <motion.div
+      className="work-bento-card"
+      initial={reduce ? false : { opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-4%" }}
+      transition={{ duration: 0.5, delay: index * 0.06, ease }}
+      whileHover={reduce ? {} : { y: -3 }}
+      style={{ gridColumn: span.col, gridRow: span.row }}
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
+    >
+      <Link
+        to={`/work/${project.slug}`}
+        aria-label={`${project.title} — ${project.subtitle}`}
+        style={{ display: "flex", flexDirection: "column", height: "100%", textDecoration: "none" }}
+      >
+        <div className="work-bento-content">
+
+          {/* Top row: category + index */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+            <span
+              className="font-mono-label"
+              style={{ fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: project.accentColor }}
+            >
+              {project.category}
+            </span>
+            <span
+              className="font-mono-label text-ink-30"
+              style={{ fontSize: "10px", letterSpacing: "0.1em" }}
+            >
+              {project.index}
+            </span>
+          </div>
+
+          {/* Title */}
+          <h3
+            className="font-display text-ink"
+            style={{
+              fontSize: "clamp(1.5rem, 2.2vw, 2.35rem)",
+              lineHeight: "1.05",
+              letterSpacing: "-0.03em",
+              fontVariationSettings: '"opsz" 96',
+              marginBottom: "8px",
+            }}
+          >
+            {project.title}
+          </h3>
+
+          {/* Subtitle */}
+          <p
+            className="font-mono-label"
+            style={{ fontSize: "12px", letterSpacing: "0.02em", color: "hsl(var(--ink-60))", marginBottom: "10px" }}
+          >
+            {project.subtitle}
+          </p>
+
+          {/* Context — project.body, clamped by line count */}
+          <p
+            className="text-ink-60"
+            style={{
+              fontSize: "clamp(13px, 1.15vw, 15px)",
+              lineHeight: "1.65",
+              overflow: "hidden",
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: lineClamp,
+              marginBottom: "0",
+            }}
+          >
+            {project.body}
+          </p>
+
+          {/* Footer — pushed to bottom */}
+          <div style={{ marginTop: "auto" }}>
+          {/* Divider */}
+          <div style={{ height: "1px", background: "hsl(var(--rule))", margin: "20px 0 16px" }} />
+
+          {/* Bottom meta row */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+              <span
+                className="font-mono-label text-ink-60"
+                style={{ fontSize: "11px", letterSpacing: "0.02em" }}
+              >
+                {project.role}
+              </span>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <span className="font-mono-label text-ink-30" style={{ fontSize: "10px", letterSpacing: "0.04em" }}>
+                  {project.timeline}
+                </span>
+                <span
+                  className="font-mono-label"
+                  style={{ fontSize: "10px", letterSpacing: "0.08em", textTransform: "uppercase", color: "hsl(var(--ink-30))" }}
+                >
+                  {project.status}
+                </span>
+              </div>
+            </div>
+            <span
+              className="work-bento-arrow font-mono-label"
+              style={{ fontSize: "16px", color: project.accentColor }}
+            >
+              →
+            </span>
+          </div>
+          </div>{/* /footer */}
+
+        </div>
+      </Link>
+    </motion.div>
+  );
+}
 
 export default WorkSection;

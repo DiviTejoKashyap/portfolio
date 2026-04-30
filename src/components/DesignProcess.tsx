@@ -23,19 +23,19 @@ const steps = [
   {
     number: "03",
     name: "prototype",
-    body: "High-fidelity Figma on Monday, React prototype on Thursday — whichever answers the next open question faster. When prototype and shipped build disagree, I fix the prototype. Files have to behave like the product.",
+    body: "High-fidelity Figma on Monday, React prototype on Thursday. Whichever answers the next open question faster. When prototype and shipped build disagree, I fix the prototype. Files have to behave like the product.",
   },
   {
     number: "04",
     name: "ship",
-    body: "Pair with engineers through implementation. Review PRs on my own designs. Roughly 40% of design changes happen during the implementation phase, not before it. The final pixel is part of the design file.",
+    body: "Pair with engineers through implementation. Review PRs on my own designs. Many decisions only surface during the build phase. The final pixel is part of the design process, not outside it.",
   },
 ];
 
 const DesignProcess = () => {
   return (
-    <section className="relative w-full border-t border-rule">
-      <div className="container-wide py-20 md:py-28">
+    <section id="process" className="relative w-full border-t border-rule">
+      <div className="container-wide py-10 md:py-14">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
           {/* LEFT — section heading column */}
           <motion.div
@@ -54,26 +54,26 @@ const DesignProcess = () => {
             <h2
               className="font-display text-ink mb-6"
               style={{
-                fontSize: "clamp(40px, 5.5vw, 72px)",
+                fontSize: "clamp(22px, 3vw, 42px)",
                 lineHeight: "0.98",
                 letterSpacing: "-0.02em",
                 fontWeight: 500,
               }}
             >
               a process built around{" "}
-              <span className="font-display-italic">evidence</span> —<br />
+              <span className="font-display-italic">evidence,</span><br />
               not decks.
             </h2>
             <p className="text-[16px] md:text-[17px] leading-[1.7] text-ink-60 max-w-[420px]">
               Four steps, each with a tool I use and an artifact that comes out
-              of it. The specifics matter more than the shape — names of methods,
+              of it. The specifics matter more than the shape: names of methods,
               paragraphs of rationale, PRs I've reviewed.
             </p>
           </motion.div>
 
           {/* RIGHT — numbered list */}
           <div className="lg:col-span-7">
-            <ol className="space-y-12 md:space-y-16">
+            <ol className="space-y-6 md:space-y-10">
               {steps.map((step, i) => (
                 <motion.li
                   key={step.number}
@@ -81,13 +81,13 @@ const DesignProcess = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: i * 0.05 }}
-                  className="flex items-start gap-6 md:gap-10 border-b border-rule pb-10 md:pb-14 last:border-b-0"
+                  className="flex items-start gap-6 md:gap-10 border-b border-rule pb-8 md:pb-12 last:border-b-0"
                 >
                   {/* Number — large Playfair */}
                   <div
                     className="font-display text-cobalt shrink-0"
                     style={{
-                      fontSize: "clamp(40px, 5vw, 72px)",
+                      fontSize: "clamp(28px, 3.6vw, 52px)",
                       lineHeight: "1",
                       fontWeight: 500,
                       letterSpacing: "-0.02em",
@@ -100,7 +100,7 @@ const DesignProcess = () => {
                     <h3
                       className="font-display-italic text-ink mb-3"
                       style={{
-                        fontSize: "clamp(24px, 2.8vw, 38px)",
+                        fontSize: "clamp(18px, 2vw, 28px)",
                         lineHeight: "1.1",
                         fontWeight: 500,
                       }}

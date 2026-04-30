@@ -4,7 +4,6 @@ export interface Project {
   headline: string;
   body: string;
   tags: string[];
-  isLive?: boolean;
   gradient: string;
   banner: string;
   previewFile: string;
@@ -27,33 +26,18 @@ export interface Project {
   outcome: string;
   impact: string[];
   sections: CaseStudySection[];
-
-  /* ── "The one detail I obsessed over" ────────────────────────────────
-     Visible on every project row. Recruiter-scannable proof of obsession.
-     Specific, concrete — not a generic principle. ~60-110 chars.
-  */
   obsession: string;
-
-  /* ── Before / after diff revealed on hover ───────────────────────────
-     A real decision — what it was, what it became.
-     Proves the thinking is the output.
-  */
   beforeAfter: {
     before: string;
     after: string;
   };
-
-  /* ── Cursor detail when hovering this project row ────────────────────
-     What the x-ray cursor shows. Real spec from the project's system.
-  */
   cursorDetail: string;
 }
 
 export interface CaseStudySection {
-  type: "stat-row" | "two-col" | "full-text" | "process-steps" | "quote";
+  type: "two-col" | "full-text" | "process-steps" | "quote";
   heading?: string;
   body?: string;
-  stats?: { value: string; label: string }[];
   cols?: { heading: string; body: string }[];
   steps?: { number: string; title: string; body: string }[];
   quote?: string;
@@ -64,8 +48,8 @@ export const projects: Project[] = [
   {
     slug: "lume-sys",
     eyebrow: "01 — AI OBSERVABILITY",
-    headline: "Lume.Sys: Monitoring layer for production AI pipelines",
-    body: "A full-stack AI observability platform that surfaces latency, cost, and reliability signals across multi-model inference pipelines in real time.",
+    headline: "Lume.Sys: Monitoring layer for AI pipelines",
+    body: "An AI observability dashboard designed for ML engineers. Tracks latency, token cost, and error rates across multiple model providers from a single interface.",
     tags: ["Product Design", "Design Engineering", "React", "TypeScript", "Supabase"],
     gradient: "linear-gradient(135deg, #0a0a08 0%, #1a1200 50%, #2a1800 100%)",
     banner: "/banners/lume-banner.png",
@@ -75,59 +59,101 @@ export const projects: Project[] = [
     role: "Product Designer & Design Engineer",
     timeline: "Oct 2024 – Jan 2025",
     team: "Solo",
-    status: "Live",
+    status: "Personal Project",
     accentColor: "#e8a427",
     bgColor: "#0a0a08",
 
     obsession:
       "The P99 latency chart recalculates every 30s, not every frame — cost-aware reactivity.",
     beforeAfter: {
-      before: "Charts re-rendered on every WebSocket tick. ~40% browser CPU.",
-      after: "Throttled to 30s cadence with manual override. CPU: 4–6%.",
+      before: "Charts re-rendered on every WebSocket tick — heavy browser CPU usage.",
+      after: "Throttled to 30-second cadence with manual override. Stable CPU at low load.",
     },
     cursorDetail: "grid: 12col / gutter: 24px",
 
     overview:
-      "Production AI teams fly blind. Token costs spike, latency degrades, and error rates climb with no single surface to correlate signals across providers. Lume.Sys is an observability dashboard built for ML engineers managing multi-model inference pipelines.",
+      "AI teams often track model performance across multiple tools with no unified view. Lume.Sys is an observability dashboard for ML engineers managing multi-model inference pipelines — designed to surface latency, token cost, and error rates in one place.",
     problem:
-      "Existing APM tools weren't built for the LLM era. They couldn't correlate token throughput with cost curves, or surface P99 latency by model provider in a single view. Teams were stitching together Datadog, spreadsheets, and custom scripts.",
+      "Standard APM tools weren't built for the LLM era. They surface generic HTTP metrics and can't correlate token throughput with cost curves, or show P99 latency by model provider in a single view.",
     solution:
-      "A terminal-aesthetic dashboard with real-time trace streaming, provider-level health scoring, and cost attribution. Built on Supabase realtime + React with a custom charting layer.",
+      "A terminal-aesthetic dashboard with real-time trace streaming, provider-level health scoring, and cost attribution. Built on Supabase Realtime and React with a custom charting layer.",
     users:
-      "ML engineers and ML Ops teams at companies running multi-model inference in production. Specifically: the engineers on call during incidents who need to triage latency spikes, cost anomalies, and error cascades across model providers in under 30 minutes.",
+      "Designed for ML engineers managing multi-model AI pipelines — people who need to correlate token usage, latency, and cost across multiple providers without switching tools.",
     research:
-      "Two weeks embedded with ML Ops teams at 4 companies, shadowing incident response workflows end-to-end. I recorded every tool switch, every Slack escalation, and every spreadsheet lookup during live triage sessions. The pattern: no single surface correlated token throughput, cost, and latency — engineers built mental models across 4+ tools under time pressure.",
+      "Studied existing APM and observability tools to understand what was missing for LLM-specific workflows. Reviewed common ML engineering contexts (Datadog, custom scripts, provider dashboards) to identify what signals would be most valuable in a unified view.",
     insights: [
-      "Engineers spent 40% of incident response time correlating data across disconnected tools — Datadog, spreadsheets, custom scripts, and provider dashboards",
-      "The mental model gap (thinking in prompts and tokens, seeing generic HTTP metrics) created systematic blind spots that delayed triage by 22 minutes on average",
-      "No existing APM tool spoke LLM: token windows, model cold starts, provider rate limits, and cost attribution weren't first-class concepts anywhere",
+      "Existing APM tools surface generic HTTP metrics and don't track LLM-specific signals like token windows, model cold starts, or provider rate limits",
+      "Engineers managing multi-model pipelines need to correlate latency, cost, and error rates across providers in a single view — not across separate dashboards",
+      "A terminal-first aesthetic signals precision to an engineering audience and matches the mental model of ML engineers already comfortable with dense, data-heavy tools",
     ],
     ideation:
-      "Explored three visual directions: a Grafana-style modular dashboard (too generic, ignored the LLM context), a log-first table view (too narrow, missed the correlation layer), and a terminal-aesthetic cockpit (precise, dense, earned by the engineering audience). Iterated through 12 wireframe versions before landing on the Workspace → Pipeline → Trace hierarchy.",
+      "Explored three visual directions: a Grafana-style modular dashboard (too generic, ignored the LLM context), a log-first table view (too narrow, missed the correlation layer), and a terminal-aesthetic cockpit (dense, precise, appropriate for the engineering audience). Iterated through multiple wireframe versions before landing on the Workspace → Pipeline → Trace hierarchy.",
     wireframes:
-      "Early wireframes explored flat list views, nested tree structures, and card-grid layouts before converging on the three-panel cockpit. Key decision: left sidebar as navigation, center panel as the live trace stream, right panel as inspector — modeled on VS Code's layout which the audience already trusted.",
+      "Started with terminal UI references to understand the information density patterns ML engineers are already comfortable with. Wireframed the three-level hierarchy through multiple arrangements before committing to the three-panel layout — left sidebar navigation, center live trace stream, right inspector — modeled on VS Code's layout.",
     outcome:
-      "Shipped as a live platform monitoring 2.4M requests/day across 4 model providers. Teams reported 68% reduction in time-to-detect latency regressions. Real-time cost attribution eliminated $18K/month in unattributed spend within the first billing cycle. Adopted by 3 internal teams without any onboarding documentation.",
+      "Designed and built a full-stack observability dashboard with real-time trace streaming, provider-level latency breakdown, and token cost attribution. Explored UI patterns for correlating multi-provider signals in a single interface.",
     impact: [
-      "2.4M requests monitored across 4 model providers",
-      "68% reduction in time-to-detect latency regressions",
-      "Real-time cost attribution eliminated $18K/mo in unattributed spend",
-      "Adopted by 3 internal teams within first month",
+      "Designed Workspace → Pipeline → Trace information hierarchy",
+      "Built custom chart layer with throttled refresh for cost-aware reactivity",
+      "Implemented real-time WebSocket stream via Supabase Realtime",
+      "Shipped responsive React dashboard with terminal-aesthetic dark theme",
     ],
     sections: [
-      { type: "stat-row", stats: [{ value: "2.4M", label: "Requests / day" }, { value: "186ms", label: "Avg latency" }, { value: "4", label: "Model providers" }, { value: "68%", label: "Faster detection" }] },
-      { type: "full-text", heading: "The Problem Space", body: "LLM inference is fundamentally different from traditional API calls. Token counts vary wildly, model cold starts introduce unpredictable latency spikes, and rate limits create cascading failures. Standard APM tools surface generic HTTP metrics — they don't speak the language of tokens, contexts, or model routing. I spent two weeks shadowing ML engineers to map their war-room workflows during incidents." },
-      { type: "two-col", cols: [{ heading: "Discovery Findings", body: "Engineers spent 40% of incident response time correlating data across tools. The mental model mismatch — thinking in prompts but seeing HTTP requests — created systematic blind spots that delayed triage by 22 minutes on average." }, { heading: "Design Principles", body: "Terminal-first aesthetics signal precision to an engineering audience. Dense information over whitespace. Every pixel earns its place. The UI should feel like a cockpit — everything visible at once, nothing hidden behind tabs." }] },
-      { type: "process-steps", steps: [{ number: "01", title: "Research & Shadowing", body: "Two weeks embedded with ML Ops teams. Mapped incident response workflows, identified data correlation pain points across 4 companies." }, { number: "02", title: "Information Architecture", body: "Designed the Workspace → Pipeline → Trace hierarchy. Three levels of zoom for investigation depth." }, { number: "03", title: "Component System", body: "Built a custom chart library with amber CRT aesthetic. Every component optimized for data density above all else." }, { number: "04", title: "Real-time Layer", body: "Supabase Realtime for WebSocket trace streaming. 30-second refresh cycle with manual override. Live UTC clock." }] },
-      { type: "quote", quote: "This is the first tool that speaks our language. I can see a token spike and trace it to a specific pipeline in under 30 seconds.", attribution: "ML Ops Engineer, early adopter" },
-      { type: "full-text", heading: "Reflection", body: "The terminal aesthetic is high-fidelity for engineers but creates friction for stakeholders who need cost summaries. Next version: a management view that abstracts the density into executive KPIs — same data, completely different frame." },
+      {
+        type: "full-text",
+        heading: "The Problem Space",
+        body: "LLM inference is fundamentally different from traditional API calls. Token counts vary wildly, model cold starts introduce unpredictable latency spikes, and rate limits create cascading failures. Standard APM tools surface generic HTTP metrics — they don't speak the language of tokens, contexts, or model routing. The design challenge was to build a surface that did.",
+      },
+      {
+        type: "two-col",
+        cols: [
+          {
+            heading: "Design Direction",
+            body: "The terminal-first aesthetic signals precision to an engineering audience. Dense information over whitespace. Every element earns its place. The UI is designed to feel like a cockpit — everything visible at once, nothing hidden behind tabs.",
+          },
+          {
+            heading: "Design Principles",
+            body: "Cost-aware reactivity: charts refresh on a 30-second cadence, not every frame. Provider health uses a scoring system, not raw numbers. The trace stream shows context at three levels of zoom: pipeline, model call, token window.",
+          },
+        ],
+      },
+      {
+        type: "process-steps",
+        steps: [
+          {
+            number: "01",
+            title: "Research & Tool Audit",
+            body: "Reviewed existing observability tools and their gaps in LLM contexts. Identified core signals that ML engineers need to correlate: latency, token cost, provider health, error cascades.",
+          },
+          {
+            number: "02",
+            title: "Information Architecture",
+            body: "Designed the Workspace → Pipeline → Trace hierarchy. Three levels of zoom for investigation depth — from high-level health to individual token windows.",
+          },
+          {
+            number: "03",
+            title: "Component System",
+            body: "Built a custom chart library with amber CRT aesthetic. Components optimized for data density: sparklines, latency heatmaps, cost waterfall charts.",
+          },
+          {
+            number: "04",
+            title: "Real-time Layer",
+            body: "Supabase Realtime for WebSocket trace streaming. 30-second refresh cycle with manual override. Live UTC clock. Cost attribution shown inline with every trace.",
+          },
+        ],
+      },
+      {
+        type: "full-text",
+        heading: "Reflection",
+        body: "The terminal aesthetic works well for engineers but creates friction for non-technical stakeholders who need cost summaries. A follow-up direction: a management view that abstracts the density into higher-level signals — same data, different frame for a different audience.",
+      },
     ],
   },
   {
     slug: "vault-ds",
     eyebrow: "02 — DESIGN SYSTEMS",
     headline: "Vault DS: Component system for scale-stage product teams",
-    body: "A production design system with 128 components, full token architecture, and Storybook documentation built to close the gap between Figma and code.",
+    body: "A design system with 128 components and a three-tier token architecture. Built Figma variables, Storybook docs, and a custom sync script to keep design and code in parity.",
     tags: ["Design Systems", "Storybook", "Figma", "React", "Design Tokens"],
     gradient: "linear-gradient(135deg, #05070A 0%, #0B0E11 100%)",
     banner: "/banners/vault-banner.png",
@@ -136,60 +162,102 @@ export const projects: Project[] = [
     subtitle: "Production Design System",
     role: "Design Systems Lead",
     timeline: "Jun 2024 – Nov 2024",
-    team: "Solo → 2 engineers",
-    status: "Internal",
+    team: "Solo",
+    status: "Design Exploration",
     accentColor: "#3b82f6",
     bgColor: "#05070A",
 
     obsession:
       "A Figma→CSS build script eliminates the translation step — what you see is literally what ships.",
     beforeAfter: {
-      before: "Designers exported hex; engineers re-typed as tokens. 12hr lag.",
-      after: "Figma Variables → JSON → CSS custom properties. 90s end-to-end.",
+      before: "Designers exported hex values; engineers re-typed them as tokens. Manual and error-prone.",
+      after: "Figma Variables → JSON → CSS custom properties. Automated sync in seconds.",
     },
     cursorDetail: "token: ink-60 / opacity: 0.6",
 
     overview:
-      "Scale-stage product teams ship fast and break consistency. Components drift, tokens diverge, and every new feature becomes a negotiation about which version of a button to use. Vault DS is a design system with 128 components, semantic token architecture, and a live audit stream dashboard.",
+      "Scale-stage product teams ship fast and break consistency. Components drift, tokens diverge, and every new feature becomes a negotiation about which button to use. Vault DS is a design system with 128 components, a semantic token architecture, and a live audit stream dashboard demonstrating the system at scale.",
     problem:
-      "The team had 4 different button implementations across 3 products. Color values were hardcoded. Dark mode was a patchwork. Every sprint started with 'which version of this component should I use?' Velocity was high but coherence was eroding.",
+      "Without a shared token system, dark mode becomes a patchwork. Without governance, component libraries diverge across products. Without a sync script, design and code drift apart every sprint.",
     solution:
-      "A systematically built component library with a token-first approach, paired with a live security audit stream dashboard demonstrating real-world application of the system at scale.",
+      "A systematically built component library with a token-first approach: primitive → semantic → component tokens. Paired with a Figma→CSS sync script and full Storybook documentation.",
     users:
-      "Product designers and frontend engineers at scale-stage companies (Series A–B) shipping multiple products from a shared codebase — the people who ask 'which button should I use?' at the start of every sprint and get a different answer each time.",
+      "Designed for product designers and frontend engineers working across multiple products from a shared codebase — teams that lose velocity to component inconsistency and token drift.",
     research:
-      "Full component audit across 3 products before writing a single component. Found 23 unique button variants, 14 input patterns, and 8 modal implementations — all solving the same problems differently. Root cause: no token system, no contribution guidelines, and a 'ship fast' culture that had optimized against consistency for two years.",
+      "Audited open-source design systems (Radix, shadcn, MUI) to understand token architecture approaches. Designed the three-tier system from first principles, testing naming conventions against real component use cases before settling on the semantic model.",
     insights: [
-      "The problem was governance, not tooling — teams didn't know which component to use because there was no authoritative source of truth",
-      "Hardcoded color values made dark mode impossible to implement without rebuilding every component from scratch",
-      "Figma and code had diverged so far that designers and engineers were making independent decisions, creating new inconsistencies with every sprint",
+      "Token systems fail when naming is ambiguous — semantic names (ink, ink-60) outperform role-based names (text-primary, text-secondary) for dark mode flexibility",
+      "Design-code parity requires a sync mechanism, not just documentation — the Figma→CSS script eliminates the manual translation step entirely",
+      "Governance and contribution guidelines matter as much as component implementation — the system is only as good as the rules for adding to it",
     ],
     ideation:
-      "Prototyped 3 token naming conventions (semantic, role-based, and hybrid) before choosing the three-tier semantic system. Sketched the contribution flow as a state machine before writing governance docs. Built the first 10 components in Figma and React simultaneously to test whether the abstractions held across mediums.",
+      "Prototyped three token naming conventions (semantic, role-based, and hybrid) before choosing the three-tier semantic system. Sketched the contribution flow as a state machine before writing governance docs. Built the first ten components in Figma and React simultaneously to test whether the abstractions held across mediums.",
     wireframes:
-      "Started with a component inventory map rather than UI wireframes — charted every existing component against the proposed token system to identify conflicts before building. First design artifacts were token hierarchy diagrams, not screens. UI wireframes came after the token architecture was validated.",
+      "Started with a component inventory map rather than UI wireframes — charted component patterns against the proposed token system to identify conflicts before building. First design artifacts were token hierarchy diagrams, not screens. UI wireframes came after the token architecture was validated.",
     outcome:
-      "128 components shipped with full Storybook documentation and Figma variable bindings. Adopted by 3 product teams within 6 weeks with zero breaking changes. New feature design time reduced by 40% in the first two sprints post-migration. Zero dark mode regressions across all products after full token migration.",
+      "Designed and built a 128-component library with full Storybook documentation and Figma variable bindings. Created a three-tier token architecture and a Figma→CSS sync script that eliminates manual token translation.",
     impact: [
-      "128 components shipped and documented in Storybook",
-      "Reduced new feature design time by 40% within 2 sprints",
-      "Zero regressions across dark/light mode after full token migration",
-      "Adopted by 3 separate product teams with no breaking changes",
+      "Designed three-tier token architecture: primitive → semantic → component",
+      "Built Figma→CSS sync script, eliminating manual token translation",
+      "Documented component contribution model and governance guidelines",
+      "Shipped 128 components in Figma with auto-layout and variable bindings",
     ],
     sections: [
-      { type: "stat-row", stats: [{ value: "128", label: "Components" }, { value: "3", label: "Product teams" }, { value: "40%", label: "Faster design" }, { value: "0", label: "Dark mode regressions" }] },
-      { type: "full-text", heading: "Token Architecture", body: "Most design systems fail at the token layer. Vault DS uses a three-tier system: Primitive tokens (raw values) → Semantic tokens (ink, ink-60, ink-30) → Component tokens (button-bg, button-border). Every color decision traces back to this hierarchy, making dark mode a configuration change instead of a rebuild." },
-      { type: "two-col", cols: [{ heading: "Figma-Code Parity", body: "Built a custom build script that exports Figma tokens directly to CSS custom properties, eliminating the translation step entirely. What you see in Figma is exactly what ships in code." }, { heading: "Live Audit Application", body: "The Vault DS audit stream showcases the system under real load — dense data tables, severity badges, monospaced code panels, and sidebar layouts all built from the same token foundation." }] },
-      { type: "process-steps", steps: [{ number: "01", title: "Audit & Inventory", body: "Catalogued every component across 3 products. Found 23 unique button variants, 14 input patterns, 8 modal implementations." }, { number: "02", title: "Token System Design", body: "Designed the three-tier token architecture. Established naming conventions and semantic mappings with sign-off from both leads." }, { number: "03", title: "Component Build", body: "Built 128 components in Figma with auto-layout and variable bindings. Simultaneously built the React library with full TypeScript types." }, { number: "04", title: "Migration Sprint", body: "Ran migration sprint with two engineers. Replaced all hardcoded values with token references. Zero regressions via Chromatic snapshot testing." }] },
-      { type: "quote", quote: "I stopped thinking about which button to use. The system makes the decision obvious. That's when I knew it was working.", attribution: "Senior Product Designer, adopting team" },
-      { type: "full-text", heading: "Reflection", body: "Design systems are governance problems disguised as technical ones. The hardest part wasn't building components — it was establishing the contribution model. I wish I'd written the governance docs before the first component, not after the tenth PR." },
+      {
+        type: "full-text",
+        heading: "Token Architecture",
+        body: "Most design systems fail at the token layer. Vault DS uses a three-tier system: Primitive tokens (raw values) → Semantic tokens (ink, ink-60, ink-30) → Component tokens (button-bg, button-border). Every color decision traces back to this hierarchy, making dark mode a configuration change instead of a rebuild.",
+      },
+      {
+        type: "two-col",
+        cols: [
+          {
+            heading: "Figma-Code Parity",
+            body: "Built a sync script that exports Figma tokens directly to CSS custom properties, eliminating the translation step entirely. What you see in Figma is exactly what ships in code.",
+          },
+          {
+            heading: "Audit Stream Application",
+            body: "The Vault DS audit stream showcases the system under real load — dense data tables, severity badges, monospaced code panels, and sidebar layouts all built from the same token foundation.",
+          },
+        ],
+      },
+      {
+        type: "process-steps",
+        steps: [
+          {
+            number: "01",
+            title: "Audit & Inventory",
+            body: "Catalogued component patterns across design references to identify common inconsistencies and token conflicts before building anything new.",
+          },
+          {
+            number: "02",
+            title: "Token System Design",
+            body: "Designed the three-tier token architecture. Tested naming conventions against real use cases. Established the semantic mapping with sign-off from both design and engineering.",
+          },
+          {
+            number: "03",
+            title: "Component Build",
+            body: "Built 128 components in Figma with auto-layout and variable bindings. Simultaneously built the React library with full TypeScript types and Storybook stories.",
+          },
+          {
+            number: "04",
+            title: "Sync Script",
+            body: "Built the Figma→JSON→CSS pipeline. Variables export automatically, eliminating the manual re-typing step. Dark mode becomes a token swap, not a rebuild.",
+          },
+        ],
+      },
+      {
+        type: "full-text",
+        heading: "Reflection",
+        body: "Design systems are governance problems disguised as technical ones. The hardest part wasn't building components — it was establishing the contribution model. The governance docs should come before the first component, not after the tenth PR.",
+      },
     ],
   },
   {
     slug: "sync-collab",
     eyebrow: "03 — SAAS PLATFORM",
-    headline: "Sync.Collab: Where design teams actually get work done",
-    body: "A full-stack SaaS collaboration platform with kanban, async design review, real-time presence, and a command palette — built from scratch in 8 weeks.",
+    headline: "Sync.Collab: Collaboration platform for design teams",
+    body: "A collaboration platform for design teams. Kanban boards, async review threads, real-time presence, and a command palette. Designed and built as a full-stack personal project in 8 weeks.",
     tags: ["Product Design", "Next.js 14", "Supabase", "Real-time", "Full-stack"],
     gradient: "linear-gradient(135deg, #FAFAF9 0%, #EEF4FF 100%)",
     banner: "/banners/sync-banner.png",
@@ -199,65 +267,107 @@ export const projects: Project[] = [
     role: "Product Designer & Full-stack Engineer",
     timeline: "Jul 2024 – Sep 2024",
     team: "Solo",
-    status: "Live",
+    status: "Personal Project",
     accentColor: "#2F6FED",
     bgColor: "#FAFAF9",
 
     obsession:
       "The ⌘K palette ranks results by recency + fuzzy score — not either one alone.",
     beforeAfter: {
-      before: "Fuzzy match only. 'design' surfaced a 2-month-old board above today's.",
-      after: "Hybrid score: 0.6 × fuzzy + 0.4 × recency. Active work surfaces first.",
+      before: "Fuzzy match only — older boards surfaced above today's active work.",
+      after: "Hybrid score: fuzzy + recency weighting. Active work surfaces first.",
     },
     cursorDetail: "spacing: 8pt / leading: 1.6",
 
     overview:
       "Design teams live across Figma, Notion, Slack, and Linear — context fragmented across all four. Sync.Collab brings kanban project management, async design review, real-time team presence, and a command palette into a single focused interface.",
     problem:
-      "The 'too many tools' problem isn't new. But design teams have a specific version: feedback lives in Figma comments, tasks in Linear, conversations in Slack, and nobody knows what's actually blocking the project.",
+      "Feedback lives in Figma comments, tasks in Linear, conversations in Slack, and no one knows what's actually blocking the project. The tool fragmentation isn't just inconvenient — it creates systematic context loss at every handoff.",
     solution:
-      "A collaboration surface built specifically for design teams — kanban boards, async review threads with annotation pins, real-time presence, and a ⌘K command palette. Built on Next.js 14 App Router + Supabase Realtime.",
+      "A collaboration surface built for design teams — kanban boards, async review threads with annotation pins, real-time presence, and a ⌘K command palette. Built on Next.js 14 App Router and Supabase Realtime.",
     users:
-      "Distributed design and product teams at early-to-mid stage companies — typically 4–12 people — who split their workflow across Figma, Notion, Slack, and Linear. The people who end each sprint saying 'I didn't know that was blocked.'",
+      "Designed for distributed design teams who split their workflow across Figma, Notion, Slack, and Linear — the people who end each sprint saying they didn't know something was blocked.",
     research:
-      "Week-in-the-life mapping across 6 companies: shadowed designers from brief to handoff, recording every tool switch. Average: 4.2 tool switches per hour. Each switch carried a 30–90 second re-orientation penalty — 2–4 hours of cognitive overhead per designer per week, before accounting for the context lost in translation between tools.",
+      "Mapped my own cross-tool workflow during a typical design sprint, noting every tool switch between Figma, Notion, Slack, and Linear. Each context switch carries a re-orientation cost: time spent rebuilding mental state rather than doing work. This became the central design problem.",
     insights: [
-      "6 critical context-loss moments exist between design brief and engineering handoff, each requiring manual re-entry of status information into a new tool",
-      "Feedback fragmentation is the core problem, not feature gaps — teams don't need more tools, they need fewer containers for the same information",
-      "The ⌘K command palette is the missing unifier: one input surface that reaches all entities without navigating between views",
+      "Feedback fragmentation is the core problem: context lives in Figma comments, tasks in Linear, conversations in Slack — no single surface holds the full picture",
+      "A command palette unifies context without requiring navigation — it's the missing interface layer that reaches all entities from one input",
+      "The review workflow needs to keep the design artifact primary, not buried in a thread sidebar — annotation pins on the canvas solve this",
     ],
     ideation:
-      "Mapped 3 product scopes — narrow (async review only), medium (review + task management), broad (full collaboration suite) — and pressure-tested each against the 6 context-loss moments. The medium scope closed 4 of 6 gaps. Adding the command palette closed the remaining 2. Built lo-fi flows for all 3 before committing to medium scope.",
+      "Mapped three product scopes — narrow (async review only), medium (review + task management), broad (full collaboration suite) — and pressure-tested each against the core context-loss moments. The medium scope closed most gaps. Adding the command palette closed the remaining ones.",
     wireframes:
-      "Lo-fi wireframes focused on information hierarchy before visual design: what does a designer need to see first when opening the tool mid-sprint? Iterated through 3 dashboard layouts, 5 review screen arrangements, and 2 kanban structures before finding the configuration that matched the existing mental models of 6 tested users.",
+      "Lo-fi wireframes focused on information hierarchy: what does a designer need to see first when opening the tool mid-sprint? Iterated through three dashboard layouts, five review screen arrangements, and two kanban structures before finding the configuration that matched existing mental models.",
     outcome:
-      "Shipped in 8 weeks from zero to production deployment. Full-stack: authentication, database schema, realtime subscriptions, file storage, and a ⌘K command palette with 40+ actions responding in under 100ms. The command palette — added late in the build — became the most-praised feature in beta feedback.",
+      "Designed and built the full platform in 8 weeks. Implemented authentication, database schema, realtime subscriptions, file storage, and a ⌘K command palette. The command palette — built late in the sprint — became the most considered feature.",
     impact: [
-      "8 weeks from 0 to production deployment",
-      "Real-time presence for up to 50 concurrent users",
-      "Full-stack: auth, database, realtime, file storage",
-      "Command palette with 40+ actions, sub-100ms response time",
+      "Designed and built full-stack: auth, database, realtime subscriptions, file storage",
+      "Created ⌘K command palette with fuzzy + recency hybrid ranking",
+      "Implemented kanban boards with real-time presence indicators",
+      "Designed async design review with annotation pins on the canvas",
     ],
     sections: [
-      { type: "stat-row", stats: [{ value: "8w", label: "Zero to production" }, { value: "50", label: "Concurrent users" }, { value: "40+", label: "⌘K actions" }, { value: "<100ms", label: "Response time" }] },
-      { type: "full-text", heading: "The Collaboration Problem", body: "I mapped a week in the life of a mid-size design team across six companies. The average designer switched between 4.2 tools per hour during active project work. Every tool switch required a 30–90 second re-orientation period. That's 2–4 hours per designer per week of pure cognitive overhead." },
-      { type: "two-col", cols: [{ heading: "Editorial, Not Sterile", body: "Sync uses a serif editorial headline font (Newsreader) against a clean neutral base. The combination signals craft without sacrificing clarity — closer to a well-designed magazine than enterprise software." }, { heading: "Review Mode Innovation", body: "The review screen puts the design artifact center stage with annotation pins directly on the canvas, comment threads on the right, and version history accessible without leaving context. Feedback never breaks the visual flow." }] },
-      { type: "process-steps", steps: [{ number: "01", title: "User Journey Mapping", body: "Mapped end-to-end design workflow from brief to handoff. Identified 6 critical moments where context was lost between tools." }, { number: "02", title: "Information Architecture", body: "Designed workspace → project → card hierarchy. Card types: design, prototype, research, handoff — each with specific metadata." }, { number: "03", title: "Design & Engineering Sprint", body: "8-week parallel sprint: Figma design system, Next.js 14 App Router, Supabase schema, Realtime subscriptions. No separation between design and build." }, { number: "04", title: "Command Palette", body: "⌘K palette with fuzzy search across all entities. 40+ actions. Built with cmdk. Became the most-used feature post-launch." }] },
-      { type: "quote", quote: "It finally feels like a tool built by someone who actually does design work, not someone who manages it from a distance.", attribution: "Design Lead, beta user" },
-      { type: "full-text", heading: "What Shipping Solo Taught Me", body: "The command palette was an afterthought that became the most-praised feature. Sometimes the architectural decisions are the UX decisions. When you're both the designer and the engineer, you ship fewer features but the ones you ship are deeply considered." },
+      {
+        type: "full-text",
+        heading: "The Collaboration Problem",
+        body: "I mapped my own workflow during a design sprint and noted every tool switch. Each switch between Figma, Notion, Slack, and Linear carries a re-orientation cost — time spent rebuilding context rather than making decisions. The goal was to reduce that overhead by unifying the most common interactions in one surface.",
+      },
+      {
+        type: "two-col",
+        cols: [
+          {
+            heading: "Editorial, Not Sterile",
+            body: "Sync uses a serif editorial headline font (Newsreader) against a clean neutral base. The combination signals craft without sacrificing clarity — closer to a well-designed magazine than enterprise software.",
+          },
+          {
+            heading: "Review Mode",
+            body: "The review screen puts the design artifact center stage with annotation pins directly on the canvas, comment threads on the right, and version history accessible without leaving context. Feedback never breaks the visual flow.",
+          },
+        ],
+      },
+      {
+        type: "process-steps",
+        steps: [
+          {
+            number: "01",
+            title: "Workflow Mapping",
+            body: "Mapped end-to-end design workflow from brief to handoff. Identified critical moments where context is lost between tools — these became the primary design targets.",
+          },
+          {
+            number: "02",
+            title: "Information Architecture",
+            body: "Designed workspace → project → card hierarchy. Card types: design, prototype, research, handoff — each with specific metadata relevant to that phase.",
+          },
+          {
+            number: "03",
+            title: "Design & Engineering Sprint",
+            body: "8-week parallel sprint: Figma design system, Next.js 14 App Router, Supabase schema, Realtime subscriptions. No separation between design and build phases.",
+          },
+          {
+            number: "04",
+            title: "Command Palette",
+            body: "⌘K palette with fuzzy + recency hybrid search across all workspace entities. Built with cmdk. The hybrid ranking ensures active work surfaces above older results.",
+          },
+        ],
+      },
+      {
+        type: "full-text",
+        heading: "What Shipping Solo Taught Me",
+        body: "The command palette was an afterthought that became the most considered feature. Sometimes the architectural decisions are the UX decisions. When you're both the designer and the engineer, you ship fewer features but the ones you ship are deeply considered.",
+      },
     ],
   },
   {
     slug: "pulse",
     eyebrow: "04 — MOBILE HEALTH",
-    headline: "Pulse: Professional wellness architecture for high-performers",
-    body: "A mobile-first wellness platform combining biometric intelligence, habit stacking, and cognitive load detection — designed as an interactive hi-fi prototype.",
+    headline: "Pulse: Wellness prototype for high-performers",
+    body: "A mobile wellness prototype that turns biometric data into clear, actionable recommendations. Three screens, no nested navigation, fully interactive hi-fi.",
     tags: ["Product Design", "Mobile UX", "Prototyping", "Health Tech", "UX Research"],
     gradient: "linear-gradient(165deg, #f8fafc 0%, #e0e7ff 100%)",
     banner: "/banners/pulse-banner.png",
     previewFile: "/mockups/pulse_portfolio_mockups.html",
     title: "Pulse",
-    subtitle: "Professional Wellness Platform",
+    subtitle: "Professional Wellness Prototype",
     role: "Product Designer",
     timeline: "Mar 2024 – May 2024",
     team: "Solo",
@@ -268,54 +378,95 @@ export const projects: Project[] = [
     obsession:
       "The bio-intelligence card is the only non-dismissible element — persists until acted on.",
     beforeAfter: {
-      before: "All cards swipe away. Users dismissed alerts, missed decision windows.",
-      after: "Alert card has no dismiss. Only 'schedule block' or 'snooze 2hr' resolves.",
+      before: "All cards swipeable. Users dismissed alerts and missed the recommended action window.",
+      after: "Alert card has no dismiss. Only 'schedule block' or 'snooze 2hr' resolves it.",
     },
     cursorDetail: "3 screens / 0 nested nav",
 
     overview:
-      "High-performers track everything but understand nothing. Pulse takes raw biometric data — HRV, sleep stages, movement — and turns it into something you can actually act on, surfacing the right recommendation at the moment you need it.",
+      "High-performers track everything but understand little. Pulse takes raw biometric data — HRV, sleep stages, movement — and turns it into something actionable, surfacing the right recommendation at the moment it's relevant.",
     problem:
       "Existing wellness apps are either data-heavy (Garmin, Oura) with no actionable layer, or motivation-heavy (Streaks, Habitica) with no biometric grounding. Neither connects what your body is doing to what you should do next.",
     solution:
-      "A three-screen mobile architecture: Dashboard (snapshot + AI nudges), Analytics (trends and correlations), and Habits (recovery-informed habit stacking). Delivered as a fully interactive hi-fi prototype with wireframe toggle.",
+      "A three-screen mobile architecture: Dashboard (snapshot and contextual nudges), Analytics (trends), and Habits (recovery-informed habit stacking). Delivered as a fully interactive hi-fi prototype with wireframe toggle mode.",
     users:
-      "High-performers across tech, finance, and athletics who already wear biometric trackers (Oura, Whoop, Apple Watch) but can't translate the data into daily decisions. People who know their HRV dropped but don't know whether to reschedule their deep work block or push through.",
+      "Designed for high-performers who wear biometric trackers but struggle to translate raw data into actionable daily decisions — people who know their HRV dropped but don't know what to do about it.",
     research:
-      "Six user interviews with high-performers across tech, finance, and endurance athletics. Competitive audit of 8 wellness apps spanning pure data trackers (Garmin Connect, Oura) to gamified habit apps (Streaks, Habitica). Mapped the gap: every app optimized for one end of the data-to-action spectrum, but nothing bridged both.",
+      "Competitive analysis of eight wellness apps across biometric trackers (Oura, Garmin Connect) and habit apps (Streaks, Habitica). Mapped the gap: every app optimized for one end of the data-to-action spectrum, but none bridged both. The design problem was the space between them.",
     insights: [
-      "Users want intelligence, not more metrics — the data is already there via their trackers, they need contextual interpretation at the moment of decision",
-      "Information hierarchy should lead with the most motivating signal (movement), then the most actionable (bio-intelligence alert), then contextual data (mental wellness)",
-      "A 3-screen architecture outperformed 5- and 7-screen alternatives in comprehension tests — fewer screens, deeper content, lower navigation overhead",
+      "Health apps split into two categories — data trackers with no guidance, and habit apps with no biometric grounding — neither bridges both",
+      "Information hierarchy on the dashboard should lead with the most actionable signal, not the most impressive number",
+      "A 3-screen architecture reduces cognitive overhead by keeping content deep within fewer surfaces, rather than spreading it thin across many",
     ],
     ideation:
-      "Tested three information architectures in lo-fi: 3-screen (snapshot/analytics/habits), 5-screen (expanded categories), and 7-screen (one screen per metric type). The 7-screen version felt like a fitness app; the 5-screen version felt like a dashboard; the 3-screen version felt like a tool. Committed to 3 screens after testing with 4 users.",
+      "Tested three information architectures: 3-screen, 5-screen, and 7-screen. The 7-screen version felt like a fitness app; the 5-screen version felt like a dashboard; the 3-screen version felt like a tool. Committed to 3 screens after comparing comprehension across arrangements.",
     wireframes:
-      "Wireframes explored 20+ card layout variations for the dashboard before landing on the movement-first hierarchy. Key decision made in wireframes: the bio-intelligence alert card should not be dismissible — it's not a notification, it's a recommendation that persists until acted on. This distinction drove all subsequent layout decisions.",
+      "Wireframes explored card layout variations for the dashboard before landing on the movement-first hierarchy. Key decision in wireframes: the bio-intelligence alert card should not be dismissible — it's a recommendation that persists until acted on, not a notification to clear.",
     outcome:
-      "Delivered as a fully interactive hi-fi prototype with dual hi-fi and wireframe toggle mode — designed for stakeholder presentations without a backend. The wireframe toggle became the lead presentation format, showing information architecture without visual noise. This dual-mode pattern is now standard in every prototype built since.",
+      "Designed a fully interactive hi-fi prototype with dual hi-fi and wireframe toggle modes. The wireframe toggle became the primary stakeholder presentation format, showing information architecture without visual noise.",
     impact: [
-      "3-screen architecture reduces cognitive load vs. 7+ screen competitors",
-      "Bio-intelligence layer surfaces contextual nudges at decision points",
-      "Habit stacking informed by real recovery score — not arbitrary streaks",
-      "Hi-fi + wireframe dual-mode prototype for stakeholder presentation",
+      "Designed 3-screen architecture: Dashboard, Analytics, Habits",
+      "Created recovery-informed habit stacking — habits surface based on recovery score",
+      "Built non-dismissible bio-intelligence alert pattern to drive action",
+      "Delivered fully interactive prototype with hi-fi and wireframe view modes",
     ],
     sections: [
-      { type: "stat-row", stats: [{ value: "3", label: "Core screens" }, { value: "62ms", label: "Optimal HRV modeled" }, { value: "88%", label: "Recovery score" }, { value: "14d", label: "Streak system" }] },
-      { type: "full-text", heading: "The Intelligence Gap", body: "Most health apps collect data they can't interpret for you. Your Oura ring knows your HRV dropped 20% but doesn't tell you to reschedule your afternoon deep work block. Pulse's bio-intelligence layer does exactly that — it reads your biometric context and surfaces the right recommendation at the right moment, not after the fact." },
-      { type: "two-col", cols: [{ heading: "Information Hierarchy", body: "The dashboard leads with movement (most motivating), follows with a bio-intelligence alert (most actionable), then closes with mental wellness signals. Each card earns its position by driving a decision, not just displaying a number." }, { heading: "Recovery-Informed Habits", body: "Unlike arbitrary streaks, Pulse's habit system reads your recovery score before surfacing recommendations. At 60% recovery, it won't push a 2-hour deep work block — it surfaces a 5-minute Focus Reset instead." }] },
-      { type: "process-steps", steps: [{ number: "01", title: "Competitive Audit", body: "Analyzed 8 wellness apps across biometric trackers and habit systems. Mapped the gap between data collection and behavioral guidance." }, { number: "02", title: "User Interviews", body: "6 interviews with high-performers across tech, finance, and athletics. Core insight: they want intelligence, not more metrics." }, { number: "03", title: "IA & Flow Design", body: "Tested 5-screen and 7-screen architectures. Settled on 3 screens — fewer screens, deeper content. Bottom nav with clear categorical separation." }, { number: "04", title: "Hi-Fi Prototype", body: "Built a fully interactive prototype with hi-fi and wireframe modes, screen transitions, and toast notifications — portfolio-ready without a backend." }] },
-      { type: "quote", quote: "The best health app tells you what to do next — not just what happened yesterday.", attribution: "User interview, session 4" },
-      { type: "full-text", heading: "Reflection", body: "Pulse proved a well-scoped 3-screen architecture outperforms feature-bloated competitors in comprehension tests. The wireframe toggle in the prototype became a key presentation tool — showing stakeholders the information architecture without visual noise. That dual-mode pattern is now part of every prototype I build." },
+      {
+        type: "full-text",
+        heading: "The Intelligence Gap",
+        body: "Most health apps collect data they don't interpret for you. Your Oura ring knows your HRV dropped but doesn't tell you to reschedule your deep work block. Pulse's bio-intelligence layer reads your biometric context and surfaces a recommendation at the right moment — not after the fact.",
+      },
+      {
+        type: "two-col",
+        cols: [
+          {
+            heading: "Information Hierarchy",
+            body: "The dashboard leads with movement (most motivating), follows with a bio-intelligence alert (most actionable), then closes with mental wellness signals. Each card earns its position by driving a decision, not just displaying a number.",
+          },
+          {
+            heading: "Recovery-Informed Habits",
+            body: "Unlike arbitrary streaks, Pulse's habit system reads your recovery score before surfacing recommendations. At low recovery, it surfaces a short recovery activity instead of a demanding deep work block.",
+          },
+        ],
+      },
+      {
+        type: "process-steps",
+        steps: [
+          {
+            number: "01",
+            title: "Competitive Audit",
+            body: "Analyzed wellness apps across biometric trackers and habit systems. Mapped the gap between data collection and behavioral guidance — the design opportunity lived in that gap.",
+          },
+          {
+            number: "02",
+            title: "Research & Ideation",
+            body: "Studied how high-performers actually use biometric data. Core finding: existing tools optimize for data display; the missing layer is contextual interpretation at the moment of decision.",
+          },
+          {
+            number: "03",
+            title: "IA & Architecture",
+            body: "Compared 3-screen, 5-screen, and 7-screen architectures. Settled on 3 screens — fewer surfaces, deeper content, lower navigation overhead. Bottom nav with clear categorical separation.",
+          },
+          {
+            number: "04",
+            title: "Hi-Fi Prototype",
+            body: "Built a fully interactive prototype with hi-fi and wireframe modes, screen transitions, and toast notifications. Wireframe mode became the lead presentation format for showing IA without visual noise.",
+          },
+        ],
+      },
+      {
+        type: "full-text",
+        heading: "Reflection",
+        body: "The wireframe toggle in the prototype became a key presentation tool — showing stakeholders the information architecture without visual noise. A well-scoped 3-screen architecture outperforms feature-bloated alternatives in comprehension. That dual-mode pattern is now part of every prototype I build.",
+      },
     ],
   },
   {
     slug: "solo-leveling-os",
     eyebrow: "05 — PERSONAL SYSTEM",
     headline: "Solo Leveling OS: Gamified life operating system",
-    body: "A full-stack productivity system that turns personal goals into a rank-based RPG with XP, shadow armies, AI guidance, and a production Next.js + Supabase backend.",
+    body: "A personal productivity system built as an RPG. Goals become Gates, tasks become quests, progress earns XP. Built with Next.js, Supabase, and the Claude API.",
     tags: ["Product Design", "Next.js 14", "Supabase", "Claude API", "Gamification"],
-    isLive: true,
     gradient: "linear-gradient(135deg, #0d1117 0%, #0a1628 50%, #061020 100%)",
     banner: "/banners/solo-banner.png",
     previewFile: "/mockups/solo_leveling_mockups.html",
@@ -324,52 +475,99 @@ export const projects: Project[] = [
     role: "Designer, Engineer, Product Owner",
     timeline: "Aug 2024 – Dec 2024",
     team: "Solo",
-    status: "Live · Personal Use",
+    status: "Personal Project",
     accentColor: "#06b6d4",
     bgColor: "#0d1117",
 
     obsession:
       "The XP curve is exponential, not linear — 50 XP for a task, 8,000 XP for an S-rank Gate.",
     beforeAfter: {
-      before: "Linear XP: 100 per quest, 1K per gate. Ranks felt inflated.",
-      after: "Exponential: 1→2 in a day, 40→41 takes a month. Ranks earn themselves.",
+      before: "Linear XP: every task felt the same weight. Ranks felt arbitrary.",
+      after: "Exponential thresholds: early levels are fast, later ones are genuinely earned.",
     },
     cursorDetail: "rank: B / XP: 68,420",
 
     overview:
-      "Most productivity tools treat motivation as a given. They optimize the system and assume you'll bring the will. Solo Leveling OS flips this — it makes the work feel like a game worth playing, drawing on the rank-based progression system from the manga to create a deeply personal, AI-assisted life OS.",
+      "Most productivity tools treat motivation as a given. They optimize the system and assume you'll bring the will. Solo Leveling OS flips this — it makes the work feel like a game worth playing, drawing on the rank-based progression system from the manga to create a deeply personal, AI-assisted productivity system.",
     problem:
-      "I'd tried every productivity system: GTD, Notion databases, Obsidian vaults, bullet journaling. They all worked for 2–3 weeks before maintenance overhead exceeded the motivation boost. The systems were too neutral. Nothing was at stake. Nothing felt earned.",
+      "I'd tried every productivity system: GTD, Notion databases, Obsidian vaults, bullet journaling. They all worked for a few weeks before maintenance overhead exceeded the motivation boost. The systems were too neutral. Nothing was at stake. Nothing felt earned.",
     solution:
-      "An RPG-layered productivity system with XP, ranks (E through S), Gates (large goals), daily quests, a Shadow Realm thought capture layer, and an AI System Guide powered by the Claude API — backed by Next.js 14 + Supabase.",
+      "An RPG-layered productivity system with XP, ranks (E through S), Gates (large goals), daily quests, a Shadow Realm thought capture layer, and an AI System Guide powered by the Claude API — backed by Next.js 14 and Supabase.",
     users:
-      "Solo builders, indie hackers, and high-drive individuals who have tried every productivity system and burned out on maintenance overhead. People who know what they need to do but can't sustain the motivation architecture long enough to do it consistently.",
+      "Built for myself. The design assumption: a solo builder who has tried every productivity system and burned out on maintenance overhead. A system built specifically for yourself cannot be abandoned because it holds your own mythology.",
     research:
-      "Five months of personal experimentation before writing a line of product code. Tested GTD, Notion databases, Obsidian vaults, bullet journaling, and 3 different habit apps. Mapped the failure mode of each: all worked for 2–3 weeks before maintenance overhead exceeded the motivation boost. Pattern: every system was too neutral — nothing was at stake, nothing felt earned.",
+      "Five months of personal experimentation before writing a line of product code. Tested GTD, Notion databases, Obsidian vaults, bullet journaling, and habit apps. Mapped the failure mode of each: all worked for a few weeks before maintenance overhead exceeded the motivation boost. Pattern: every system was too neutral — nothing was at stake, nothing felt earned.",
     insights: [
-      "All failed productivity systems shared one trait: zero stakes. Nothing bad happened when you skipped a day, and nothing meaningful happened when you succeeded",
-      "Games solved the motivation problem 50 years ago using the same dopaminergic triggers — clear feedback loops, visible progress, earned rewards — with no ethical compromise",
-      "Ownership is the most underrated driver of sustained motivation: a system built specifically for yourself cannot be abandoned because it holds your own mythology",
+      "Every failed productivity system shared one trait: zero stakes. Nothing meaningful happened when you skipped a day, and nothing genuinely rewarding happened when you succeeded",
+      "Games solved the motivation problem decades ago using clear feedback loops, visible progress, and earned rewards — these work for productivity for the same neurological reasons",
+      "Ownership is an underrated driver of sustained motivation: a system built specifically for yourself is harder to abandon than one built for a generic persona",
     ],
     ideation:
-      "Prototyped from a single-file HTML app built in one weekend to test the core loop: complete quest → earn XP → level up. Moved to React + Zustand + localStorage after validating the core mechanic held. Designed the XP economy with 5 different curve shapes before settling on exponential thresholds — fast early levels, slow later ones, each feeling earned.",
+      "Prototyped from a single-file HTML app built in one weekend to test the core loop: complete quest → earn XP → level up. Moved to React + Zustand + localStorage after validating the core mechanic. Designed the XP economy with multiple curve shapes before settling on exponential thresholds — fast early levels, slower later ones.",
     wireframes:
-      "Early wireframes were text-based state machine diagrams mapping the XP economy, rank structure, and gate hierarchy before any visual design. First UI wireframes focused on the command center layout — what's the most important thing a hunter needs to see the moment they open the app? Iterated through 4 dashboard arrangements before landing on rank status as the persistent anchor.",
+      "Early wireframes were text-based state machine diagrams mapping the XP economy, rank structure, and gate hierarchy before any visual design. First UI wireframes focused on the command center layout — what's the most important thing a hunter needs to see when opening the app?",
     outcome:
-      "Used daily for 5+ months — the longest any productivity system has held in personal history. XP spans 47 levels with meaningful rank progression from E to B class. The AI System Guide persona, built on the Claude API with full game-state context, became the most-used feature. Habit streak consistency improved 3x versus previous systems.",
+      "Used daily as my primary productivity system. Built full-stack with Next.js 14, Supabase, and the Claude API. XP spans 47 levels with meaningful rank progression from E to B class.",
     impact: [
-      "Used daily for 5+ months — longest any system has held",
-      "XP system spans 47 levels with meaningful rank progression E → S",
-      "AI System Guide persona built on Claude API with full game-state context",
-      "3x improvement in habit streak consistency vs previous systems",
+      "Designed and built full-stack app: Next.js 14, Supabase, Claude API",
+      "Created XP economy with exponential progression curve across 47 levels",
+      "Built AI System Guide with full game-state context injected per request",
+      "Used daily as primary productivity system for 5+ months",
     ],
     sections: [
-      { type: "stat-row", stats: [{ value: "5mo+", label: "Daily active use" }, { value: "Lv.47", label: "Current rank" }, { value: "23", label: "Gates cleared" }, { value: "3x", label: "Habit improvement" }] },
-      { type: "full-text", heading: "Why Games Work", body: "Games solved the motivation problem 50 years ago. Clear feedback loops, visible progress, meaningful stakes, earned rewards. Productivity tools deliberately strip these out in the name of seriousness. But the neuroscience doesn't care — it responds to the same dopaminergic triggers regardless of context. The question isn't whether gamification works. It's whether you can build a system that earns its own mythology." },
-      { type: "two-col", cols: [{ heading: "The Rank System", body: "E → D → C → B → A → S class progression, each requiring exponentially more XP. Ranks unlock new abilities: more active Gates, Shadow slots, AI query budget. The scarcity makes progression feel earned, not arbitrary." }, { heading: "Shadow Realm Capture", body: "A frictionless thought-capture layer that routes inputs automatically — tasks to Gate Queue, goals to Missions, habits to habit tracker. The system classifies so you don't have to. Keyboard-first, zero friction." }] },
-      { type: "process-steps", steps: [{ number: "01", title: "Prototype → Full App", body: "Started as a single-file HTML prototype in one weekend. Moved to React + Zustand + localStorage. Finally migrated to Next.js 14 + Supabase when persistence requirements grew." }, { number: "02", title: "Narrative Architecture", body: "Every element maps to a Solo Leveling concept. Gates = major projects. Shadows = personified tools and habits. Daily quests = micro-commitments. The lore makes the system feel inhabited." }, { number: "03", title: "XP Economy Design", body: "Designed the XP economy to avoid inflation. Easy tasks give 50–150 XP. S-rank Gates give 4,000–8,000 XP. Level thresholds follow an exponential curve so early levels feel fast, later ones feel earned." }, { number: "04", title: "AI Integration", body: "System Guide built on Claude API with a persona system prompt. Includes current game state in every request: rank, active gates, recent quest history. Rate-limited by rank to create meaningful scarcity." }] },
-      { type: "quote", quote: "The best UX insight from this project: the system works because I built it. Ownership is the most underrated driver of sustained motivation.", attribution: "Personal reflection, month 4" },
-      { type: "full-text", heading: "What This Proved", body: "Personal projects are the most honest portfolio pieces because you can't fake sustained use. Five months of daily engagement means the UX decisions were correct — the feedback loops work, the visual hierarchy surfaces the right information, the AI persona adds genuine value. Designing for one person with total clarity of context produces better decisions than designing for an estimated persona." },
+      {
+        type: "full-text",
+        heading: "Why Games Work",
+        body: "Games solved the motivation problem decades ago. Clear feedback loops, visible progress, meaningful stakes, earned rewards. Productivity tools deliberately strip these out in the name of seriousness. But the neurological response is the same regardless — the question isn't whether these mechanics work, it's whether you can build a system that earns its own mythology.",
+      },
+      {
+        type: "two-col",
+        cols: [
+          {
+            heading: "The Rank System",
+            body: "E → D → C → B → A → S class progression, each requiring exponentially more XP. Ranks unlock new capabilities: more active Gates, Shadow slots, AI query budget. Scarcity makes progression feel earned, not arbitrary.",
+          },
+          {
+            heading: "Shadow Realm Capture",
+            body: "A frictionless thought-capture layer that routes inputs automatically — tasks to Gate Queue, goals to Missions, habits to tracker. The system classifies so you don't have to. Keyboard-first, zero friction.",
+          },
+        ],
+      },
+      {
+        type: "process-steps",
+        steps: [
+          {
+            number: "01",
+            title: "Prototype → Full App",
+            body: "Started as a single-file HTML prototype in one weekend to validate the core XP loop. Moved to React + Zustand. Finally migrated to Next.js 14 + Supabase when persistence requirements grew.",
+          },
+          {
+            number: "02",
+            title: "Narrative Architecture",
+            body: "Every element maps to a Solo Leveling concept. Gates = major projects. Shadows = personified tools and habits. Daily quests = micro-commitments. The lore makes the system feel inhabited.",
+          },
+          {
+            number: "03",
+            title: "XP Economy Design",
+            body: "Designed the XP economy to avoid inflation. Easy tasks give 50–150 XP. S-rank Gates give 4,000–8,000 XP. Level thresholds follow an exponential curve so early levels feel fast, later ones feel genuinely earned.",
+          },
+          {
+            number: "04",
+            title: "AI Integration",
+            body: "System Guide built on the Claude API with a persona system prompt. Includes current game state in every request: rank, active gates, recent quest history. Rate-limited by rank to create meaningful scarcity.",
+          },
+        ],
+      },
+      {
+        type: "quote",
+        quote: "The best UX insight from this project: the system works because I built it. Ownership is the most underrated driver of sustained motivation.",
+        attribution: "Personal reflection, month 4",
+      },
+      {
+        type: "full-text",
+        heading: "What This Proved",
+        body: "Personal projects are the most honest portfolio pieces because you can't fake sustained use. Five months of daily engagement means the feedback loops work, the visual hierarchy surfaces the right information, and the AI persona adds genuine value. Designing for one person with total clarity of context produces better decisions than designing for an estimated persona.",
+      },
     ],
   },
 ];
