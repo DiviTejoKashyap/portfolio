@@ -22,8 +22,8 @@ const WorkSection = () => {
   const reduce = useReducedMotion();
 
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
-  const previewX = useSpring(0, { stiffness: 160, damping: 24 });
-  const previewY = useSpring(0, { stiffness: 160, damping: 24 });
+  const previewX = useSpring(0, { stiffness: 220, damping: 28 });
+  const previewY = useSpring(0, { stiffness: 220, damping: 28 });
   const lastProject = useRef<PortfolioProject | null>(null);
   const activeProject = projects.find((p) => p.slug === activeSlug) ?? null;
   if (activeProject) lastProject.current = activeProject;
@@ -94,8 +94,8 @@ const WorkSection = () => {
       <motion.div
         className="work-preview-float"
         style={{ x: previewX, y: previewY }}
-        animate={{ opacity: activeSlug ? 1 : 0, scale: activeSlug ? 1 : 0.94 }}
-        transition={{ opacity: { duration: 0.14 }, scale: { duration: 0.2, ease } }}
+        animate={{ opacity: activeSlug ? 1 : 0, scale: activeSlug ? 1 : 0.96 }}
+        transition={{ opacity: { duration: 0.18 }, scale: { duration: 0.28, ease } }}
         aria-hidden="true"
       >
         <div
@@ -146,8 +146,8 @@ function BentoCard({
       initial={reduce ? false : { opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-4%" }}
-      transition={{ duration: 0.5, delay: index * 0.06, ease }}
-      whileHover={reduce ? {} : { y: -3 }}
+      transition={{ duration: 0.48, delay: index * 0.065, ease }}
+      whileHover={reduce ? {} : { y: -4, transition: { duration: 0.32, ease } }}
       style={{ gridColumn: span.col, gridRow: span.row }}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}

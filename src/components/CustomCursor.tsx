@@ -6,10 +6,10 @@ const CustomCursor = () => {
   const [hovering, setHovering] = useState(false);
   const [pressing, setPressing] = useState(false);
 
-  const dotX  = useSpring(0, { stiffness: 600, damping: 32 });
-  const dotY  = useSpring(0, { stiffness: 600, damping: 32 });
-  const ringX = useSpring(0, { stiffness: 110, damping: 22 });
-  const ringY = useSpring(0, { stiffness: 110, damping: 22 });
+  const dotX  = useSpring(0, { stiffness: 800, damping: 36 });
+  const dotY  = useSpring(0, { stiffness: 800, damping: 36 });
+  const ringX = useSpring(0, { stiffness: 130, damping: 24 });
+  const ringY = useSpring(0, { stiffness: 130, damping: 24 });
 
   useEffect(() => {
     if (window.matchMedia("(pointer: coarse)").matches) return;
@@ -59,7 +59,8 @@ const CustomCursor = () => {
           height: pressing ? 5 : hovering ? 10 : 8,
           backgroundColor: "#ffffff",
           mixBlendMode: "difference",
-          transition: "width 0.15s ease, height 0.15s ease",
+          willChange: "transform",
+          transition: "width 0.18s cubic-bezier(0.22,1,0.36,1), height 0.18s cubic-bezier(0.22,1,0.36,1)",
         }}
       />
       <motion.div
@@ -75,8 +76,9 @@ const CustomCursor = () => {
           border: "1.5px solid #ffffff",
           mixBlendMode: "difference",
           opacity: hovering ? 0.8 : 0.5,
+          willChange: "transform",
           transition:
-            "width 0.32s cubic-bezier(0.22,1,0.36,1), height 0.32s cubic-bezier(0.22,1,0.36,1), opacity 0.2s ease",
+            "width 0.28s cubic-bezier(0.22,1,0.36,1), height 0.28s cubic-bezier(0.22,1,0.36,1), opacity 0.18s ease",
         }}
       />
     </>

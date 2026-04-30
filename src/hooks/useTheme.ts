@@ -10,32 +10,40 @@ export function useTheme() {
     return "light";
   });
 
+  // Drives the overlay fade — true for ~520ms around the color flip
+  const [switching, setSwitching] = useState(false);
+
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("kd-theme", theme);
   }, [theme]);
 
   const toggle = () => {
-    const root = document.documentElement;
     const next: Theme = theme === "light" ? "dark" : "light";
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    if (!reduced) {
-      root.classList.add("theme-transitioning");
-    }
-
-    // rAF ensures the browser paints the transition class before data-theme
-    // changes, so CSS transitions are already set up when colors switch.
-    requestAnimationFrame(() => {
-      root.dataset.theme = next;
+    if (reduce) {
+      document.documentElement.dataset.theme = next;
       localStorage.setItem("kd-theme", next);
       setTheme(next);
+      return;
+    }
 
-      window.setTimeout(() => {
-        root.classList.remove("theme-transitioning");
-      }, 650);
-    });
+    // 1. Start overlay fade-in
+    setSwitching(true);
+
+    // 2. Flip colors after the overlay is half-opaque (~120ms)
+    window.setTimeout(() => {
+      document.documentElement.dataset.theme = next;
+      localStorage.setItem("kd-theme", next);
+      setTheme(next);
+    }, 120);
+
+    // 3. Fade overlay back out
+    window.setTimeout(() => {
+      setSwitching(false);
+    }, 520);
   };
 
-  return { theme, toggle };
+  return { theme, toggle, switching };
 }

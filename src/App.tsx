@@ -20,14 +20,14 @@ function AnimatedRoutes() {
 
   return (
     // initial={false}: first render has no enter animation — Loader handles the intro
-    // mode="wait": exit completes before enter begins
-    <AnimatePresence mode="wait" initial={false}>
+    // mode="sync": exit and enter overlap so total feels ~0.38s not additive
+    <AnimatePresence mode="sync" initial={false}>
       <motion.div
         key={location.pathname}
-        initial={reduce ? false : { opacity: 0, y: 5 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={reduce ? {} : { opacity: 0, transition: { duration: 0.12, ease } }}
-        transition={{ duration: 0.22, ease }}
+        initial={reduce ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={reduce ? {} : { opacity: 0, transition: { duration: 0.16, ease } }}
+        transition={{ duration: 0.28, ease }}
         style={{ minHeight: "100vh" }}
       >
         <Routes location={location}>

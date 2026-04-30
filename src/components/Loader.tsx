@@ -19,8 +19,8 @@ const Loader = ({ onDone, onReveal }: LoaderProps) => {
     // Skip loader entirely for reduced-motion users
     if (reduce) { onReveal?.(); onDone(); return; }
 
-    const totalDuration = 1100;
-    const intervalMs    = 18;
+    const totalDuration = 800;
+    const intervalMs    = 16;
     const steps         = totalDuration / intervalMs;
     let step            = 0;
 
@@ -49,7 +49,7 @@ const Loader = ({ onDone, onReveal }: LoaderProps) => {
       className="fixed inset-0 z-[9990] flex flex-col justify-end"
       style={{ background: "hsl(var(--bg))", padding: "clamp(24px, 4vw, 56px)" }}
       animate={exiting ? { y: "-100%" } : { y: 0 }}
-      transition={{ duration: 0.72, ease: [0.76, 0, 0.24, 1] }}
+      transition={{ duration: 0.52, ease: [0.76, 0, 0.24, 1] }}
       onAnimationComplete={handleAnimationComplete}
     >
       {/* Name reveal */}
@@ -63,7 +63,7 @@ const Loader = ({ onDone, onReveal }: LoaderProps) => {
           }}
           initial={{ y: "105%" }}
           animate={{ y: 0 }}
-          transition={{ duration: 0.65, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.5, delay: 0.04, ease: [0.22, 1, 0.36, 1] }}
         >
           Tejo Kashyap Divi
         </motion.div>
@@ -76,7 +76,7 @@ const Loader = ({ onDone, onReveal }: LoaderProps) => {
           style={{ fontSize: "12px", letterSpacing: "0.12em", textTransform: "uppercase" }}
           initial={{ y: "100%" }}
           animate={{ y: 0 }}
-          transition={{ duration: 0.5, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.42, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
         >
           Product Designer · Design Engineer
         </motion.div>

@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { portfolioContent } from "@/data/portfolioContent";
+import HeroBlockFlow from "@/components/HeroBlockFlow";
 
 const ease: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const { person } = portfolioContent;
@@ -14,7 +15,7 @@ const Hero = ({ revealed = true }: HeroProps) => {
     return {
       initial:    skip ? (false as const) : ({ opacity: 0, y: yOffset } as const),
       animate:    revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: yOffset },
-      transition: reduce ? { duration: 0 } : { duration: 0.65, delay, ease },
+      transition: reduce ? { duration: 0 } : { duration: 0.52, delay, ease },
     };
   };
 
@@ -24,8 +25,10 @@ const Hero = ({ revealed = true }: HeroProps) => {
       {/* ── Editorial canvas panel ── */}
       <motion.div {...anim(0.04, 24)} className="hero-panel">
 
+        <HeroBlockFlow />
+
         {/* macOS-style window bar */}
-        <div className="hero-window-bar" aria-hidden="true">
+        <div className="hero-window-bar hero-panel-content" aria-hidden="true">
           <div className="window-controls">
             <span className="window-dot red" />
             <span className="window-dot yellow" />
@@ -38,7 +41,7 @@ const Hero = ({ revealed = true }: HeroProps) => {
         </div>
 
         {/* Panel body */}
-        <div className="hero-panel-body">
+        <div className="hero-panel-body hero-panel-content">
 
           {/* Headline — Fraunces editorial serif */}
           <motion.h1 {...anim(0.12, 28)} className="hero-headline font-display">
@@ -101,6 +104,13 @@ const Hero = ({ revealed = true }: HeroProps) => {
           overflow: hidden;
           display: flex;
           flex-direction: column;
+          will-change: transform, opacity;
+        }
+
+        /* ── Content layer sits above block flow ── */
+        .hero-panel-content {
+          position: relative;
+          z-index: 2;
         }
 
         /* ── macOS window bar ── */

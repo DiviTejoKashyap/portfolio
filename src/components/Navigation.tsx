@@ -13,7 +13,7 @@ const Navigation = () => {
   const location = useLocation();
   const isHome   = location.pathname === "/";
   const { navigation, person } = portfolioContent;
-  const { theme, toggle } = useTheme();
+  const { theme, toggle, switching } = useTheme();
 
   // ── Active section tracking ──────────────────────────────────────
   useEffect(() => {
@@ -61,6 +61,9 @@ const Navigation = () => {
 
   return (
     <>
+      {/* ── Theme transition overlay ── */}
+      <div className="theme-wipe" data-active={switching ? "true" : "false"} />
+
       {/* ── Fixed chip nav ── */}
       <header className="site-nav" role="banner">
         <div className="site-nav-inner">
@@ -170,7 +173,7 @@ const Navigation = () => {
             initial={{ clipPath: "inset(0 0 100% 0 round 0 0 28px 28px)" }}
             animate={{ clipPath: "inset(0 0 0% 0 round 0 0 28px 28px)" }}
             exit={{ clipPath: "inset(0 0 100% 0 round 0 0 28px 28px)" }}
-            transition={{ duration: 0.54, ease: stiffEase }}
+            transition={{ duration: 0.44, ease: stiffEase }}
           >
             {/* Nav links */}
             <nav
@@ -184,7 +187,7 @@ const Navigation = () => {
                     initial={{ y: "110%" }}
                     animate={{ y: 0 }}
                     exit={{ y: "110%" }}
-                    transition={{ duration: 0.5, delay: 0.08 + i * 0.06, ease }}
+                    transition={{ duration: 0.42, delay: 0.06 + i * 0.055, ease }}
                   >
                     <button
                       onClick={() => scrollTo(link.href)}
@@ -208,7 +211,7 @@ const Navigation = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ delay: 0.38, duration: 0.3 }}
+              transition={{ delay: 0.28, duration: 0.24 }}
             >
               {person.links.map(({ label, href }) => (
                 <a
